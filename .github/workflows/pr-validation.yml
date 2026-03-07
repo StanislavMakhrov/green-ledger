@@ -1,0 +1,116 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Guardrail: internal/workflow PRs must not bump versions"
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          changed_files=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)
+          if [ -z "$changed_files" ]; then
+            echo "No changed files detected; skipping internal commit guardrail."
+            exit 0
+          fi
+
+          # If anything outside these paths changed, this is not an internal-only PR.
+          non_internal=$(echo "$changed_files" | grep -Ev '^(\.github/|scripts/|docs/)' || true)
+          if [ -n "$non_internal" ]; then
+            echo "Non-internal files changed; internal commit guardrail not applicable."
+            exit 0
+          fi
+
+          echo "Internal-only PR detected; enforcing non-version-bumping commit types."
+
+          # Versionize bumps on conventional commits like feat/fix (and breaking changes).
+          messages=$(git log --format=%B "$BASE_SHA".."$HEAD_SHA" || true)
+
+          if echo "$messages" | grep -Eqi '^(feat|fix|perf)(\([^)]*\))?:|BREAKING CHANGE:'; then
+            echo "❌ ERROR: This PR only changes internal/workflow/tooling files, but includes version-bumping commits (feat/fix/perf or BREAKING CHANGE)."
+            echo "Please use non-bumping types like chore:, ci:, docs:, style:, refactor: for internal changes."
+            exit 1
+          fi
+
+          echo "✓ Commit messages OK for internal-only PR."
+
+      - name: Check if validation is needed
+        id: filter
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "No changed files detected; running validation"
+            exit 0
+          fi
+
+          NON_IGNORED=$(echo "$CHANGED_FILES" | grep -Ev '^(docs/|\.github/agents/|\.github/skills/|\.github/copilot-instructions\.md$|\.github/gh-cli-instructions\.md$|\.github/pull_request_template\.md$)' || true)
+
+          if [ -z "$NON_IGNORED" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Only docs/agent-instructions changed; skipping validation"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Non-ignored files changed; running validation"
+          fi
+
+      - name: Setup Node.js
+        if: steps.filter.outputs.changed == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.filter.outputs.changed == 'true'
+        run: npm ci
+
+      - name: Lint
+        if: steps.filter.outputs.changed == 'true'
+        run: npm run lint
+
+      - name: Type check
+        if: steps.filter.outputs.changed == 'true'
+        run: npm run type-check
+
+      - name: Test
+        if: steps.filter.outputs.changed == 'true'
+        run: npm test
+
+      - name: Build
+        if: steps.filter.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Lint markdown
+        if: steps.filter.outputs.changed == 'true'
+        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#CHANGELOG.md"
+
+      - name: Skip validation (no relevant files changed)
+        if: steps.filter.outputs.changed == 'false'
+        run: echo "✅ PR validation skipped (docs/agent-only changes)"
