@@ -85,26 +85,32 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 20
-          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
+          cache: ${{ hashFiles('src/package-lock.json') != '' && 'npm' || '' }}
+          cache-dependency-path: src/package-lock.json
 
       - name: Install dependencies
         if: steps.filter.outputs.changed == 'true'
+        working-directory: src
         run: npm ci
 
       - name: Lint
         if: steps.filter.outputs.changed == 'true'
+        working-directory: src
         run: npm run lint
 
       - name: Type check
         if: steps.filter.outputs.changed == 'true'
+        working-directory: src
         run: npm run type-check
 
       - name: Test
         if: steps.filter.outputs.changed == 'true'
+        working-directory: src
         run: npm test
 
       - name: Build
         if: steps.filter.outputs.changed == 'true'
+        working-directory: src
         run: npm run build
 
       - name: Lint markdown

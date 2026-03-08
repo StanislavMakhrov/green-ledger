@@ -22,7 +22,7 @@ Provide standardized instructions for running tests and validating the build. En
 
 - Use `npm test` for running the test suite
 - Use `npm run build` (which runs `next build`) to validate the production build
-- Run tests from the repository root
+- Run all npm commands from the `src/` directory (where `package.json` lives)
 - Wait for test completion and check exit code (0 = pass, non-zero = fail)
 
 ### Must Not
@@ -36,36 +36,42 @@ Provide standardized instructions for running tests and validating the build. En
 ### Run Full Test Suite
 
 ```bash
+cd src
 npm test
 ```
 
 ### Run Tests in Watch Mode (during development)
 
 ```bash
+cd src
 npm run test:watch
 ```
 
 ### Run a Specific Test File
 
 ```bash
+cd src
 npx vitest run path/to/test.test.ts
 ```
 
 ### Run Tests Matching a Pattern
 
 ```bash
+cd src
 npx vitest run --reporter=verbose -t "pattern"
 ```
 
 ### Validate Production Build
 
 ```bash
+cd src
 npm run build
 ```
 
 ### Run Lint + Type Check
 
 ```bash
+cd src
 npm run lint
 npm run type-check
 ```
@@ -74,13 +80,13 @@ npm run type-check
 
 ### Tests fail with module not found
 
-Run `npm ci` to ensure all dependencies are installed.
+Run `cd src && npm ci` to ensure all dependencies are installed.
 
 ### Build fails with type errors
 
-Run `npm run type-check` to see TypeScript errors independently of the build.
+Run `cd src && npm run type-check` to see TypeScript errors independently of the build.
 
 ### Database-related test failures
 
-Run `npx prisma db push` to ensure the database schema is up to date, then retry.
+Run `cd src && npx prisma db push` to ensure the database schema is up to date, then retry.
 
