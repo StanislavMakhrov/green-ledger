@@ -84,15 +84,20 @@ export default function SuppliersPage() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
-    fetch("/api/suppliers")
-      .then((r) => r.json())
-      .then((d) => setSuppliers(Array.isArray(d) ? d : []))
-      .finally(() => setLoading(false));
+    try {
+      const r = await fetch("/api/suppliers");
+      const d = await r.json();
+      setSuppliers(Array.isArray(d) ? d : []);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(load, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   const refreshToken = async (id: string) => {
     await fetch(`/api/suppliers/${id}/refresh-token`, { method: "POST" });

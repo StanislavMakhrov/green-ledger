@@ -132,22 +132,25 @@ function RecordsTab() {
   });
   const [saving, setSaving] = useState(false);
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
-    Promise.all([
-      fetch("/api/scope3/records").then((r) => r.json()),
-      fetch("/api/scope3/categories").then((r) => r.json()),
-      fetch("/api/suppliers").then((r) => r.json()),
-    ])
-      .then(([recs, cats, sups]) => {
-        setRecords(Array.isArray(recs) ? recs : []);
-        setCategories(Array.isArray(cats) ? cats : []);
-        setSuppliers(Array.isArray(sups) ? sups : []);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const [recs, cats, sups] = await Promise.all([
+        fetch("/api/scope3/records").then((r) => r.json()),
+        fetch("/api/scope3/categories").then((r) => r.json()),
+        fetch("/api/suppliers").then((r) => r.json()),
+      ]);
+      setRecords(Array.isArray(recs) ? recs : []);
+      setCategories(Array.isArray(cats) ? cats : []);
+      setSuppliers(Array.isArray(sups) ? sups : []);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

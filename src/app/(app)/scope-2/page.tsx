@@ -115,15 +115,20 @@ export default function Scope2Page() {
   const [records, setRecords] = useState<Scope2Record[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
-    fetch("/api/scope2")
-      .then((r) => r.json())
-      .then((d) => setRecords(Array.isArray(d) ? d : []))
-      .finally(() => setLoading(false));
+    try {
+      const r = await fetch("/api/scope2");
+      const d = await r.json();
+      setRecords(Array.isArray(d) ? d : []);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(load, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   const deleteRecord = async (id: string) => {
     if (!confirm("Delete this record?")) return;
