@@ -24,12 +24,13 @@ import {
 } from '@/lib/calculations'
 
 interface RouteParams {
-  params: { token: string }
+  params: Promise<{ token: string }>
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
+  const { token } = await params
   const supplier = await prisma.supplier.findUnique({
-    where: { publicFormToken: params.token },
+    where: { publicFormToken: token },
   })
   if (!supplier) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 404 })

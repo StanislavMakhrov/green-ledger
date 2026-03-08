@@ -9,10 +9,11 @@ import { prisma } from '@/lib/prisma'
 import { recordAuditEvent } from '@/lib/audit'
 
 interface RouteParams {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { id } = await params
   const body = await request.json() as {
     name?: string
     country?: string
@@ -22,7 +23,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 
   const supplier = await prisma.supplier.update({
-    where: { id: params.id },
+    where: { id },
     data: body,
   })
 
@@ -35,6 +36,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  await prisma.supplier.delete({ where: { id: params.id } })
+  const { id } = await params
+  await prisma.supplier.delete({ where: { id } })
   return new NextResponse(null, { status: 204 })
 }

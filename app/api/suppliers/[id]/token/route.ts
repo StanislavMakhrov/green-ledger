@@ -11,12 +11,13 @@ import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
 
 interface RouteParams {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function POST(_request: Request, { params }: RouteParams) {
+  const { id } = await params
   const supplier = await prisma.supplier.update({
-    where: { id: params.id },
+    where: { id },
     data: { publicFormToken: randomUUID() },
   })
   return NextResponse.json({ publicFormToken: supplier.publicFormToken })
