@@ -241,6 +241,18 @@ Follow the project's coding conventions strictly:
       git commit -m "docs: update demo artifacts for <feature-name>"
       ```
 
+   f. **Run pre-push validation (MANDATORY)**:
+      - Load and follow the `pre-push-validation` skill
+      - Run all PR Validation checks locally: lint, type-check, test, build, markdownlint
+      - Fix any failures and re-validate until all checks pass
+      - **Do not push code that fails validation** — the Maintainer should only review, not fix CI
+
+   g. **Monitor CI after push (coding agent only)**:
+      - After `report_progress` pushes changes, check the PR Validation workflow status
+      - Use GitHub MCP tools or `scripts/check-workflow-status.sh list` to monitor
+      - If CI fails, inspect logs, fix the issue, re-run pre-push validation, and push again
+      - The PR must have green CI checks before handoff to the next agent
+
 6. **Ask one question at a time** - If clarification is needed, ask focused questions.
 
 ## Commands
@@ -357,6 +369,8 @@ Verify:
 - [ ] Comprehensive demo passes markdownlint with 0 errors (REQUIRED)
 - [ ] Snapshots updated using `update-test-snapshots` skill if markdown output changed (REQUIRED)
 - [ ] Comprehensive demo plan.json updated if feature has visible markdown impact
+- [ ] Pre-push validation passed (`pre-push-validation` skill): lint, type-check, test, build, markdownlint all green
+- [ ] CI checks are green after push (PR Validation workflow passed) — do not hand off with red checks
 - [ ] The Maintainer has reviewed the implementation
 
 ## Handoff

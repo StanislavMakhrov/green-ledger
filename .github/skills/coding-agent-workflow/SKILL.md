@@ -44,7 +44,9 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 
 3. **Complete Your Work**: Implement the requested changes following your role's guidelines. **Use `edit`/`create` tools to apply all file modifications** — never just describe or list changes without applying them.
 
-4. **Commit and Push Changes**:
+4. **Run Pre-Push Validation (MANDATORY)**: Before committing/pushing, you MUST load and run the `pre-push-validation` skill to execute all PR Validation checks locally (lint, type-check, test, build, markdownlint). **Do not push code that fails any check.** Fix failures and re-validate until all checks pass. This ensures the PR passes CI without maintainer intervention.
+
+5. **Commit and Push Changes**:
 
    - **Primary agent** (running the top-level PR): Use the `report_progress` tool. It handles `git add`, `git commit`, and `git push` automatically with the GitHub Actions token. Manual `git push` fails (no personal credentials). Call it with:
      - `commitMessage`: Conventional commit message (e.g., "feat: add feature X")
@@ -68,7 +70,12 @@ This skill is automatically loaded by all coding agents. It defines the core wor
      ```
      Your commits accumulate in the local branch. When the parent agent calls `report_progress`, ALL local commits (including yours) are pushed to the remote PR branch.
 
-5. **Create Summary Comment (After Progress Reported)**: Post a PR comment with:
+6. **Monitor CI After Push (Primary Agent Only)**: After `report_progress` pushes your changes, PR Validation runs automatically on GitHub. You SHOULD check the workflow status and fix any failures:
+   - Use GitHub MCP tools (`github-mcp-server-actions_list` with `method="list_workflow_runs"`) or `scripts/check-workflow-status.sh list` to check status
+   - If a check fails, inspect the logs, fix the issue locally, re-run `pre-push-validation`, and push again with `report_progress`
+   - **Do not leave a PR with failing CI for the Maintainer to fix** — the PR must be green before handoff
+
+7. **Create Summary Comment (After Progress Reported)**: Post a PR comment with:
    - **Summary**: Brief description of what you completed
    - **Changes**: List of key files/features modified
    - **Next Agent**: Recommend which agent should continue the workflow (see docs/agents.md for workflow sequence)
@@ -94,6 +101,8 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 ## Key Principles
 
 - **GitHub creates branches/PRs automatically** - never attempt to create them yourself
+- **Run `pre-push-validation` before every push** - ensures PR passes CI on the first attempt; the Maintainer should only review, never fix CI failures
+- **Monitor CI after pushing** (primary agent) - check workflow status and fix failures; do not hand off a PR with red checks
 - **`report_progress` is only available to the primary agent** - subagents spawned via `task` tool must use `git commit` instead
 - **Always use `report_progress`** for commits and pushes (primary agent) - never use manual `git push` commands
 - **Subagents MUST `git commit` before completing** - uncommitted changes will be lost if only in memory; the parent's `report_progress` can pick up uncommitted files via `git add .` but this is a fallback, not the primary mechanism

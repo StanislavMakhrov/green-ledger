@@ -199,10 +199,20 @@ For each stage:
 - Provide specific UAT feedback to Developer
 - After fixes, return to UAT Tester
 
-**Build/CI Failures:**
-- If Release Manager reports build/CI failures, delegate to Developer
-- Provide error logs and failure context to Developer
-- After fixes, return to Release Manager
+**Build/CI Failures (CRITICAL — Proactive Monitoring):**
+
+The agent is responsible for delivering a PR that passes all CI checks. The Maintainer should only need to review — never fix CI.
+
+- **After every `report_progress` push**, check the PR Validation workflow status:
+  - Use GitHub MCP tools (`github-mcp-server-actions_list` with `method="list_workflow_runs"`) or `scripts/check-workflow-status.sh list` to monitor
+  - Wait for the workflow to complete (use `scripts/check-workflow-status.sh watch <run-id>` or poll status)
+- **If PR Validation fails**, delegate back to Developer with:
+  - The specific failure step (lint, type-check, test, build, markdownlint)
+  - Error logs from the failed step (use `scripts/check-workflow-status.sh logs <run-id> --step "<step-name>"` or GitHub MCP tools)
+  - Instruction to fix the issue, re-run `pre-push-validation` locally, and commit the fix
+- **After Developer fixes**, push the fix with `report_progress` and re-check CI
+- **Repeat until CI is green** — do not proceed to the next workflow stage with failing CI
+- If Release Manager reports build/CI failures during release, apply the same loop
 
 ### 5. Track and Report Progress
 Throughout orchestration:
@@ -370,6 +380,7 @@ Workflow orchestration is complete when:
 - [ ] All expected deliverables created
 - [ ] Code review approved
 - [ ] Tests passing
+- [ ] PR Validation CI checks are green (lint, type-check, test, build, markdownlint all pass)
 - [ ] UAT completed (if user-facing feature)
 - [ ] PR created and merged by Release Manager
 - [ ] Retrospective completed

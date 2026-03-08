@@ -138,6 +138,7 @@ Format:
 | `git-rebase-main` | Safely rebase the current feature branch on top of the latest origin/main. |
 | `merge-conflict-resolution` | Resolve git merge/rebase conflicts safely without losing intended changes; verify by reviewing diffs and searching for conflict markers. |
 | `next-issue-number` | Determine the next available issue number across all change types (feature, fix, workflow) by checking both local docs and remote branches, then reserve it by pushing an empty branch. |
+| `pre-push-validation` | Run all PR Validation checks locally (lint, type-check, test, build, markdownlint) before pushing to ensure the PR passes CI without maintainer intervention. |
 | `run-tests` | Run the project test suite using `npm test` (Vitest) from the `src/` directory. Use `npm run test:watch` for development. |
 | `run-uat` | Run User Acceptance Testing by building and running the Docker image, then asking the Maintainer to manually verify. |
 | `validate-agent` | Validate agent definitions for consistency, model availability, handoff integrity, and tool existence. |

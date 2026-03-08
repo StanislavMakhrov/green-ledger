@@ -38,6 +38,14 @@ For project-specific instructions, refer to the `docs/spec.md` file in the repos
 
 **Exception — subagents spawned via `task` tool**: `report_progress` is NOT available to subagents. They must use `git commit` instead (see below).
 
+### CI Accountability (MANDATORY)
+
+**The agent is responsible for delivering a PR that passes all CI checks.** The Maintainer should only review — never fix CI failures.
+
+1. **Before pushing**: Run the `pre-push-validation` skill (lint, type-check, test, build, markdownlint) locally. Do not push code that fails any check.
+2. **After pushing**: Monitor the PR Validation workflow. If it fails, inspect logs, fix the issue, re-validate locally, and push again.
+3. **Before handoff**: Confirm CI is green. Do not hand off a PR with failing checks to the next agent or to the Maintainer.
+
 ### Why Manual Git Commands Fail
 
 GitHub Copilot coding agents run in a GitHub Actions environment without personal git credentials. Manual `git push` commands fail authentication and result in empty PRs where work is committed locally but never appears in the PR.
