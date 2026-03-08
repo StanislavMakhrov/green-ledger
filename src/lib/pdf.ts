@@ -17,16 +17,17 @@ interface ReportData {
   }>;
 }
 
+/** Formats a number to 2 decimal places for report display. */
+function formatNumber(n: number) {
+  return n.toFixed(2);
+}
+
 /**
  * Generates an HTML string that represents the CSRD Climate Report.
  * Returns a self-contained HTML document styled for print-to-PDF.
  * Minimal-dependency approach: no headless browser required.
  */
 export function generateReportHtml(data: ReportData): string {
-/** Formats a number to 2 decimal places for report display. */
-function formatNumber(n: number) {
-  return n.toFixed(2);
-}
 
   const categoryRows = data.scope3Categories
     .filter((c) => c.material)

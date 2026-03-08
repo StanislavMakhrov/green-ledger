@@ -27,6 +27,7 @@ export function SuppliersClient({ initialSuppliers }: SuppliersClientProps) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   async function handleAddSupplier(e: React.FormEvent) {
@@ -52,6 +53,7 @@ export function SuppliersClient({ initialSuppliers }: SuppliersClientProps) {
   }
 
   async function handleRefreshToken(supplierId: string) {
+    setTokenError(null);
     try {
       const res = await fetch(`/api/suppliers/${supplierId}/refresh-token`, {
         method: "POST",
@@ -62,7 +64,7 @@ export function SuppliersClient({ initialSuppliers }: SuppliersClientProps) {
         prev.map((s) => (s.id === supplierId ? updated : s))
       );
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error refreshing token");
+      setTokenError(err instanceof Error ? err.message : "Error refreshing token");
     }
   }
 
@@ -77,7 +79,7 @@ export function SuppliersClient({ initialSuppliers }: SuppliersClientProps) {
         setTimeout(() => setCopied(null), 2000);
       },
       () => {
-        alert("Could not copy link. Please copy it manually.");
+        setTokenError("Could not copy link. Please copy it manually.");
       }
     );
   }
@@ -169,6 +171,11 @@ export function SuppliersClient({ initialSuppliers }: SuppliersClientProps) {
       )}
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        {tokenError && (
+          <p className="px-4 py-2 text-sm text-red-600 bg-red-50 border-b border-red-100">
+            {tokenError}
+          </p>
+        )}
         <table className="w-full text-sm">
           <thead className="bg-green-50 text-gray-600 text-xs uppercase">
             <tr>

@@ -11,6 +11,12 @@ const EF_TON_KM = 0.0001;
 /** Emission factor for waste (tCO2e per kg). Source: DEFRA 2023 */
 const EF_WASTE_KG = 0.00058;
 
+/** Confidence score for spend-based proxy calculations (lower due to indirect estimation) */
+const CONFIDENCE_SPEND_BASED = 0.6;
+
+/** Confidence score for activity-based calculations (higher due to direct activity data) */
+const CONFIDENCE_ACTIVITY_BASED = 0.8;
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
@@ -94,17 +100,17 @@ export async function POST(
     valueTco2e = body.spend_eur * PROXY_FACTOR_PER_EUR;
     calculationMethod = "spend_based";
     emissionFactorSource = "DEFRA 2023 spend-based proxy";
-    confidence = 0.6;
+    confidence = CONFIDENCE_SPEND_BASED;
   } else if (body.ton_km !== undefined) {
     valueTco2e = body.ton_km * EF_TON_KM;
     calculationMethod = "activity_based";
     emissionFactorSource = "DEFRA 2023 transport activity";
-    confidence = 0.8;
+    confidence = CONFIDENCE_ACTIVITY_BASED;
   } else if (body.waste_kg !== undefined) {
     valueTco2e = body.waste_kg * EF_WASTE_KG;
     calculationMethod = "activity_based";
     emissionFactorSource = "DEFRA 2023 waste proxy";
-    confidence = 0.8;
+    confidence = CONFIDENCE_ACTIVITY_BASED;
   } else {
     return NextResponse.json({ error: "No data provided" }, { status: 400 });
   }
