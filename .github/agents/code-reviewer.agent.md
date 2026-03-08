@@ -11,7 +11,7 @@ handoffs:
     send: false
   - label: Run User Acceptance Testing
     agent: "UAT Tester"
-    prompt: The code review is approved. Run UAT in both GitHub and Azure DevOps PRs using the UAT scenarios from the Test Plan. Produce a UAT results report; if issues are found, do not fix code—handoff to Developer with clear repro steps and evidence.
+    prompt: The code review is approved. Build the Docker image, start the app, and ask the Maintainer to manually verify the feature. Document the PASS/FAIL result in a UAT report.
     send: false
   - label: Prepare Release (No UAT Needed)
     agent: "Release Manager"

@@ -16,7 +16,6 @@ on:
 jobs:
   copilot-setup-steps:
     runs-on: ubuntu-latest
-    environment: copilot
 
     steps:
       - name: Checkout repository
@@ -30,30 +29,8 @@ jobs:
       - name: Install dependencies
         run: npm ci || echo "No package-lock.json yet; skipping npm ci"
 
-      - name: Configure GitHub CLI authentication for UAT
-        env:
-          GH_UAT_TOKEN: ${{ secrets.GH_UAT_TOKEN }}
-        run: |
-          if [[ -z "$GH_UAT_TOKEN" ]]; then
-            echo "⚠️ WARNING: GH_UAT_TOKEN not configured in copilot environment"
-            echo "UAT tests requiring GitHub authentication will fail"
-            exit 0
-          fi
-
-          echo "$GH_UAT_TOKEN" | gh auth login --with-token
-          gh auth setup-git
-
-          if gh auth status 2>&1 | grep -q "Logged in"; then
-            echo "✓ GitHub CLI authenticated for UAT"
-            echo "✓ Git credential helper configured"
-          else
-            echo "❌ GitHub CLI authentication failed"
-            exit 1
-          fi
-
       - name: Setup complete
         run: |
           echo "✓ GitHub Copilot coding agent environment ready"
           echo "  - Node.js: $(node --version)"
           echo "  - npm: $(npm --version)"
-          echo "  - GitHub CLI: $(gh --version | head -1)"

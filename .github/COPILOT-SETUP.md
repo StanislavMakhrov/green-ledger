@@ -2,50 +2,42 @@
 
 This repository uses GitHub Copilot coding agents for automated development workflows. This document describes the required repository configuration.
 
-## Required Secrets
+## Prerequisites
 
-GitHub Copilot coding agents require secrets to be configured in a special `copilot` environment for security and isolation.
-
-### Setting Up the `copilot` Environment
-
-1. Navigate to **Repository Settings > Environments**
-2. Create or select the environment named `copilot`
-3. Add the following secrets:
-
-| Secret Name | Description | Required For |
-|-------------|-------------|--------------|
-| `GH_UAT_TOKEN` | GitHub Personal Access Token for UAT repository access | UAT Tester agent |
-
-### Token Requirements
-
-#### GH_UAT_TOKEN
-
-- **Type**: GitHub Personal Access Token (classic or fine-grained)
-- **Scopes Required**:
-  - `repo` (full control of private repositories)
-  - `workflow` (update GitHub Actions workflows)
-- **Repository Access**: Must have write access to `StanislavMakhrov/green-ledger-uat`
+- **GitHub Copilot Pro+** (or Enterprise) subscription
+- Copilot coding agent enabled in repository settings
 
 ## How It Works
 
 1. **Setup Workflow**: `.github/workflows/copilot-setup-steps.yml`
    - Runs before the coding agent starts working
-   - Installs Node.js and npm dependencies
-   - Authenticates GitHub CLI using `GH_UAT_TOKEN` (if configured)
+   - Installs Node.js 20 and npm dependencies
 
 2. **Agent Definitions**: `.github/agents/*.agent.md`
    - Define agent roles, tools, and instructions
-   - Referenced by VS Code and GitHub Copilot
+   - Auto-discovered by GitHub Copilot from the repository
 
 3. **Agent Skills**: `.github/skills/*/SKILL.md`
-   - Reusable workflows for common tasks (PR creation, testing, UAT)
+   - Reusable workflows for common tasks (PR creation, testing, releases)
+
+## Usage
+
+1. Push this repository to GitHub
+2. Go to **Settings → Copilot → Coding agent → ON**
+3. Create an issue and assign it to `@copilot`
+4. The workflow orchestrator agent delegates work to specialized agents automatically
+
+## UAT (User Acceptance Testing)
+
+UAT is performed manually by the Maintainer using Docker:
+1. The UAT Tester agent builds the Docker image (`docker compose build`)
+2. The Maintainer runs `docker compose up` and verifies the feature at http://localhost:3000
+3. The Maintainer replies PASS or FAIL
+
+No special tokens, separate repositories, or environments are required for UAT.
 
 ## Troubleshooting
 
 ### Agent cannot push code
 
-Ensure the `RELEASE_TOKEN` secret is configured in repository settings (not the copilot environment) with `contents: write` permission.
-
-### UAT tests fail
-
-Ensure `GH_UAT_TOKEN` is configured in the `copilot` environment with the required scopes.
+Ensure the repository has GitHub Actions enabled and the default `GITHUB_TOKEN` has `contents: write` permission.

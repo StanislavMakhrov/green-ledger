@@ -22,6 +22,7 @@ concurrency:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
@@ -226,391 +227,54 @@ jobs:
           generate_release_notes: false
           prerelease: ${{ steps.version.outputs.is_prerelease == 'true' }}
 
-  build-binaries:
-    name: Build ${{ matrix.platform }} Binary
-    if: needs.release.outputs.version != ''
-    runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
-    needs: release
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Linux builds (use container for consistent glibc)
-          - platform: linux-x64
-            os: ubuntu-latest
-            rid: linux-x64
-            archive_ext: tar.gz
-            binary_name: green-ledger
-            container: mcr.microsoft.com/dotnet/sdk:10.0-noble
-            needs_clang: true
-            compress_with_upx: true
-          - platform: linux-arm64
-            os: ubuntu-24.04-arm
-            rid: linux-arm64
-            archive_ext: tar.gz
-            binary_name: green-ledger
-            container: mcr.microsoft.com/dotnet/sdk:10.0-noble
-            needs_clang: true
-            compress_with_upx: true
-          # Alpine/musl builds (for Alpine Linux, Atlantis, and other musl-based environments)
-          # Note: Alpine job containers are NOT used because:
-          # - actions/setup-dotnet requires bash, which Alpine lacks by default
-          # - JavaScript Actions in Alpine containers are only supported on x64 (not ARM64)
-          # Instead, we run the build inside a Docker container via a build step.
-          - platform: linux-musl-x64
-            os: ubuntu-latest
-            rid: linux-musl-x64
-            archive_ext: tar.gz
-            binary_name: green-ledger
-            container: ''
-            needs_clang: false
-            compress_with_upx: true
-          - platform: linux-musl-arm64
-            os: ubuntu-24.04-arm
-            rid: linux-musl-arm64
-            archive_ext: tar.gz
-            binary_name: green-ledger
-            container: ''
-            needs_clang: false
-            compress_with_upx: true
-          # Windows builds
-          - platform: windows-x64
-            os: windows-latest
-            rid: win-x64
-            archive_ext: zip
-            binary_name: green-ledger.exe
-            container: ''
-            needs_clang: false
-            compress_with_upx: true
-          # Note: windows-arm64 removed due to lack of native ARM64 Windows runners
-          # and low usage (<1%). Can be re-added if native runners become available.
-          # macOS builds
-          # Note: macos-x64 (Intel) removed — GitHub Actions macos-13 runner is no longer supported.
-          # Note: UPX is intentionally excluded for macOS: UPX modifies the Mach-O binary, which
-          # invalidates code signatures and triggers macOS Gatekeeper. Re-signing would require
-          # Apple Developer certificates; without signing, the binary is quarantined on user machines.
-          - platform: macos-arm64
-            os: macos-14  # Apple Silicon runner
-            rid: osx-arm64
-            archive_ext: tar.gz
-            binary_name: green-ledger
-            container: ''
-            needs_clang: false
-            compress_with_upx: false
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install Xcode Command Line Tools (macOS)
-        if: startsWith(matrix.platform, 'macos-')
-        run: |
-          # Xcode CLT is required for .NET NativeAOT compilation on macOS
-          # xcode-select --install starts installer, but it may already be installed
-          sudo xcode-select --install 2>&1 || true
-          # Verify installation
-          if ! xcode-select -p &>/dev/null; then
-            echo "Error: Xcode Command Line Tools not found after installation"
-            exit 1
-          fi
-          echo "Xcode Command Line Tools installed at: $(xcode-select -p)"
-
-      - name: Setup .NET
-        if: "!startsWith(matrix.platform, 'linux-musl-')"
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '10.x'
-
-      - name: Install NativeAOT linker prerequisite (Linux)
-        if: matrix.needs_clang
-        run: |
-          if command -v apt-get &>/dev/null; then
-            apt-get update
-            apt-get install -y --no-install-recommends clang
-          else
-            apk add --no-cache clang build-base zlib-dev linux-headers
-          fi
-
-      - name: Build Binary
-        if: "!startsWith(matrix.platform, 'linux-musl-')"
-        shell: bash
-        run: |
-          dotnet publish src/GreenLedger/GreenLedger.csproj \
-            -c Release \
-            -r ${{ matrix.rid }} \
-            --self-contained true \
-            -p:PublishAot=true \
-            -o artifacts/${{ matrix.platform }}
-
-      - name: Build Binary (musl via Docker)
-        if: startsWith(matrix.platform, 'linux-musl-')
-        run: |
-          docker run --rm \
-            -v "$(pwd):/work" \
-            -w /work \
-            -e RID="${{ matrix.rid }}" \
-            -e PLATFORM="${{ matrix.platform }}" \
-            mcr.microsoft.com/dotnet/sdk:10.0-alpine \
-            sh -c 'apk add --no-cache clang build-base zlib-dev linux-headers && dotnet publish src/GreenLedger/GreenLedger.csproj -c Release -r "$RID" --self-contained true -p:PublishAot=true -o "/work/artifacts/$PLATFORM"'
-
-
-      - name: Install UPX (Linux)
-        if: startsWith(matrix.platform, 'linux-') && matrix.compress_with_upx
-        run: |
-          apt-get update -qq
-          apt-get install -y --no-install-recommends upx-ucl
-
-      - name: Install UPX (Windows)
-        if: matrix.os == 'windows-latest' && matrix.compress_with_upx
-        shell: pwsh
-        run: choco install upx -y --no-progress
-
-      - name: Compress Binary with UPX
-        if: matrix.compress_with_upx
-        shell: bash
-        run: |
-          upx --best "artifacts/${{ matrix.platform }}/${{ matrix.binary_name }}"
-          echo "Compressed size: $(du -h "artifacts/${{ matrix.platform }}/${{ matrix.binary_name }}" | cut -f1)"
-
-      - name: Verify glibc version (Linux only)
-        if: startsWith(matrix.platform, 'linux-')
-        run: |
-          echo "Verifying glibc version in built binary..."
-          readelf -V artifacts/${{ matrix.platform }}/${{ matrix.binary_name }} | grep GLIBC || true
-
-      - name: Package Binary (tar.gz)
-        if: matrix.archive_ext == 'tar.gz'
-        shell: bash
-        run: |
-          VERSION="${{ needs.release.outputs.version }}"
-          cd artifacts/${{ matrix.platform }}
-          tar -czf ../../green-ledger_${VERSION}_${{ matrix.platform }}.tar.gz ${{ matrix.binary_name }}
-          cd ../..
-
-      - name: Package Binary (zip)
-        if: matrix.archive_ext == 'zip'
-        shell: pwsh
-        run: |
-          $VERSION = "${{ needs.release.outputs.version }}"
-          Compress-Archive -Path "artifacts/${{ matrix.platform }}/${{ matrix.binary_name }}" -DestinationPath "green-ledger_${VERSION}_${{ matrix.platform }}.zip"
-
-      - name: Generate Checksums
-        shell: bash
-        run: |
-          VERSION="${{ needs.release.outputs.version }}"
-          # sha256sum is unavailable on macOS; use shasum as fallback
-          if command -v sha256sum &>/dev/null; then
-            sha256() { sha256sum "$@"; }
-          else
-            sha256() { shasum -a 256 "$@"; }
-          fi
-          if [ "${{ matrix.archive_ext }}" = "tar.gz" ]; then
-            sha256 green-ledger_${VERSION}_${{ matrix.platform }}.tar.gz > green-ledger_${VERSION}_${{ matrix.platform }}.sha256
-          else
-            sha256 green-ledger_${VERSION}_${{ matrix.platform }}.zip > green-ledger_${VERSION}_${{ matrix.platform }}.sha256
-          fi
-
-      - name: Validate Artifacts (Unix)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          VERSION="${{ needs.release.outputs.version }}"
-          # Verify binary is executable
-          test -x artifacts/${{ matrix.platform }}/${{ matrix.binary_name }}
-          # Smoke test: musl binaries link against musl libc and can't run directly on glibc Ubuntu
-          if [[ "${{ matrix.platform }}" == linux-musl-* ]]; then
-            docker run --rm \
-              -v "$(pwd)/artifacts/${{ matrix.platform }}:/musl_binary" \
-              mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine \
-              /musl_binary/${{ matrix.binary_name }} --help > /dev/null
-          else
-            artifacts/${{ matrix.platform }}/${{ matrix.binary_name }} --help > /dev/null
-          fi
-          # Verify archive integrity
-          if [ "${{ matrix.archive_ext }}" = "tar.gz" ]; then
-            tar -tzf green-ledger_${VERSION}_${{ matrix.platform }}.tar.gz > /dev/null
-          fi
-          # Verify checksums
-          if command -v sha256sum &>/dev/null; then
-            sha256sum -c green-ledger_${VERSION}_${{ matrix.platform }}.sha256
-          else
-            shasum -a 256 --check green-ledger_${VERSION}_${{ matrix.platform }}.sha256
-          fi
-
-      - name: Validate Artifacts (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $VERSION = "${{ needs.release.outputs.version }}"
-          # Smoke test: verify binary runs
-          & "artifacts/${{ matrix.platform }}/${{ matrix.binary_name }}" --help > $null
-          # Verify archive integrity
-          $zipPath = "green-ledger_${VERSION}_${{ matrix.platform }}.zip"
-          $extractPath = "test-extract"
-          Expand-Archive -Path $zipPath -DestinationPath $extractPath
-          if (-not (Test-Path "$extractPath/${{ matrix.binary_name }}")) {
-            throw "Binary not found in archive"
-          }
-          Remove-Item -Recurse -Force $extractPath
-          # Verify checksums
-          $expectedHash = (Get-Content "green-ledger_${VERSION}_${{ matrix.platform }}.sha256").Split()[0]
-          $actualHash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLower()
-          if ($expectedHash -ne $actualHash) {
-            throw "Checksum mismatch: expected $expectedHash, got $actualHash"
-          }
-
-      - name: Upload checksum as artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: checksum-${{ matrix.platform }}
-          path: green-ledger_${{ needs.release.outputs.version }}_${{ matrix.platform }}.sha256
-          retention-days: 1
-
-      - name: Upload Binary to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.release.outputs.version }}
-          files: |
-            green-ledger_${{ needs.release.outputs.version }}_${{ matrix.platform }}.${{ matrix.archive_ext }}
-            green-ledger_${{ needs.release.outputs.version }}_${{ matrix.platform }}.sha256
-
-  consolidate-checksums:
-    name: Consolidate Checksums
-    if: needs.release.outputs.version != ''
-    runs-on: ubuntu-latest
-    needs: [release, build-binaries]
-
-    steps:
-      - name: Download all checksum artifacts
-        uses: actions/download-artifact@v8
-        with:
-          pattern: checksum-*
-          path: checksums
-          merge-multiple: true
-
-      - name: Consolidate SHA256 checksums
-        run: |
-          VERSION="${{ needs.release.outputs.version }}"
-          # Combine all individual checksum files into SHA256SUMS
-          if compgen -G "checksums/*.sha256" > /dev/null; then
-            cat checksums/*.sha256 | sort > SHA256SUMS
-            echo "Consolidated checksums:"
-            cat SHA256SUMS
-          else
-            echo "No checksums found to consolidate"
-            echo "Error: Expected checksum files not found" >&2
-            exit 1
-          fi
-
-      - name: Upload consolidated checksums
-        if: hashFiles('SHA256SUMS') != ''
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.release.outputs.version }}
-          files: SHA256SUMS
-
-      - name: Upload checksums as artifact
-        if: hashFiles('SHA256SUMS') != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: checksums
-          path: SHA256SUMS
-          retention-days: 1
-
-  update-homebrew-formula:
-    name: Update Homebrew Formula
-    runs-on: ubuntu-latest
-    needs: [release, consolidate-checksums]
-    # Only run for stable releases (skip prereleases)
-    if: needs.release.outputs.version != '' && needs.release.outputs.is_prerelease != 'true'
-
-    steps:
-      - name: Checkout green-ledger repository
-        uses: actions/checkout@v6
-
-      - name: Download consolidated checksums
-        uses: actions/download-artifact@v8
-        with:
-          name: checksums
-          path: checksums
-
-      - name: Checkout Homebrew tap repository
-        uses: actions/checkout@v6
-        with:
-          repository: StanislavMakhrov/homebrew-green-ledger
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          path: homebrew-tap
-
-      - name: Update formula
-        run: |
-          bash scripts/update-homebrew-formula.sh \
-            "${{ needs.release.outputs.version }}" \
-            "checksums/SHA256SUMS" \
-            "homebrew-tap/Formula/green-ledger.rb"
-
-      - name: Commit and push formula update
-        working-directory: homebrew-tap
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/green-ledger.rb
-          # Only commit if there are changes
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: update formula to v${{ needs.release.outputs.version }}"
-            git push
-            echo "✅ Homebrew formula updated to v${{ needs.release.outputs.version }}"
-          else
-            echo "ℹ️  No changes to formula (already up-to-date)"
-          fi
-
   docker:
-    name: Build and Push Docker Image
+    name: Build and Push Docker Image to GHCR
     if: needs.release.outputs.version != ''
     runs-on: ubuntu-latest
     needs: release
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Compute Docker tags
-        id: docker_tags
-        run: |
-          TAGS="${{ secrets.DOCKERHUB_USERNAME }}/green-ledger:${{ needs.release.outputs.version }}"
-          if [ "${{ needs.release.outputs.is_prerelease }}" != "true" ]; then
-            TAGS="$TAGS\n${{ secrets.DOCKERHUB_USERNAME }}/green-ledger:${{ needs.release.outputs.minor }}"
-            TAGS="$TAGS\n${{ secrets.DOCKERHUB_USERNAME }}/green-ledger:${{ needs.release.outputs.major }}"
-            TAGS="$TAGS\n${{ secrets.DOCKERHUB_USERNAME }}/green-ledger:latest"
-          fi
-          echo "tags<<EOF" >> $GITHUB_OUTPUT
-          echo -e "$TAGS" >> $GITHUB_OUTPUT
-          echo EOF >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get build timestamp
-        id: meta
-        run: echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+      - name: Compute Docker tags
+        id: tags
+        run: |
+          VERSION="${{ needs.release.outputs.version }}"
+          REPO="ghcr.io/${{ github.repository_owner }}/green-ledger"
+          REPO=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+          TAGS="${REPO}:${VERSION}"
+          if [ "${{ needs.release.outputs.is_prerelease }}" != "true" ]; then
+            TAGS="${TAGS},${REPO}:${{ needs.release.outputs.minor }}"
+            TAGS="${TAGS},${REPO}:${{ needs.release.outputs.major }}"
+            TAGS="${TAGS},${REPO}:latest"
+          fi
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: src/Dockerfile
           push: true
-          tags: ${{ steps.docker_tags.outputs.tags }}
+          tags: ${{ steps.tags.outputs.tags }}
           labels: |
             org.opencontainers.image.version=${{ needs.release.outputs.version }}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.created }}
-          outputs: type=image,compression=zstd,compression-level=22,force-compression=true
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.title=green-ledger
+            org.opencontainers.image.description=CSRD Climate Reporting for German SMEs
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -139,10 +139,9 @@ Format:
 | `merge-conflict-resolution` | Resolve git merge/rebase conflicts safely without losing intended changes; verify by reviewing diffs and searching for conflict markers. |
 | `next-issue-number` | Determine the next available issue number across all change types (feature, fix, workflow) by checking both local docs and remote branches, then reserve it by pushing an empty branch. |
 | `run-tests` | Run the project test suite using `npm test` (Vitest). Use `npm run test:watch` for development. |
-| `run-uat` | Run User Acceptance Testing by creating a PR on GitHub for visual/functional review. |
+| `run-uat` | Run User Acceptance Testing by building and running the Docker image, then asking the Maintainer to manually verify. |
 | `validate-agent` | Validate agent definitions for consistency, model availability, handoff integrity, and tool existence. |
 | `view-pr-github` | View a GitHub PR (prefer GitHub chat tools; gh is fallback with pager disabled). |
-| `watch-uat-github-pr` | Watch a GitHub UAT PR for maintainer feedback or approval by polling comments until approved/passed. |
 
 ### Prefer GitHub Chat Tools For PR Inspection
 
@@ -223,7 +222,7 @@ flowchart TB
 	UAT_AGENT["<b>UAT Tester</b>"]
 
 	%% Row 16: UAT Artifacts
-	UAT["🧪 User Acceptance PRs"]
+	UAT["🧪 Docker Image + Manual Check"]
 
 	%% Row 17: Release Manager
 	RM["<b>Release Manager</b>"]
@@ -263,11 +262,11 @@ flowchart TB
 
 	CR --> CRR
 	CRR -. "Rework" .-> DEV
-	CRR -- "Approved (UAT needed)" --> UAT_AGENT
-	CRR -- "Approved (no UAT)" --> RM
+	CRR -- "Approved" --> UAT_AGENT
+	CRR -- "Approved (internal)" --> RM
 
 	UAT_AGENT --> UAT
-	UAT -. "Rendering Issues" .-> DEV
+	UAT -. "Issues Found" .-> DEV
 	UAT -- "Approved" --> RM
 
 	RM --> REL
@@ -291,12 +290,12 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 1. **Issue Analyst** investigates bugs, incidents, and technical problems.
 2. **Requirements Engineer** gathers and clarifies requirements for new features.
 3. **Architect** designs the solution and documents decisions.
-4. **Quality Engineer** defines the test plan and cases (consumes architecture). For user-facing features, defines acceptance scenarios for UAT. **For features with UAT test plans, specifies requirements for feature-specific UAT plan artifacts (`uat-plan.json` and `uat-plan.md`).**
+4. **Quality Engineer** defines the test plan and cases (consumes architecture). For user-facing features, defines acceptance scenarios for UAT.
 5. **Task Planner** creates and prioritizes actionable work items (consumes test plan).
-6. **Developer** implements features/fixes and tests. **For features with UAT test plans, creates `uat-plan.json` and `uat-plan.md` in the feature folder.**
+6. **Developer** implements features/fixes and tests.
 7. **Technical Writer** updates all relevant documentation (markdown files in the repository).
-8. **Code Reviewer** reviews and approves the work. **For features with UAT test plans, validates that `uat-plan.json` and `uat-plan.md` exist, are up-to-date, and complete.** Hands off to UAT Tester for user-facing features, or directly to Release Manager for internal changes.
-9. **UAT Tester** validates user-facing features via real pull requests on GitHub. **Treats missing `uat-plan.json` or `uat-plan.md` as BLOCKER when UAT test plan exists.** Waits for Maintainer approval/abort.
+8. **Code Reviewer** reviews and approves the work. Hands off to UAT Tester for user-facing features, or directly to Release Manager for internal changes.
+9. **UAT Tester** validates user-facing features by building the Docker image and asking the Maintainer to manually verify the app. Waits for Maintainer PASS/FAIL.
 10. **Release Manager** prepares, coordinates, and executes the release.
 
 **Meta-Agent:**
@@ -392,7 +391,7 @@ Agents determine their execution environment by analyzing:
 - ❌ Interactive debugging with Maintainer
 - ❌ Complex decisions requiring iterative refinement
 - ❌ Exploratory work with unclear requirements
-- ❌ UAT testing (requires running scripts locally)
+- ❌ UAT testing (requires Docker and manual verification locally)
 - ❌ Tasks requiring multiple rounds of Maintainer feedback
 - ❌ Retrospectives (require chat export from VS Code)
 
@@ -439,9 +438,9 @@ Agents determine their execution environment by analyzing:
 
 ### 4. Quality Engineer
 - **Goal:** Define how the feature will be tested and validated.
-- **Deliverables:** Test plan, test cases, quality criteria. For user-facing features, user acceptance scenarios for manual review via PRs. **For features with UAT test plans, defines requirements for feature-specific UAT plan artifacts (`uat-plan.json` and `uat-plan.md`) stored in the feature folder.**
+- **Deliverables:** Test plan, test cases, quality criteria. For user-facing features, user acceptance scenarios for manual review.
 - **Model:** Claude Sonnet 4.6
-- **Definition of Done:** Test plan covers all acceptance criteria. User-facing features have clear acceptance scenarios defined. UAT test plans specify what the feature-specific plan.json must contain and test.
+- **Definition of Done:** Test plan covers all acceptance criteria. User-facing features have clear acceptance scenarios defined.
 
 ### 5. Task Planner
 - **Goal:** Translate requirements and architecture into actionable work items.
@@ -450,8 +449,8 @@ Agents determine their execution environment by analyzing:
 
 ### 6. Developer
 - **Goal:** Implement features and tests as specified.
-- **Deliverables:** Code, tests, passing CI. **For features with UAT test plans, creates `uat-plan.json` and `uat-plan.md` in the feature folder based on Quality Engineer's requirements.**
-- **Definition of Done:** Code and tests meet requirements and pass all checks. UAT plan artifacts (when required) are created and verified to match the specification.
+- **Deliverables:** Code, tests, passing CI.
+- **Definition of Done:** Code and tests meet requirements and pass all checks.
 
 ### 7. Technical Writer
 - **Goal:** Update and maintain all relevant documentation.
@@ -460,17 +459,15 @@ Agents determine their execution environment by analyzing:
 
 ### 8. Code Reviewer
 - **Goal:** Ensure code quality and process adherence.
-- **Deliverables:** Code review feedback or approval. **For features with UAT test plans, validates that `uat-plan.json` and `uat-plan.md` exist, are up-to-date, and cover all specified changes and edge cases.**
-- **Definition of Done:** Code is reviewed and approved or sent back for rework. UAT plan artifacts (when required) are validated for completeness and correctness.
+- **Deliverables:** Code review feedback or approval.
+- **Definition of Done:** Code is reviewed and approved or sent back for rework.
 
 ### 9. UAT Tester
-- **Goal:** Validate user-facing features in real-world environments via GitHub PR UI.
-- **Deliverables:** User Acceptance PRs on GitHub with test comments:
-  1. 🎯 Feature Test (feature-specific report from `docs/features/NNN-<feature-slug>/uat-plan.md`)
-  2. 🔄 Regression Test (comprehensive demo ensuring no side effects)
-- **BLOCKER:** If UAT test plan exists but `uat-plan.json` or `uat-plan.md` are missing from the feature folder, UAT cannot proceed. This is a **blocking issue** that requires Developer to create the missing artifacts.
-- **Definition of Done:** Maintainer approves rendering and both reports, or aborts with documented issues. Approval signals are either (a) explicit PASS/FAIL in interactive chat, or (b) GitHub labels (`uat-approved` / `uat-rejected`).
-- **Implementation:** Uses `scripts/uat-*.sh` helpers (and optionally `scripts/uat-run.sh` for automated polling/cleanup).
+- **Goal:** Validate user-facing features by building and running the Docker image, then asking the Maintainer to manually verify.
+- **Deliverables:** UAT report documenting Docker run instructions, verification checklist, and Maintainer's PASS/FAIL decision.
+- **Workflow:** Build Docker image → start app → present checklist → wait for Maintainer verdict → document result.
+- **Feedback format:** Maintainer replies in chat (VS Code) or as a PR comment (coding agent). PASS requires no description. FAIL requires a description: which page/flow, expected vs actual, screenshots if possible.
+- **Definition of Done:** Maintainer has manually checked the running app and given an explicit PASS or FAIL (with description) verdict. UAT report is written to `docs/features/NNN-<feature-slug>/uat-report.md`.
 
 ### 10. Release Manager
 - **Goal:** Plan, coordinate, and execute releases.
@@ -521,9 +518,8 @@ When multiple branches are created in parallel, they may independently pick the 
 | **Architecture Decision Records (ADRs)** | Captures significant design decisions, alternatives considered, and rationale. Provides context for future maintainers. | Markdown following the ADR format: Context, Decision, Consequences. | `docs/adr-<number>-<short-title>.md` (high level / general decisions) and `docs/features/NNN-<feature-slug>/architecture.md` (feature-specific decisions) |
 | **User Stories / Tasks** | Actionable work items with clear acceptance criteria. Used to track implementation progress (features) or workflow improvement work (workflow). | Markdown. For workflow improvements, use a table with a Status column (icon + text) and a short rationale per item. | `docs/features/NNN-<feature-slug>/tasks.md` and `docs/workflow/NNN-<topic-slug>/tasks.md` |
 | **Test Plan & Test Cases** | Defines how the feature will be verified. Maps test cases to acceptance criteria. For user-facing features, includes user acceptance scenarios for manual review. | Markdown document with: Test Objectives, Test Cases (ID, Description, Steps, Expected Result), Coverage Matrix, User Acceptance Scenarios (for user-facing features). | `docs/features/NNN-<feature-slug>/test-plan.md` |
-| **UAT Test Plan** | For user-facing features (especially markdown rendering), defines what the feature-specific UAT plan should contain, what it should test, and validation instructions for the maintainer. | Markdown document specifying: Goal, Feature-Specific Artifact Requirements (must specify what uat-plan.json should contain), Test Steps, Validation Instructions. | `docs/features/NNN-<feature-slug>/uat-test-plan.md` |
-| **UAT Plan Artifacts** | **REQUIRED** when UAT test plan exists. Feature-specific test data and rendered output designed to exercise the feature changes and edge cases. Used by UAT Tester for feature-specific testing. | JSON (test data) and Markdown (rendered output). Quality Engineer defines requirements, Developer creates artifacts, Code Reviewer validates completeness, UAT Tester uses for testing. | `docs/features/NNN-<feature-slug>/uat-plan.json` and `docs/features/NNN-<feature-slug>/uat-plan.md` |
-| **User Acceptance PRs** | Real-environment verification for user-facing features. Used to catch rendering bugs and validate real-world usage. Managed by UAT Tester agent. | Temporary PRs on GitHub. **Two reports** are posted as separate PR comments: (1) **🎯 Feature Test** - feature-specific artifact exercising the changes, (2) **🔄 Regression Test** - comprehensive demo ensuring no side effects. Fixes posted as new comments. Approval is either **interactive** (Maintainer replies PASS/FAIL in chat) or **automated polling** (GitHub: `uat-approved` / `uat-rejected` labels). | GitHub (via `scripts/uat-*.sh`) |
+| **UAT Test Plan** | For user-facing features, defines what the Maintainer should verify when running the Docker image locally. | Markdown document specifying: Goal, Test Steps (what pages/flows to check), Expected Results, Docker run instructions. | `docs/features/NNN-<feature-slug>/uat-test-plan.md` |
+| **UAT Report** | Documents the Maintainer's manual verification of the running Docker image. | Markdown with: Docker image used, test steps performed, PASS/FAIL result, notes. | `docs/features/NNN-<feature-slug>/uat-report.md` |
 | **Code & Tests** | Implementation of the feature including unit tests, integration tests, and any necessary refactoring. | Source code files following project conventions (Next.js App Router, `lib/` for shared logic). | `app/`, `lib/`, and co-located test files |
 | **Documentation** | Updated user-facing and developer documentation reflecting the new feature. | Markdown files following existing documentation structure. | `docs/`, `README.md` |
 | **Code Review Report** | Feedback on code quality, adherence to standards, and approval status. May request rework. | Markdown document with: Summary, Issues Found, Recommendations, Approval Status. | `docs/features/NNN-<feature-slug>/code-review.md` |
@@ -654,12 +650,12 @@ Each agent hands off to the next by producing a specific deliverable. The workfl
 | Developer               | Technical Writer        | Code & Tests                                         |
 | Technical Writer        | Code Reviewer           | Updated Documentation                                |
 | Code Reviewer           | UAT Tester (user-facing features) <br/> Release Manager (internal changes) <br/> Developer (rework needed) | Code Review Report |
-| UAT Tester              | Release Manager (approved) <br/> Developer (rendering issues) | User Acceptance PRs verified |
+| UAT Tester              | Release Manager (approved) <br/> Developer (issues found) | Maintainer verified Docker image manually |
 | Release Manager         | CI/CD Pipeline, GitHub  | Pull Request, Release Notes                          |
 | Release Manager         | Retrospective           | Deployment Complete                                  |
 | Retrospective           | Workflow Engineer       | Retrospective Report with Action Items               |
 
-**Exception:** Code Reviewer has three possible handoffs depending on approval status and feature type. UAT Tester hands to Release Manager when approved, or back to Developer if rendering issues are found. Release Manager may hand back to Developer if build/release fails.
+**Exception:** Code Reviewer has three possible handoffs depending on approval status and feature type. UAT Tester hands to Release Manager when approved, or back to Developer if issues are found. Release Manager may hand back to Developer if build/release fails.
 
 Handoffs are triggered when the deliverable is complete and meets the "Definition of Done" for that agent. Automation (e.g., GitHub Actions) can be used to detect completion and notify the next agent(s).
 
@@ -700,7 +696,7 @@ Default prompts use the short agent names (e.g., `/dev`). These are the default 
 - `/tw` Technical Writer (matches Developer -> Technical Writer handoff)
 - `/cr` Code Reviewer (matches Technical Writer -> Code Reviewer handoff)
 - `/uat` UAT Tester (matches Code Reviewer -> UAT Tester handoff)
-- `/rm` Release Manager (matches UAT Tester -> Release Manager handoff)
+- `/rm` Release Manager (matches Code Reviewer or UAT Tester -> Release Manager handoff)
 - `/retro` Retrospective (matches Release Manager -> Retrospective handoff)
 - `/we` Workflow Engineer (matches Retrospective -> Workflow Engineer handoff)
 
@@ -710,7 +706,7 @@ Non-default prompts add a suffix describing what the agent should do instead of 
 
 - `/ia-from-gh-issue` Issue Analyst (start from a GitHub issue)
 - `/dev-rework-cr-failed` Developer rework (Code Reviewer requested changes)
-- `/dev-rework-uat-failed` Developer rework (UAT failed)
+- `/dev-rework-uat-failed` Developer rework (UAT found issues)
 - `/dev-fix-build-failed` Developer fix (CI/release build failed)
 - `/dev-fix-ia-handoff` Developer fix (Issue Analyst -> Developer transition; uses `analysis.md`)
 - `/rm-no-uat` Release Manager (prepare release with no UAT)
