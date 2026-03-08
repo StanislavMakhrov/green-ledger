@@ -21,6 +21,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "overrides": {
     "vite": "7.3.1"
   },
