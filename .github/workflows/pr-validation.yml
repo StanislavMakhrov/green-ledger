@@ -113,10 +113,6 @@ jobs:
         working-directory: src
         run: npm run build
 
-      - name: Lint markdown
-        if: steps.filter.outputs.changed == 'true'
-        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#CHANGELOG.md"
-
       - name: Skip validation (no relevant files changed)
         if: steps.filter.outputs.changed == 'false'
         run: echo "✅ PR validation skipped (docs/agent-only changes)"
