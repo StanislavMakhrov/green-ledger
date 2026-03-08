@@ -115,7 +115,7 @@ jobs:
 
       - name: Lint markdown
         if: steps.filter.outputs.changed == 'true'
-        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#CHANGELOG.md"
+        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#src/node_modules" "#CHANGELOG.md"
 
       - name: Skip validation (no relevant files changed)
         if: steps.filter.outputs.changed == 'false'
