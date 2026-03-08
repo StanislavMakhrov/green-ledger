@@ -1,0 +1,144 @@
+// Prisma schema for GreenLedger
+// SQLite for local/demo; schema is designed to be Postgres-migratable.
+// Enums are represented as String fields with application-level validation
+// (SQLite does not support native enum types).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// OrgBoundary values: "operational_control" | "financial_control" | "equity_share"
+// SupplierStatus values: "active" | "inactive"
+// DataSourceScope12 values: "manual" | "csv_import"
+// Scope3CalculationMethod values: "spend_based" | "activity_based" | "supplier_specific"
+// Scope3DataSource values: "supplier_form" | "csv_import" | "proxy"
+// MethodologyScope values: "scope_1" | "scope_2" | "scope_3"
+// AuditEntityType values: "supplier" | "scope1" | "scope2" | "scope3" | "methodology" | "export"
+// AuditAction values: "created" | "updated" | "submitted" | "exported"
+
+model Company {
+  id            String @id @default(uuid())
+  name          String
+  country       String @default("DE")
+  reportingYear Int
+  /// OrgBoundary enum: operational_control | financial_control | equity_share
+  orgBoundary   String @default("operational_control")
+
+  suppliers        Supplier[]
+  scope1Records    Scope1Record[]
+  scope2Records    Scope2Record[]
+  scope3Records    Scope3Record[]
+  methodologyNotes MethodologyNote[]
+  auditEvents      AuditTrailEvent[]
+}
+
+model Supplier {
+  id              String @id @default(uuid())
+  companyId       String
+  name            String
+  country         String
+  sector          String
+  contactEmail    String
+  publicFormToken String @unique
+  /// SupplierStatus enum: active | inactive
+  status          String @default("active")
+
+  company       Company        @relation(fields: [companyId], references: [id])
+  scope3Records Scope3Record[]
+}
+
+model Scope1Record {
+  id                    String   @id @default(uuid())
+  companyId             String
+  periodYear            Int
+  valueTco2e            Float
+  calculationMethod     String
+  emissionFactorsSource String
+  /// DataSourceScope12 enum: manual | csv_import
+  dataSource            String
+  assumptions           String?
+  createdAt             DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model Scope2Record {
+  id                    String   @id @default(uuid())
+  companyId             String
+  periodYear            Int
+  valueTco2e            Float
+  calculationMethod     String
+  emissionFactorsSource String
+  /// DataSourceScope12 enum: manual | csv_import
+  dataSource            String
+  assumptions           String?
+  createdAt             DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model Scope3Category {
+  id                String  @id @default(uuid())
+  code              String  @unique
+  name              String
+  material          Boolean @default(false)
+  materialityReason String?
+
+  scope3Records Scope3Record[]
+}
+
+model Scope3Record {
+  id                   String   @id @default(uuid())
+  companyId            String
+  supplierId           String?
+  categoryId           String
+  periodYear           Int
+  valueTco2e           Float
+  /// Scope3CalculationMethod enum: spend_based | activity_based | supplier_specific
+  calculationMethod    String
+  emissionFactorSource String
+  /// Scope3DataSource enum: supplier_form | csv_import | proxy
+  dataSource           String
+  assumptions          String?
+  confidence           Float    @default(1.0)
+  activityDataJson     String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  company  Company        @relation(fields: [companyId], references: [id])
+  supplier Supplier?      @relation(fields: [supplierId], references: [id])
+  category Scope3Category @relation(fields: [categoryId], references: [id])
+}
+
+model MethodologyNote {
+  id        String   @id @default(uuid())
+  companyId String
+  /// MethodologyScope enum: scope_1 | scope_2 | scope_3
+  scope     String
+  text      String
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, scope])
+}
+
+model AuditTrailEvent {
+  id         String   @id @default(uuid())
+  companyId  String
+  /// AuditEntityType enum: supplier | scope1 | scope2 | scope3 | methodology | export
+  entityType String
+  entityId   String
+  /// AuditAction enum: created | updated | submitted | exported
+  action     String
+  actor      String
+  timestamp  DateTime @default(now())
+  comment    String?
+
+  company Company @relation(fields: [companyId], references: [id])
+}

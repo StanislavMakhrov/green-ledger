@@ -19,6 +19,8 @@ build/
 # Database
 prisma/*.db
 prisma/*.db-journal
+prisma/**/*.db
+prisma/**/*.db-journal
 
 # Test results and coverage
 coverage/
