@@ -43,7 +43,7 @@ A 5-minute demo flow:
 - Use a mono-repo structure with a single Next.js app
 - Root namespace / package name: `green-ledger`
 - All application source code lives in the `src/` directory, including `package.json`, `Dockerfile`, Next.js config, Prisma schema, TypeScript source, etc.
-- The repo root contains only project-level files: `docker-compose.yml`, `README.md`, `LICENSE`, `CONTRIBUTING.md`, `CHANGELOG.md`, and directories `docs/`, `scripts/`, `.github/`
+- The repo root contains only project-level files: `README.md`, `LICENSE`, `CONTRIBUTING.md`, `CHANGELOG.md`, and directories `docs/`, `scripts/`, `.github/`
 - `src/` directory layout (Next.js convention inside `src/`):
   - `src/package.json` — npm package definition
   - `src/Dockerfile` — Docker image build
