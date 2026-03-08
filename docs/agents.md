@@ -42,7 +42,7 @@ For well-defined features or bugs, use the **Workflow Orchestrator** agent to au
 - Single-agent tasks (just use that agent)
 - Highly interactive work requiring maintainer decisions at each step
 
-**Verification note:** If a change only touches agent instructions / skills / documentation (for example `.github/agents/`, `.github/skills/`, `.github/copilot-instructions.md`, or `docs/`), running `npm test` is not required because the test suite does not validate those changes. Run `npm test` when application code changes.
+**Verification note:** If a change only touches agent instructions / skills / documentation (for example `.github/agents/`, `.github/skills/`, `.github/copilot-instructions.md`, or `docs/`), running `npm test` is not required because the test suite does not validate those changes. Run `cd src && npm test` when application code changes.
 
 ---
 
@@ -138,7 +138,7 @@ Format:
 | `git-rebase-main` | Safely rebase the current feature branch on top of the latest origin/main. |
 | `merge-conflict-resolution` | Resolve git merge/rebase conflicts safely without losing intended changes; verify by reviewing diffs and searching for conflict markers. |
 | `next-issue-number` | Determine the next available issue number across all change types (feature, fix, workflow) by checking both local docs and remote branches, then reserve it by pushing an empty branch. |
-| `run-tests` | Run the project test suite using `npm test` (Vitest). Use `npm run test:watch` for development. |
+| `run-tests` | Run the project test suite using `npm test` (Vitest) from the `src/` directory. Use `npm run test:watch` for development. |
 | `run-uat` | Run User Acceptance Testing by building and running the Docker image, then asking the Maintainer to manually verify. |
 | `validate-agent` | Validate agent definitions for consistency, model availability, handoff integrity, and tool existence. |
 | `view-pr-github` | View a GitHub PR (prefer GitHub chat tools; gh is fallback with pager disabled). |
@@ -520,7 +520,7 @@ When multiple branches are created in parallel, they may independently pick the 
 | **Test Plan & Test Cases** | Defines how the feature will be verified. Maps test cases to acceptance criteria. For user-facing features, includes user acceptance scenarios for manual review. | Markdown document with: Test Objectives, Test Cases (ID, Description, Steps, Expected Result), Coverage Matrix, User Acceptance Scenarios (for user-facing features). | `docs/features/NNN-<feature-slug>/test-plan.md` |
 | **UAT Test Plan** | For user-facing features, defines what the Maintainer should verify when running the Docker image locally. | Markdown document specifying: Goal, Test Steps (what pages/flows to check), Expected Results, Docker run instructions. | `docs/features/NNN-<feature-slug>/uat-test-plan.md` |
 | **UAT Report** | Documents the Maintainer's manual verification of the running Docker image. | Markdown with: Docker image used, test steps performed, PASS/FAIL result, notes. | `docs/features/NNN-<feature-slug>/uat-report.md` |
-| **Code & Tests** | Implementation of the feature including unit tests, integration tests, and any necessary refactoring. | Source code files following project conventions (Next.js App Router, `lib/` for shared logic). | `app/`, `lib/`, and co-located test files |
+| **Code & Tests** | Implementation of the feature including unit tests, integration tests, and any necessary refactoring. | Source code files following project conventions (Next.js App Router, `src/lib/` for shared logic). | `src/app/`, `src/lib/`, and co-located test files |
 | **Documentation** | Updated user-facing and developer documentation reflecting the new feature. | Markdown files following existing documentation structure. | `docs/`, `README.md` |
 | **Code Review Report** | Feedback on code quality, adherence to standards, and approval status. May request rework. | Markdown document with: Summary, Issues Found, Recommendations, Approval Status. | `docs/features/NNN-<feature-slug>/code-review.md` |
 | **Pull Request** | Pull request created for merging the feature branch into main. Triggers CI/CD pipeline for validation and deployment. | GitHub Pull Request with title, description, and link to feature documentation. | GitHub repository |
@@ -753,7 +753,7 @@ This keeps all decisions traceable through the conversation history and artifact
 
 - **Clear Agent Boundaries:** Each agent should have a single responsibility and clear handoff criteria.
 - **Artifact Ownership:** Each artifact type has exactly one responsible agent. Agents must NOT edit artifacts owned by other agents:
-  - Source code (`app/`, `lib/`, `prisma/`) → Developer only
+  - Source code (`src/app/`, `src/lib/`, `src/prisma/`) → Developer only
   - Documentation (`docs/`, `README.md`) → Technical Writer only
   - Code Review Reports → Code Reviewer only
   - Retrospective Reports → Retrospective agent only

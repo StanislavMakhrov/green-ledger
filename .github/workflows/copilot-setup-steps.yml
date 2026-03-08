@@ -27,6 +27,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
+        working-directory: src
         run: npm ci || echo "No package-lock.json yet; skipping npm ci"
 
       - name: Setup complete

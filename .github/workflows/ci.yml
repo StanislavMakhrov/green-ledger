@@ -64,7 +64,7 @@ jobs:
           fi
 
           # Paths that affect the published Docker image
-          releasable=$(echo "$changed" | grep -E '^(app/|lib/|prisma/|public/|package\.json$|package-lock\.json$|next\.config\.|Dockerfile$|docker-compose\.|\.dockerignore$)' || true)
+          releasable=$(echo "$changed" | grep -E '^(src/)' || true)
 
           if [ -z "$releasable" ]; then
             echo "Only non-release-impacting files changed since $last_tag; skipping."

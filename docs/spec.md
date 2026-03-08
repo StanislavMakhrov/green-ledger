@@ -42,7 +42,16 @@ A 5-minute demo flow:
 
 - Use a mono-repo structure with a single Next.js app
 - Root namespace / package name: `green-ledger`
-- Place all source code under the project root (Next.js convention: `app/`, `lib/`, `prisma/`, `public/`, etc.)
+- All application source code lives in the `src/` directory, including `package.json`, `Dockerfile`, Next.js config, Prisma schema, TypeScript source, etc.
+- The repo root contains only project-level files: `docker-compose.yml`, `README.md`, `LICENSE`, `CONTRIBUTING.md`, `CHANGELOG.md`, and directories `docs/`, `scripts/`, `.github/`
+- `src/` directory layout (Next.js convention inside `src/`):
+  - `src/package.json` — npm package definition
+  - `src/Dockerfile` — Docker image build
+  - `src/next.config.mjs`, `src/tsconfig.json`, `src/eslint.config.mjs` — config files
+  - `src/app/` — Next.js App Router (pages, layouts, API routes)
+  - `src/lib/` — shared logic (Prisma client, utilities, constants)
+  - `src/prisma/` — Prisma schema and migrations
+  - `src/public/` — static assets
 - Place all documentation in the `/docs` folder, except for `README.md` at the root
 - Key architecture decisions must be documented in separate files per decision: `/docs/adr-NNN-title.md`
 - Documentation subfolders under `/docs/features`, `/docs/issues`, and `/docs/workflow` use a global numeric prefix: `NNN-<topic-slug>`

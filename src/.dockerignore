@@ -1,0 +1,22 @@
+# Dependencies (installed in Docker)
+node_modules/
+
+# Next.js build output (rebuilt in Docker)
+.next/
+out/
+
+# Test and coverage
+coverage/
+.vitest/
+
+# Local database
+prisma/*.db
+prisma/*.db-journal
+
+# Local caches
+.tmp/
+
+# Non-essential files
+*.md
+!README.md
+
