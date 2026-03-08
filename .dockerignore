@@ -1,0 +1,30 @@
+# VCS / editor metadata
+.git/
+.github/
+.vscode/
+.idea/
+
+# Dependencies (will be installed in Docker)
+node_modules/
+
+# Next.js build output (will be rebuilt in Docker)
+.next/
+out/
+
+# Test and coverage
+coverage/
+.vitest/
+
+# Local database
+prisma/*.db
+prisma/*.db-journal
+
+# Local/dev caches
+.tmp/
+
+# Non-essential repo content
+docs/
+scripts/
+.husky/
+*.md
+!README.md
