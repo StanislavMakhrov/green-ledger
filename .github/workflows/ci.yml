@@ -82,10 +82,9 @@ jobs:
         run: |
           commit-and-tag-version --skip.changelog || { echo "No releasable commits; skipping."; exit 0; }
           echo "version_bumped=true" >> $GITHUB_OUTPUT
-        continue-on-error: true
 
       - name: Amend commit message with [skip ci]
-        if: steps.bump.outcome == 'success'
+        if: steps.bump.outputs.version_bumped == 'true'
         run: |
           git log -1 --pretty=%B > "$RUNNER_TEMP/commit-msg.txt"
 
@@ -113,7 +112,7 @@ jobs:
           fi
 
       - name: Push changes
-        if: steps.bump.outcome == 'success'
+        if: steps.bump.outputs.version_bumped == 'true'
         env:
           GIT_TERMINAL_PROMPT: '0'
         run: |
