@@ -9,6 +9,15 @@ description: Run all PR Validation checks locally before pushing to ensure the P
 
 Run the same checks that the `PR Validation` GitHub Actions workflow executes, **locally before pushing code**. This ensures PRs pass CI on the first attempt and the Maintainer only needs to review — not fix CI failures.
 
+## Who Uses This Skill
+
+**Only agents that produce or modify source code.** Primarily:
+
+- **Developer** — after implementing features/fixes, before pushing
+- **Any coding agent that edits files under `src/`** — before pushing
+
+**This skill MUST NOT be used by the Workflow Orchestrator.** The orchestrator never writes code and must delegate all validation work to the Developer agent.
+
 ## When to Use This Skill
 
 - **Before every `report_progress` call** (coding agent primary)

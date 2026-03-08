@@ -118,6 +118,8 @@ task({
 - **Never provide manual implementation instructions** - Delegate to Developer, don't do their work
 - **Never assume tool limitations** - Let agents worry about their tools
 - **Never implement "simple" tasks yourself** - ALL tasks must be delegated, no exceptions
+- **Never run `pre-push-validation` or any build/test/lint commands yourself** - that is the Developer agent's responsibility; delegate CI fixes to the Developer
+- **Never explore the codebase to understand implementation details** - delegate research to the appropriate agent; your job is to orchestrate, not investigate
 - **Never decide a task is "too simple" to delegate** - ALL tasks must be delegated, no exceptions
 - **Never invoke generic agents** - NEVER invoke `explore`, `task`, or `general-purpose` agents; only use custom agents defined in docs/agents.md
 - **Never skip the entry point agent** - always start with Requirements Engineer (features) or Issue Analyst (bugs)
