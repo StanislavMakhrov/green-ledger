@@ -47,3 +47,31 @@
   - `docs/features/001-mvp/work-protocol.md` — This work protocol
   - `docs/features.md` — Updated with link to specification
 - **Problems Encountered:** None — spec.md was comprehensive and unambiguous; no clarifying questions were needed.
+
+### Quality Engineer
+
+- **Date:** 2025-07-14
+- **Summary:** Read `docs/spec.md`, `docs/features/001-mvp/specification.md`, and
+  `docs/features/001-mvp/architecture.md` in full. Mapped all 19 acceptance criteria from
+  the specification to 34 test cases across three test categories: business logic unit tests,
+  API route tests (with mocked Prisma), and smoke tests. The test plan is aligned with the
+  spec's constraint of "minimal unit/smoke tests (Vitest for API logic)" and ensures
+  `next build` remains the primary CI gate.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/test-plan.md` — Full test plan with 34 test cases mapped to
+    acceptance criteria. Covers: proxy calculation (spend/transport/waste + priority logic),
+    dashboard totals (sum, zero cases), token generation uniqueness, all API routes (CRUD for
+    suppliers/scope1/scope2/scope3/methodology, supplier form validation and proxy creation,
+    PDF export headers), and two smoke tests (`next build` + Prisma seed integrity).
+- **Key Decisions Made:**
+  1. **All API tests mock Prisma** via `vi.mock()` — no real SQLite DB needed in Vitest runs.
+  2. **PDF export test mocks `generateReport()`** — validates headers and response shape
+     without rendering the actual PDF (avoids `@react-pdf/renderer` overhead in CI).
+  3. **Seed smoke test** queries the live DB record counts to validate seed integrity (15
+     categories, 3 suppliers, correct Scope 1/2/3 record counts, AuditTrailEvent rows).
+  4. **No UAT test plan** created — MVP has no user-facing rendering changes that require a
+     GitHub/ADO PR comment verification; the PDF is validated by headers only in CI.
+  5. **No new test infrastructure** proposed — standard Vitest + `vi.mock()` per the spec.
+- **Problems Encountered:** `docs/testing-strategy.md` does not yet exist; the test plan
+  is self-contained and establishes the testing conventions for the project. The Developer
+  should create `docs/testing-strategy.md` as part of implementation.
