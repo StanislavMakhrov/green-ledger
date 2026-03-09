@@ -75,3 +75,36 @@
 - **Problems Encountered:** `docs/testing-strategy.md` does not yet exist; the test plan
   is self-contained and establishes the testing conventions for the project. The Developer
   should create `docs/testing-strategy.md` as part of implementation.
+
+### Task Planner
+
+- **Date:** 2025-07-14
+- **Summary:** Read `docs/spec.md`, `docs/features/001-mvp/specification.md`,
+  `docs/features/001-mvp/architecture.md`, and `docs/features/001-mvp/test-plan.md` in full.
+  Decomposed the MVP into 27 implementation tasks across 6 phases. Each task specifies
+  exact files to create, dependencies, and measurable acceptance criteria mapped back to
+  the specification and test plan.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/tasks.md` — 27 implementation tasks in 6 phases:
+    - **Phase 1 (Foundation):** T-01 Bootstrap Next.js, T-02 Prisma schema, T-03 seed script,
+      T-04 shared lib (constants, calculations, token, Prisma client)
+    - **Phase 2 (API Routes):** T-05 Dashboard API, T-06 Suppliers API, T-07 Scope 1 API,
+      T-08 Scope 2 API, T-09 Scope 3 API, T-10 Methodology API, T-11 Public Supplier Form API,
+      T-12 PDF Export API
+    - **Phase 3 (UI Pages):** T-13 App shell, T-14 Dashboard page, T-15 Suppliers page,
+      T-16 Scope 1 page, T-17 Scope 2 page, T-18 Scope 3 page, T-19 Methodology page,
+      T-20 Export page, T-21 Public supplier form page
+    - **Phase 4 (PDF):** T-22 PDF export implementation (`@react-pdf/renderer`)
+    - **Phase 5 (Tests):** T-23 Business logic unit tests, T-24 API route tests + seed smoke test
+    - **Phase 6 (DevOps):** T-25 Dockerfile + docker-compose, T-26 Makefile, T-27 CI verification
+- **Key Decisions Made:**
+  1. Split `calculateProxy` and dashboard helpers into `src/lib/calculations.ts` and
+     `src/lib/dashboard.ts` (separate from constants) for clean unit-testability per test plan.
+  2. T-04 (shared lib) is a prerequisite for T-03 (seed) because the seed script imports
+     proxy constants.
+  3. T-22 (PDF module) is sequenced before T-12 (PDF route) but the test for T-12 mocks
+     `generateReport()`, so both tasks can develop in parallel.
+  4. All 34 test cases from the test plan are explicitly mapped to tasks T-23 and T-24.
+  5. All tasks are P1 (Critical) except T-26 Makefile (P2) and T-27 CI Verification (P2).
+- **Problems Encountered:** None — the specification, architecture, and test plan were
+  comprehensive and mutually consistent. No ambiguities required escalation.
