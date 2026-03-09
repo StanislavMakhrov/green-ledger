@@ -162,6 +162,21 @@ Next.js project):
 - **Testing**: No code tests are affected. PR Validation should still pass since these are
   docs/config-only changes.
 
+## Resolution Status
+
+All recommended cleanup actions have been implemented. See `work-protocol.md` for details.
+
+| Priority | Action | Status |
+|----------|--------|--------|
+| 1 | Delete `.gitmodules` | ✅ Done |
+| 2 | Remove Terraform MCP tool from 5 agent definitions | ✅ Done |
+| 3 | Fix repository owner in MCP tool examples (12 occurrences) | ✅ Done |
+| 4 | Clean `.gitattributes` of C#/.NET/Scriban rules | ✅ Done |
+
+**Documentation impact:** None — no user-facing or developer documentation (README.md,
+docs/spec.md, docs/features.md, docs/agents.md, CONTRIBUTING.md) contained references
+to the removed artifacts.
+
 ## Additional Context
 
 - The repository remote is `https://github.com/StanislavMakhrov/green-ledger`
