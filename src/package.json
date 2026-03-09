@@ -14,7 +14,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force",
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "seed": "tsx prisma/seed.ts",
     "prepare": "husky"
   },
   "prisma": {
@@ -54,6 +54,7 @@
     "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }

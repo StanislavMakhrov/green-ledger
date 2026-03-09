@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/app/generated/prisma";
+import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { randomUUID } from "crypto";
 
