@@ -9,6 +9,35 @@
 
 <!-- Each agent appends their entry below when they complete their work. -->
 
+### Architect
+
+- **Date:** 2025-07-14
+- **Summary:** Reviewed `docs/spec.md` and `docs/features/001-mvp/specification.md` in full.
+  Made all key architectural decisions for the MVP, resolving every open question from the
+  specification. Produced three ADRs and a comprehensive architecture document.
+- **Artifacts Produced:**
+  - `docs/adr-001-pdf-export.md` — Chose `@react-pdf/renderer` over Puppeteer; zero native
+    binaries, minimal Docker image impact, pure-JS PDF generation from React components.
+  - `docs/adr-002-database.md` — SQLite via Prisma for local demo simplicity; documented
+    Postgres-migratable schema constraints (UUID PKs, no SQLite-specific `@db` attributes).
+  - `docs/adr-003-project-structure.md` — Full annotated directory layout under `src/`;
+    page-to-file mapping, API route inventory, client vs. server component conventions.
+  - `docs/features/001-mvp/architecture.md` — Master architecture document covering:
+    project structure, complete Prisma schema (with enum definitions), API route table,
+    proxy calculation design with concrete constant values, PDF pipeline data flow,
+    all 15 Scope3Category seed entries, full demo seed data specification, default route
+    decision, component architecture, and security considerations.
+- **Key Decisions Made:**
+  1. **PDF library:** `@react-pdf/renderer` — no Chromium, ~5 MB, works in Next.js Route Handlers.
+  2. **Proxy constants:** spend: 0.5 kgCO2e/EUR; transport: 0.1 kgCO2e/tonne-km;
+     waste: 2.0 kgCO2e/kg; confidence: 0.5. All documented as demo placeholders.
+  3. **Scope3 seed:** All 15 GHG Protocol categories; C1 and C4 marked material.
+  4. **Default route:** `/` → redirect to `/dashboard` (no splash screen).
+  5. **Demo seed:** 1 company (Musterfirma GmbH, 2024), 3 suppliers, 2× Scope 1 records,
+     1× Scope 2 record, 3× Scope 3 proxy records, 3× methodology notes, audit events.
+- **Problems Encountered:** None — spec.md and specification.md were comprehensive; all
+  open questions had clear recommended answers or required straightforward technical judgment.
+
 ### Requirements Engineer
 
 - **Date:** 2025-07-14
