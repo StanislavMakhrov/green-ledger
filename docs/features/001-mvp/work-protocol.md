@@ -11,7 +11,7 @@
 |-------|----------|--------|
 | Requirements Engineer | ✅ Required | ✅ Completed |
 | Architect | ✅ Required | ✅ Completed |
-| Quality Engineer | ✅ Required | ⏳ Pending |
+| Quality Engineer | ✅ Required | ✅ Completed |
 | Task Planner | ✅ Required | ⏳ Pending |
 | Developer | ✅ Required | ⏳ Pending |
 | Technical Writer | ✅ Required | ⏳ Pending |
@@ -22,7 +22,16 @@
 
 ## Agent Work Log
 
-<!-- Each agent appends their entry below when they complete their work. -->
+### Quality Engineer
+
+- **Date:** 2025-07-14
+- **Summary:** Created comprehensive test plan and UAT test plan for the GreenLedger MVP. Mapped all acceptance criteria to 24 test cases across unit, API smoke, and build validation categories. Test cases cover proxy calculations, dashboard total aggregation, supplier token generation, supplier form submission (happy path, error path, audit trail), API route smoke tests for all key endpoints, and `next build` validation. Also produced a step-by-step UAT test plan guiding manual verification of all user-facing flows.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/test-plan.md` — 24 test cases mapped to acceptance criteria; coverage matrix; edge cases; non-functional requirements
+  - `docs/features/001-mvp/uat-test-plan.md` — 10-step manual verification plan with checklist for the running application
+- **Problems Encountered:** `docs/testing-strategy.md` does not yet exist (greenfield project). Followed conventions from the architecture document and specification directly.
+
+
 
 ### Requirements Engineer
 
