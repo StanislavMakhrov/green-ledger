@@ -38,7 +38,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 ### ✅ Always Do
 - Map every acceptance criterion to at least one test case
 - Ensure all automated tests are fully automated (no manual steps)
-- For user-facing features (CLI changes, rendering changes), define **UAT Test Plans** for Maintainer review via PRs in `docs/features/NNN-<feature-slug>/uat-test-plan.md`
+- For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), define **UAT Test Plans** for Maintainer review via PRs in `docs/features/NNN-<feature-slug>/uat-test-plan.md`
 - **For cross-cutting rendering features** (icons, summaries, display names affecting multiple resource types): Explicitly enumerate ALL rendering touch-points in the UAT test plan and ensure the feature-specific demo artifact exercises each one. List specific resource types, attributes, and expected outputs.
 - Follow xUnit and AwesomeAssertions patterns
 - Use test naming convention: `MethodName_Scenario_ExpectedResult`
@@ -116,7 +116,7 @@ Follow the existing test naming convention: `MethodName_Scenario_ExpectedResult`
 
 ## UAT Test Plans
 
-For user-facing features (especially markdown rendering changes), you must create a **UAT Test Plan** in `docs/features/NNN-<feature-slug>/uat-test-plan.md`. This plan guides the Maintainer (and the UAT Tester agent) on what to verify visually.
+For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), you must create a **UAT Test Plan** in `docs/features/NNN-<feature-slug>/uat-test-plan.md`. This plan guides the Maintainer (and the UAT Tester agent) on what to verify visually.
 
 ### UAT Plan Template
 

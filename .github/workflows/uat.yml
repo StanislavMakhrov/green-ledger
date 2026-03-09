@@ -1,0 +1,56 @@
+name: UAT Docker Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build (defaults to the branch this workflow is run from)'
+        required: false
+        default: ''
+
+concurrency:
+  group: uat-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  uat-build:
+    name: Build Docker Image for UAT
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+
+      - name: Check for Dockerfile
+        id: dockerfile_check
+        run: |
+          if [ -f "src/Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Dockerfile found at src/Dockerfile"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️  No Dockerfile found at src/Dockerfile — skipping Docker build."
+            echo "The Dockerfile is created per feature. Re-run this workflow after the feature branch adds it."
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.dockerfile_check.outputs.exists == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        if: steps.dockerfile_check.outputs.exists == 'true'
+        run: docker compose build
+
+      - name: Report result
+        run: |
+          if [ "${{ steps.dockerfile_check.outputs.exists }}" = "true" ]; then
+            echo "✅ Docker image built successfully. Ready for UAT."
+          else
+            echo "ℹ️  No Dockerfile present on this branch yet. UAT Docker build skipped."
+            echo "Add a Dockerfile at src/Dockerfile to enable UAT builds."
+          fi
