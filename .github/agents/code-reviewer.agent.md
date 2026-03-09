@@ -117,7 +117,7 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 - Treat snapshot changes (`src/tests/GreenLedger.Tests/TestData/Snapshots/*.md`) as high-risk and require explicit justification
 - Categorize issues by severity (Blocker/Major/Minor/Suggestion)
 - When reviewing rework from failed PR/CI pipelines, verify the specific failure is resolved
-- For user-facing features affecting markdown rendering, hand off to UAT Tester after code approval
+- For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
 - Verify markdown rendering changes follow [docs/report-style-guide.md](../../docs/report-style-guide.md)
 - **Challenge assumptions** — If code looks "obviously correct," ask what could make it fail
 - **Identify untested paths** — Look for code branches that lack corresponding test coverage
@@ -454,9 +454,9 @@ After committing:
 - If **Changes Requested**: Use the handoff button to return to the **Developer** agent.
   - This applies to both initial reviews and reviews of rework after failed PR/CI validation
   - After Developer fixes issues, work returns to Code Reviewer for re-approval
-- If **Approved** and **user-facing feature** (markdown rendering): Use the handoff button to proceed to the **UAT Tester** agent.
-  - UAT Tester will validate rendering in real GitHub and Azure DevOps PRs
-- If **Approved** and **no UAT needed** (internal changes, non-rendering features): Use the handoff button to proceed to the **Release Manager** agent.
+- If **Approved** and **user-facing feature** (UI changes, PDF export, API behavior changes, or any visible user output): Use the handoff button to proceed to the **UAT Tester** agent.
+  - UAT Tester will build the Docker image and ask the Maintainer to verify the feature manually
+- If **Approved** and **no UAT needed** (internal changes, non-user-facing features): Use the handoff button to proceed to the **Release Manager** agent.
 
 ## Communication Guidelines
 
