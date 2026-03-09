@@ -51,7 +51,17 @@ GreenLedger automates the complete workflow:
 
 ## Quick Start
 
-### Prerequisites
+### Fastest Path — Docker
+
+```bash
+git clone https://github.com/StanislavMakhrov/green-ledger.git
+cd green-ledger
+docker compose up
+```
+
+Open [http://localhost:3000](http://localhost:3000) — the app starts pre-seeded with demo data.
+
+### Prerequisites (Local Dev)
 
 - Node.js 20+
 - npm
