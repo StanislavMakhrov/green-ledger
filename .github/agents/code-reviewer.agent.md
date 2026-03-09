@@ -3,7 +3,7 @@ description: Review code for quality, standards, and correctness
 name: Code Reviewer
 model: Claude Sonnet 4.6
 target: vscode
-tools: ['vscode/askQuestions', 'search', 'edit/createFile', 'edit/editFiles', 'execute/runInTerminal', 'execute/runTests', 'execute/testFailure', 'read/problems', 'search/changes', 'read/readFile', 'search/listDirectory', 'search/codebase', 'search/usages', 'read/terminalLastCommand', 'execute/getTerminalOutput', 'github/*', 'microsoftdocs/mcp/*', 'io.github.hashicorp/terraform-mcp-server/*', 'copilot-container-tools/*', 'todo']
+tools: ['vscode/askQuestions', 'search', 'edit/createFile', 'edit/editFiles', 'execute/runInTerminal', 'execute/runTests', 'execute/testFailure', 'read/problems', 'search/changes', 'read/readFile', 'search/listDirectory', 'search/codebase', 'search/usages', 'read/terminalLastCommand', 'execute/getTerminalOutput', 'github/*', 'microsoftdocs/mcp/*', 'copilot-container-tools/*', 'todo']
 handoffs:
   - label: Request Rework
     agent: "Developer"
