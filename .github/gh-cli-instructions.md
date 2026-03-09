@@ -89,7 +89,7 @@ gh pr view 123 --json mergeStateStatus
 # Use MCP tool to check PR state
 github-mcp-server-pull_request_read with:
   method: "get"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
 
@@ -140,7 +140,7 @@ GitHub MCP tools provide reliable, structured access to GitHub operations withou
 ```
 github-mcp-server-pull_request_read with:
   method: "get"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
 ```
@@ -148,7 +148,7 @@ github-mcp-server-pull_request_read with:
 **List open PRs:**
 ```
 github-mcp-server-list_pull_requests with:
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   state: "open"
 ```
@@ -157,7 +157,7 @@ github-mcp-server-list_pull_requests with:
 ```
 github-mcp-server-actions_list with:
   method: "list_workflow_runs"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   perPage: 5
 ```

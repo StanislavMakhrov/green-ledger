@@ -24,7 +24,7 @@ Use these GitHub MCP tools for PR operations:
 ```
 github-mcp-server-pull_request_read
   method: "get"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
 ```
@@ -35,7 +35,7 @@ Returns: PR number, title, state, body, author, timestamps, merge status, etc.
 ```
 github-mcp-server-pull_request_read
   method: "get_diff"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
 ```
@@ -46,7 +46,7 @@ Returns: Full diff of the PR changes
 ```
 github-mcp-server-pull_request_read
   method: "get_status"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
 ```
@@ -57,7 +57,7 @@ Returns: Status of CI/CD checks, required checks, conclusion
 ```
 github-mcp-server-pull_request_read
   method: "get_files"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
   perPage: 100
@@ -69,7 +69,7 @@ Returns: List of files changed with stats (additions, deletions, changes)
 ```
 github-mcp-server-pull_request_read
   method: "get_review_comments"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
   perPage: 100
@@ -81,7 +81,7 @@ Returns: Code review comments with file paths, line numbers, and comment bodies
 ```
 github-mcp-server-pull_request_read
   method: "get_reviews"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
   perPage: 100
@@ -93,7 +93,7 @@ Returns: Review submissions with state (APPROVED, CHANGES_REQUESTED, etc.)
 ```
 github-mcp-server-pull_request_read
   method: "get_comments"
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   pullNumber: 123
   perPage: 100
@@ -104,7 +104,7 @@ Returns: General conversation comments on the PR
 ### List PRs
 ```
 github-mcp-server-list_pull_requests
-  owner: "oocx"
+  owner: "StanislavMakhrov"
   repo: "green-ledger"
   state: "open"  # or "closed", "all"
   perPage: 30
