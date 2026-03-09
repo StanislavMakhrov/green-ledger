@@ -14,6 +14,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN npx prisma generate
 RUN npm run build
+RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/prisma db push --skip-generate
+RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/prisma db seed
 
 FROM node:20-alpine AS runner
 RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
@@ -28,15 +30,10 @@ RUN mkdir -p /data && chown nextjs:nodejs /data
 COPY --from=builder /app/public/ ./public/
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/lib/constants.ts ./lib/constants.ts
 COPY --from=builder /app/app/generated ./app/generated
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/tsx ./node_modules/tsx
+COPY --from=builder --chown=nextjs:nodejs /tmp/greenledger.template.db /app/greenledger.template.db
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 USER nextjs
