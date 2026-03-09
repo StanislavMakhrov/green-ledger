@@ -130,6 +130,19 @@ export function renderReportHtml(data: ReportData): string {
   const fmt = (n: number) => n.toFixed(2);
   const pct = (n: number) => (n * 100).toFixed(0) + "%";
 
+  /**
+   * Escape HTML special characters to prevent XSS in Puppeteer-rendered output.
+   * User-provided data (company name, methodology notes, supplier names, assumptions)
+   * must always be escaped before embedding in the HTML template.
+   */
+  const esc = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,10 +163,10 @@ export function renderReportHtml(data: ReportData): string {
 
 <div class="cover">
   <h1>CSRD Climate Report</h1>
-  <p><strong>${data.cover.companyName}</strong></p>
+  <p><strong>${esc(data.cover.companyName)}</strong></p>
   <p>Reporting Year: ${data.cover.reportingYear}</p>
-  <p>Organisational Boundary: ${data.cover.orgBoundary}</p>
-  <p>Generated: ${data.cover.generatedDate}</p>
+  <p>Organisational Boundary: ${esc(data.cover.orgBoundary)}</p>
+  <p>Generated: ${esc(data.cover.generatedDate)}</p>
 </div>
 
 <h2>1. Emissions Summary</h2>
@@ -171,18 +184,18 @@ ${
     ? "<p>No Scope 3 records for material categories in the reporting year.</p>"
     : `<table>
   <tr><th>Category</th><th>tCO&#x2082;e</th><th>Method</th><th>Data Source</th></tr>
-  ${data.scope3Breakdown.map((r) => `<tr><td>${r.categoryName}</td><td>${fmt(r.valueTco2e)}</td><td>${r.calculationMethod}</td><td>${r.dataSource}</td></tr>`).join("")}
+  ${data.scope3Breakdown.map((r) => `<tr><td>${esc(r.categoryName)}</td><td>${fmt(r.valueTco2e)}</td><td>${esc(r.calculationMethod)}</td><td>${esc(r.dataSource)}</td></tr>`).join("")}
 </table>`
 }
 ${data.nonMaterialExists ? '<p class="note">Note: Additional Scope 3 records exist in non-material categories and are excluded from this table.</p>' : ""}
 
 <h2>3. Methodology</h2>
 <h3>Scope 1</h3>
-<div class="note">${data.methodology.scope1}</div>
+<div class="note">${esc(data.methodology.scope1)}</div>
 <h3>Scope 2</h3>
-<div class="note">${data.methodology.scope2}</div>
+<div class="note">${esc(data.methodology.scope2)}</div>
 <h3>Scope 3</h3>
-<div class="note">${data.methodology.scope3}</div>
+<div class="note">${esc(data.methodology.scope3)}</div>
 
 <h2>4. Assumptions &amp; Data Quality</h2>
 ${
@@ -193,12 +206,12 @@ ${
   ${data.assumptionsDataQuality
     .map(
       (r) =>
-        `<tr><td>${r.supplierName}</td><td>${r.categoryName}</td><td>${r.dataSource}</td><td>${pct(r.confidence)}</td><td>${r.assumptions}</td></tr>`
+        `<tr><td>${esc(r.supplierName)}</td><td>${esc(r.categoryName)}</td><td>${esc(r.dataSource)}</td><td>${pct(r.confidence)}</td><td>${esc(r.assumptions)}</td></tr>`
     )
     .join("")}
 </table>`
 }
-<p class="note">Proxy emission factor: ${data.proxyFactorSource}</p>
+<p class="note">Proxy emission factor: ${esc(data.proxyFactorSource)}</p>
 
 </body>
 </html>`;

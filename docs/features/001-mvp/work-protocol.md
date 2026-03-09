@@ -54,6 +54,18 @@
   - `docs/features/001-mvp/tasks.md` — 38 implementation tasks in 7 phases with priorities, acceptance criteria, dependencies, and test case references
 - **Problems Encountered:** None. All architectural decisions were resolved in ADRs; no maintainer clarification required.
 
+### Developer
+
+- **Date:** 2025-07-18
+- **Summary:** Implemented the complete GreenLedger MVP from scratch across 7 phases: project scaffold (Next.js + Prisma + Tailwind), database schema + seed, shared lib (emissions, pdf, audit, prisma, constants), all API route handlers, all UI pages, and unit/smoke tests.
+- **Artifacts Produced:**
+  - `src/` — full Next.js application (App Router, 8 API routes, 8 pages, 3 lib modules)
+  - `src/prisma/schema.prisma` — all 7 domain models
+  - `src/prisma/seed.ts` — idempotent seed with demo company, suppliers, scope records, methodology notes
+  - `src/lib/emissions.ts`, `src/lib/pdf.ts`, `src/lib/audit.ts`, `src/lib/prisma.ts`, `src/lib/constants.ts`
+  - `src/lib/emissions.test.ts`, `src/lib/pdf.test.ts` — 17 passing tests
+- **Problems Encountered:** None blocking. Puppeteer requires `--no-sandbox` flag in Docker (applied). Prisma 7 requires libsql adapter for SQLite (resolved per ADR-002).
+
 ### Technical Writer
 
 - **Date:** 2025-07-18
@@ -61,4 +73,13 @@
 - **Artifacts Produced:**
   - `README.md` — Updated Project Structure (correct `src/` layout with route groups), clarified Quick Start commands to note all npm scripts run from `src/`, added explicit note for Docker commands running from repo root, expanded Testing section with `npm run format`, added Database Scripts section (`db:migrate`, `db:seed`, `db:reset`), updated Tech Stack PDF Export to specify Puppeteer.
   - `docs/features.md` — Changed "Planned Features" to "Features", updated "MVP Features (to be implemented)" to "MVP Features ✅" with an implementation confirmation statement and Puppeteer detail for PDF Export.
-- **Problems Encountered:** None. The existing README was already well-structured; changes were targeted corrections and additions to match the actual implementation. Markdown lint passed on both changed files (0 errors).
+### Code Reviewer
+
+- **Date:** 2025-07-18
+- **Summary:** Reviewed the complete MVP implementation against specification, architecture, and test plan. Found and fixed 5 issues (2 security, 3 code-quality). Extended test suite from 17 to 23 tests. All checks pass.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/code-review.md` — Full code review report
+  - Fixed files: `src/lib/constants.ts`, `src/lib/emissions.ts`, `src/lib/pdf.ts`, `src/app/api/suppliers/[id]/route.ts`, `src/app/api/suppliers/[id]/refresh-token/route.ts`, `src/app/api/public/supplier/[token]/route.ts`
+  - Extended tests: `src/lib/emissions.test.ts`, `src/lib/pdf.test.ts`
+- **Problems Encountered:** None. All acceptance criteria met. Status: **Approved — ready for UAT**.
+

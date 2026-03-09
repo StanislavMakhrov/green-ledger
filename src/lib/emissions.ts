@@ -1,4 +1,4 @@
-import { PROXY_FACTOR } from "./constants";
+import { PROXY_FACTOR, TON_KM_EMISSION_FACTOR, WASTE_EMISSION_FACTOR } from "./constants";
 
 /**
  * Calculate tCO₂e from spend using the proxy emission factor.
@@ -43,4 +43,49 @@ export function calculateProxyEmissions(input: { spend_eur: number }): {
     calculationMethod: "spend_based",
     dataSource: "proxy",
   };
+}
+
+/**
+ * Resolve supplier form submission to emission fields.
+ * Tries spend_eur (proxy), then ton_km, then waste_kg.
+ * Returns null if no valid activity data is present.
+ * Eliminates mutable `let` declarations in the route handler.
+ */
+export function resolveSupplierFormEmissions(input: {
+  spend_eur?: number | null;
+  ton_km?: number | null;
+  waste_kg?: number | null;
+}): {
+  valueTco2e: number;
+  calculationMethod: "spend_based" | "activity_based";
+  assumptions: string;
+  confidence: number;
+  dataSource: "supplier_form" | "proxy";
+} | null {
+  const spendEur = input.spend_eur != null ? Number(input.spend_eur) : 0;
+  const tonKm = input.ton_km != null ? Number(input.ton_km) : 0;
+  const wasteKg = input.waste_kg != null ? Number(input.waste_kg) : 0;
+
+  if (spendEur > 0) {
+    return calculateProxyEmissions({ spend_eur: spendEur });
+  }
+  if (tonKm > 0) {
+    return {
+      valueTco2e: tonKm * TON_KM_EMISSION_FACTOR,
+      calculationMethod: "activity_based",
+      assumptions: `Transport activity data: ${tonKm} ton-km at ${TON_KM_EMISSION_FACTOR * 1000} kgCO₂e/ton-km`,
+      confidence: 0.7,
+      dataSource: "supplier_form",
+    };
+  }
+  if (wasteKg > 0) {
+    return {
+      valueTco2e: wasteKg * WASTE_EMISSION_FACTOR,
+      calculationMethod: "activity_based",
+      assumptions: `Waste data: ${wasteKg} kg at ${WASTE_EMISSION_FACTOR * 1000} kgCO₂e/kg`,
+      confidence: 0.5,
+      dataSource: "supplier_form",
+    };
+  }
+  return null;
 }

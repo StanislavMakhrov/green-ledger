@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { calculateProxyTco2e, calculateDashboardTotals, calculateProxyEmissions } from "./emissions";
-import { PROXY_FACTOR } from "./constants";
+import { calculateProxyTco2e, calculateDashboardTotals, calculateProxyEmissions, resolveSupplierFormEmissions } from "./emissions";
+import { PROXY_FACTOR, TON_KM_EMISSION_FACTOR, WASTE_EMISSION_FACTOR } from "./constants";
 
 describe("calculateProxyTco2e", () => {
   it("converts spend_eur to tCO2e using PROXY_FACTOR", () => {
@@ -58,5 +58,46 @@ describe("calculateProxyEmissions", () => {
   it("includes assumptions string mentioning PROXY_FACTOR", () => {
     const result = calculateProxyEmissions({ spend_eur: 1000 });
     expect(result.assumptions).toContain("0.4");
+  });
+});
+
+describe("resolveSupplierFormEmissions", () => {
+  it("resolveSupplierFormEmissions_spendEur_returnsProxyDataSource", () => {
+    const result = resolveSupplierFormEmissions({ spend_eur: 5000 });
+    expect(result).not.toBeNull();
+    expect(result!.dataSource).toBe("proxy");
+    expect(result!.calculationMethod).toBe("spend_based");
+    expect(result!.valueTco2e).toBeCloseTo((5000 * PROXY_FACTOR) / 1000, 5);
+    expect(result!.confidence).toBe(0.6);
+  });
+
+  it("resolveSupplierFormEmissions_tonKm_returnsActivityBased", () => {
+    const result = resolveSupplierFormEmissions({ ton_km: 1000 });
+    expect(result).not.toBeNull();
+    expect(result!.dataSource).toBe("supplier_form");
+    expect(result!.calculationMethod).toBe("activity_based");
+    expect(result!.valueTco2e).toBeCloseTo(1000 * TON_KM_EMISSION_FACTOR, 5);
+    expect(result!.confidence).toBe(0.7);
+  });
+
+  it("resolveSupplierFormEmissions_wasteKg_returnsActivityBased", () => {
+    const result = resolveSupplierFormEmissions({ waste_kg: 500 });
+    expect(result).not.toBeNull();
+    expect(result!.dataSource).toBe("supplier_form");
+    expect(result!.calculationMethod).toBe("activity_based");
+    expect(result!.valueTco2e).toBeCloseTo(500 * WASTE_EMISSION_FACTOR, 5);
+    expect(result!.confidence).toBe(0.5);
+  });
+
+  it("resolveSupplierFormEmissions_spendEurTakesPriorityOverTonKm", () => {
+    const result = resolveSupplierFormEmissions({ spend_eur: 1000, ton_km: 500 });
+    expect(result).not.toBeNull();
+    expect(result!.calculationMethod).toBe("spend_based");
+  });
+
+  it("resolveSupplierFormEmissions_noValidData_returnsNull", () => {
+    expect(resolveSupplierFormEmissions({})).toBeNull();
+    expect(resolveSupplierFormEmissions({ spend_eur: 0, ton_km: 0, waste_kg: 0 })).toBeNull();
+    expect(resolveSupplierFormEmissions({ spend_eur: null })).toBeNull();
   });
 });

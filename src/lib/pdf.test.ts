@@ -88,4 +88,32 @@ describe("renderReportHtml", () => {
     const html = renderReportHtml(dataWithNonMaterial);
     expect(html).toContain("non-material categories");
   });
-});
+
+  it("escapes HTML special characters in user-provided fields to prevent XSS", () => {
+    const xssData: ReportData = {
+      ...sampleData,
+      cover: { ...sampleData.cover, companyName: "<script>alert('xss')</script>" },
+      methodology: {
+        scope1: "<b>bold & dangerous</b>",
+        scope2: "safe",
+        scope3: 'quote: "test"',
+      },
+      assumptionsDataQuality: [
+        {
+          supplierName: "<evil>",
+          categoryName: "Safe & Category",
+          dataSource: "proxy",
+          confidence: 0.6,
+          assumptions: "A > B",
+        },
+      ],
+    };
+    const html = renderReportHtml(xssData);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;");
+    expect(html).toContain("&lt;b&gt;bold &amp; dangerous&lt;/b&gt;");
+    expect(html).toContain("&lt;evil&gt;");
+    expect(html).toContain("A &gt; B");
+  });
+
+})

@@ -15,7 +15,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const body = await request.json();
   const s = await prisma.supplier.findFirst({ where: { id, companyId: DEMO_COMPANY_ID } });
   if (!s) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const updated = await prisma.supplier.update({ where: { id }, data: body });
+  // Whitelist only user-editable fields to prevent mass assignment of companyId, publicFormToken, etc.
+  const { name, country, sector, contactEmail, status } = body as {
+    name?: string;
+    country?: string;
+    sector?: string;
+    contactEmail?: string;
+    status?: string;
+  };
+  const updated = await prisma.supplier.update({ where: { id }, data: { name, country, sector, contactEmail, status } });
   await createAuditEvent({ companyId: DEMO_COMPANY_ID, entityType: "supplier", entityId: id, action: "updated", actor: "user" });
   return NextResponse.json(updated);
 }
