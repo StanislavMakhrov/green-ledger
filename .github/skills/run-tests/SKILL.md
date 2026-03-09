@@ -38,6 +38,7 @@ Provide standardized instructions for running tests and validating the build. En
 ```bash
 cd src
 npm test
+
 ```
 
 ### Run Tests in Watch Mode (during development)
@@ -45,6 +46,7 @@ npm test
 ```bash
 cd src
 npm run test:watch
+
 ```
 
 ### Run a Specific Test File
@@ -52,6 +54,7 @@ npm run test:watch
 ```bash
 cd src
 npx vitest run path/to/test.test.ts
+
 ```
 
 ### Run Tests Matching a Pattern
@@ -59,6 +62,7 @@ npx vitest run path/to/test.test.ts
 ```bash
 cd src
 npx vitest run --reporter=verbose -t "pattern"
+
 ```
 
 ### Validate Production Build
@@ -66,6 +70,7 @@ npx vitest run --reporter=verbose -t "pattern"
 ```bash
 cd src
 npm run build
+
 ```
 
 ### Run Lint + Type Check
@@ -74,6 +79,7 @@ npm run build
 cd src
 npm run lint
 npm run type-check
+
 ```
 
 ## Troubleshooting
@@ -89,4 +95,3 @@ Run `cd src && npm run type-check` to see TypeScript errors independently of the
 ### Database-related test failures
 
 Run `cd src && npx prisma db push` to ensure the database schema is up to date, then retry.
-

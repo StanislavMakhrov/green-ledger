@@ -6,10 +6,13 @@ description: Standard workflow for GitHub Copilot coding agents including report
 # Coding Agent Workflow Skill
 
 ## Purpose
+
 Provides the standard operational workflow that all GitHub Copilot coding agents must follow when executing tasks in pull requests.
 
 ## When to Use
+
 This skill is automatically loaded by all coding agents. It defines the core workflow for:
+
 - Handling questions (direct vs delegated contexts)
 - Reporting progress with the `report_progress` tool
 - Creating summary comments after work completion
@@ -21,6 +24,7 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 ### CRITICAL: Branch and PR Management
 
 **GitHub Copilot automatically creates branches and PRs** - you do NOT create them:
+
 - When an issue is assigned to `@copilot`, GitHub automatically creates a `copilot/*` branch and draft PR
 - When you start working, you're already on the correct branch with an active PR
 - **NEVER run `git checkout`, `git switch`, or `git branch` commands** - you're already on the right branch
@@ -28,6 +32,7 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 - Your job is to commit work to the existing branch using `report_progress` (which handles git push automatically)
 
 **Why this fails:**
+
 - Manual `git checkout -b` commands will fail (permission denied)
 - Attempting to create PRs will fail or create duplicate PRs
 - These operations are GitHub's responsibility, not yours
@@ -56,6 +61,7 @@ This skill is automatically loaded by all coding agents. It defines the core wor
      report_progress(
        commitMessage="feat: implement user authentication",
        prDescription="""
+
        - [x] Add authentication service
        - [ ] Add authorization middleware
        """
@@ -84,7 +90,9 @@ This skill is automatically loaded by all coding agents. It defines the core wor
    **Note**: If you're running in delegated mode (via `task` tool), include this summary in your response text instead of creating a PR comment.
 
 **Example Summary Comment:**
+
 ```
+
 ✅ Implementation complete
 
 **Summary:** Implemented feature X with tests and documentation
@@ -96,6 +104,7 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 
 **Next Agent:** Technical Writer (to review documentation)
 **Status:** Ready
+
 ```
 
 ## Key Principles

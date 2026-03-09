@@ -24,6 +24,7 @@ This document follows the [arc42 template](https://arc42.org/) for architecture 
 - [Requirement 3]
 
 **Links to detailed requirements:**
+
 - [docs/spec.md](../../spec.md)
 - [Feature specifications in docs/features/](../../features/)
 
@@ -96,6 +97,7 @@ C4Context
     Rel(user, system, "Uses")
     Rel(system, ext1, "Reads/Writes data")
     Rel(system, ext2, "Sends notifications")
+
 ```
 
 **Communication Partners:**
@@ -128,11 +130,13 @@ C4Context
 | [e.g., Security] | [e.g., OAuth 2.0 authentication] | [e.g., Industry standard, supports SSO] |
 
 **Key Technology Decisions:**
+
 - [e.g., ASP.NET Core for web framework]
 - [e.g., Entity Framework Core for data access]
 - [e.g., Docker for containerization]
 
 **Architectural Patterns:**
+
 - [e.g., Layered architecture (Presentation, Business Logic, Data Access)]
 - [e.g., Repository pattern for data abstraction]
 - [e.g., Dependency injection for loose coupling]
@@ -160,6 +164,7 @@ C4Container
     Rel(web, api, "Calls", "HTTP/REST")
     Rel(api, db, "Reads/Writes", "SQL")
     Rel(api, cache, "Reads/Writes", "Redis Protocol")
+
 ```
 
 **Components:**
@@ -180,9 +185,11 @@ graph TD
     B --> C[Repository Layer]
     C --> D[Database]
     B --> E[External Services]
+
 ```
 
 **Sub-components:**
+
 - [Sub-component 1]: [Description]
 - [Sub-component 2]: [Description]
 
@@ -207,9 +214,11 @@ sequenceDiagram
     DB-->>Auth: User data
     Auth-->>Web: JWT token
     Web-->>User: Redirect to dashboard
+
 ```
 
 **Steps:**
+
 1. User submits credentials via login form
 2. Web application forwards to authentication service
 3. Authentication service validates against database
@@ -252,6 +261,7 @@ graph TB
     A2 --> DB
     A1 --> CACHE
     A2 --> CACHE
+
 ```
 
 **Nodes:**
@@ -346,6 +356,7 @@ This section links to existing Architecture Decision Records (ADRs) in the repos
 **Hierarchy of quality goals with concrete scenarios.**
 
 ```
+
 Quality
 ├── Performance
 │   ├── Response Time (< 200ms for 95% of requests)
@@ -359,6 +370,7 @@ Quality
 └── Maintainability
     ├── Testability (80% code coverage)
     └── Modularity (low coupling, high cohesion)
+
 ```
 
 ### 10.2 Quality Scenarios

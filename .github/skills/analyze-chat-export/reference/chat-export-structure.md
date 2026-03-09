@@ -29,6 +29,7 @@ The export contains these top-level keys:
   "responderAvatarIconUri": "...",
   "responderUsername": "..."
 }
+
 ```
 
 ## Request Structure
@@ -122,9 +123,11 @@ Each `toolInvocationSerialized` element contains:
   "toolId": "run_in_terminal",
   "toolSpecificData": { ... }
 }
+
 ```
 
 For terminal commands, `toolSpecificData` includes:
+
 - `terminalCommandState.exitCode`
 - `terminalCommandState.timestamp`
 - `terminalCommandState.duration`
@@ -189,14 +192,19 @@ For terminal commands, `toolSpecificData` includes:
 
 ```bash
 # Models used
+
 jq '[.requests[].modelId] | group_by(.) | map({model: .[0], count: length})' chat.json
 
 # Session duration in minutes
+
 jq '((.requests | last.timestamp) - (.requests | first.timestamp)) / 1000 / 60' chat.json
 
 # Manual approval count
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized") | select(.isConfirmed.type == 0 or .isConfirmed.type == 4)] | length' chat.json
 
 # Total tool calls
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized")] | length' chat.json
+
 ```

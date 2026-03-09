@@ -6,9 +6,11 @@ description: Guide for selecting appropriate VS Code Copilot tools when configur
 # Agent Tool Selection Skill
 
 ## Purpose
+
 Provides guidance for selecting the correct VS Code Copilot tools when creating or modifying agent definitions, with awareness of environment-specific tool availability.
 
 ## When to Use
+
 - When configuring the `tools:` array in an agent's frontmatter
 - When troubleshooting "tool not found" errors
 - When adapting agents for both local (VS Code) and cloud (GitHub) environments
@@ -28,12 +30,14 @@ For a complete reference of official tool IDs, consult the [VS Code Copilot Chat
 ## Tool Usage by Environment
 
 ### Both Environments (Safe for All Contexts)
+
 - `search` - Code and file search
 - `web` - Web search for external information
 - `github/*` - GitHub operations (repos, PRs, issues)
 - `memory/*` - Memory storage (if configured)
 
 ### VS Code Only (Not Available in Cloud)
+
 - `vscode` - VS Code-specific operations
 - `execute` / `read` - Terminal execution and output reading
 - `edit` - Direct file editing
@@ -42,6 +46,7 @@ For a complete reference of official tool IDs, consult the [VS Code Copilot Chat
 - `io.github.chromedevtools/*` - Local browser DevTools
 
 ### Cloud Context Alternatives
+
 - Instead of `edit` → Describe changes in PR or use GitHub API
 - Instead of `execute` → Rely on GitHub Actions workflows
 - Instead of `todo` → Track tasks in issue/PR description

@@ -8,7 +8,7 @@
 [![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?logo=prisma)](https://www.prisma.io/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-**Automated CSRD/ESRS Climate Reporting for German SMEs**
+## Automated CSRD/ESRS Climate Reporting for German SMEs
 
 GreenLedger is a B2B SaaS application that helps German Mittelstand companies automate their CSRD/ESRS climate reporting, with a deep focus on Scope 3 supply chain emissions.
 

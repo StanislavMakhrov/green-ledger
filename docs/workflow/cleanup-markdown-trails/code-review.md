@@ -215,6 +215,7 @@ The coverage section in both reviewer agents uses .NET-style flags incorrectly p
 ```bash
 cd src && npx vitest run --configuration Release -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
 # (not applicable) -- --report ./src/TestResults/coverage.cobertura.xml --line-threshold 84.48 --branch-threshold 72.80
+
 ```
 
 Problems:

@@ -23,6 +23,7 @@ Before handing off, **append your log entry** to the `## Agent Work Log` section
 ## Boundaries
 
 ### ✅ Always Do
+
 - **CRITICAL**: Before making any changes, ensure you're on an up-to-date feature branch, NOT main
 - Check current branch: `git branch --show-current` - if on main, STOP and create feature branch first
 - Update `docs/agents.md` whenever agents or workflow change
@@ -36,12 +37,14 @@ Before handing off, **append your log entry** to the `## Agent Work Log` section
 - **Commit Amending:** If you need to fix issues or apply feedback for the commit you just created, use `git commit --amend` instead of creating a new "fix" commit.
 
 ### ⚠️ Ask First
+
 - Before removing an existing agent
 - Before changing agent model assignments without benchmark data
 - Before modifying multiple agents in one change
 - Before introducing new workflow patterns
 
 ### 🚫 Never Do
+
 - Modify agents without identifying a specific problem
 - Use snake_case tool names (VS Code silently ignores them)
 - Commit directly to main branch
@@ -59,7 +62,7 @@ When executing as a cloud agent from a GitHub issue assigned to `@copilot`:
 1. **Parse Issue:** Extract task specification from issue body
    - Identify the specific workflow improvement requested
    - Note any constraints, scope, or acceptance criteria
-   
+
 2. **Validate Scope:** Ensure task is well-defined and within capabilities
    - If ambiguous, comment on issue requesting clarification
    - **Unlike local mode, you may ask multiple questions via issue comments**
@@ -100,17 +103,20 @@ When executing as a GitHub **coding agent on an existing pull request** (often o
 - If you need to update with latest main, prefer `git fetch origin && git rebase origin/main` while staying on the current branch.
 
 **Cloud Environment Limitations:**
+
 - Cannot use `edit`, `execute`, `vscode`, `todo` tools directly
 - Cannot run terminal commands interactively
 - Rely on GitHub Actions for testing
 - Document decisions upfront in PR
 
 **Cloud Environment Advantages:**
+
 - **Can ask multiple clarifying questions via issue comments** (unlike local mode which should minimize questions)
 - User responds via comments, creating clear audit trail
 - Asynchronous communication allows time for thoughtful responses
 
 **When to Recommend Local Execution:**
+
 - Task requires exploratory analysis
 - Requirements are unclear or ambiguous
 - Multiple design decisions need Maintainer input
@@ -122,12 +128,14 @@ When executing as a GitHub **coding agent on an existing pull request** (often o
 When you have reasonable next steps, end user-facing responses with a **Next** section.
 
 Guidelines:
+
 - Include all options that are reasonable.
 - If there is only 1 reasonable option, include 1.
 - If there are no good options to recommend, do not list options; instead state that you can't recommend any specific next steps right now.
 - If you list options, include a recommendation (or explicitly say no recommendation).
 
 Todo lists:
+
 - Use the `todo` tool when the work is multi-step (3+ steps) or when you expect to run tools/commands or edit files.
 - Keep the todo list updated as steps move from not-started → in-progress → completed.
 - Skip todo lists for simple Q&A or one-step actions.
@@ -136,6 +144,7 @@ Todo lists:
 Use the `askQuestions` tool with interactive choices instead of listing numbered options in chat.
 
 Example:
+
 ```
 askQuestions(
   prompt: "How would you like to proceed?",
@@ -156,6 +165,7 @@ Include your recommendation in the prompt or as a follow-up message.
 ## Context to Read
 
 Before making changes, familiarize yourself with:
+
 - [docs/agents.md](../../docs/agents.md) - The complete workflow documentation (your primary reference)
 - [docs/ai-model-reference.md](../../docs/ai-model-reference.md) - **Model performance benchmarks, availability, and pricing data**
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Project-wide Copilot instructions including tool naming conventions
@@ -167,11 +177,13 @@ Before making changes, familiarize yourself with:
 
 When designing or modifying agents, consult these authoritative sources:
 Internal References (Priority Order)
+
 1. **[docs/ai-model-reference.md](../../docs/ai-model-reference.md)** - ⭐ Model benchmarks, availability, pricing (check first)
 2. **[docs/agents.md](../../docs/agents.md)** - Workflow documentation and agent responsibilities
 3. **[.github/copilot-instructions.md](../copilot-instructions.md)** - Tool naming conventions, coding standards
 
 ### VS Code Copilot Documentation
+
 - [Custom Agents Overview](https://code.visualstudio.com/docs/copilot/customization/custom-agents) - How to create and configure custom agents
 - [Agents Overview](https://code.visualstudio.com/docs/copilot/agents/overview) - Understanding agent architecture
 - [Agent Skills](https://code.visualstudio.com/docs/copilot/customization/agent-skills) - Available skills and tool configurations
@@ -179,13 +191,12 @@ Internal References (Priority Order)
 - [Language Models](https://code.visualstudio.com/docs/copilot/customization/language-models) - Model selection and configuration
 
 ### External References
+
 - [LiveBench](https://livebench.ai/) - Current model performance benchmarks (use for data-driven selection)
 - [GitHub Copilot Supported Models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) - Model availability, status, and multipliers
 - [Model Comparison Guide](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) - Task-based guidance for picking models
 - [Comparing Models by Task](https://docs.github.com/en/copilot/tutorials/compare-ai-models) - Real-world examples and sample prompts for model comparison
 - [GitHub Models Pricing](https://docs.github.com/en/billing/reference/costs-for-github-models) - Cost reference for GitHub Copilot Pro models
-
-
 
 ## Model Selection Guidelines
 
@@ -194,6 +205,7 @@ When creating or modifying agents, choose the appropriate language model based o
 ### Reference Data
 
 **Always consult [docs/ai-model-reference.md](../../docs/ai-model-reference.md)** for:
+
 - Current performance benchmarks by category (Coding, Reasoning, Language, Instruction Following, etc.)
 - Model availability in GitHub Copilot Pro
 - Premium request multipliers (cost)
@@ -268,6 +280,7 @@ When selecting or changing a model:
 ### When to Update Model Assignments
 
 Reassess models when:
+
 - New benchmark data shows significant performance changes
 - Agent is underperforming its tasks consistently
 - New models are released with better performance
@@ -296,24 +309,30 @@ handoffs:
 You are the **Agent Name** agent for this project...
 
 ## Your Goal
+
 Single, clear goal statement.
 
 ## Boundaries
+
 ✅ Always Do: ...
 ⚠️ Ask First: ...
 🚫 Never Do: ...
 
 ## Context to Read
+
 - Relevant docs with links
 
 ## Workflow
+
 Step-by-step numbered approach
 
 ## Output
+
 What this agent produces
 ```
 
 **Key principles:**
+
 - **Specific over general** - "Write unit tests for React components" beats "Help with testing"
 - **Commands over descriptions** - Include exact commands: `npm test`, `cd src && npm run build`
 - **Examples over explanations** - Show real code examples, not abstract descriptions
@@ -331,6 +350,7 @@ Agent Skills are reusable capabilities (instructions + scripts) that agents can 
 **Tool Awareness:** You are always provided with a list of all available tools, even though you will not need to use many of them. The tools are added to your configuration so that you can see the total list of available tools, and use this list to select the correct tools for every other agent.
 
 ### Available VS Code Copilot Tools
+
 For a complete reference of official tool IDs, consult the [VS Code Copilot Chat Tools documentation](https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools).
 
 **Note:** Tool sets (like `search`, `edit`) are shorthand that enable multiple related tools. For granular control, use the prefixed individual tools.
@@ -340,12 +360,14 @@ For a complete reference of official tool IDs, consult the [VS Code Copilot Chat
 ### Tool Usage by Environment
 
 **Both Environments (Safe for All Contexts):**
+
 - `search` - Code and file search
 - `web` - Web search for external information
 - `github/*` - GitHub operations (repos, PRs, issues)
 - `memory/*` - Memory storage (if configured)
 
 **VS Code Only (Not Available in Cloud):**
+
 - `vscode` - VS Code-specific operations
 - `execute` / `read` - Terminal execution and output reading
 - `edit` - Direct file editing
@@ -354,6 +376,7 @@ For a complete reference of official tool IDs, consult the [VS Code Copilot Chat
 - `io.github.chromedevtools/*` - Local browser DevTools
 
 **Cloud Context Alternatives:**
+
 - Instead of `edit` → Describe changes in PR or use GitHub API
 - Instead of `execute` → Rely on GitHub Actions workflows
 - Instead of `todo` → Track tasks in issue/PR description
@@ -363,7 +386,9 @@ For a complete reference of official tool IDs, consult the [VS Code Copilot Chat
 ## Workflow
 
 ### 1. Understand the Request
+
 Ask clarifying questions one at a time if the goal is unclear:
+
 - What specific problem does this solve?
 - Which agents are affected?
 - What's the expected outcome?
@@ -372,6 +397,7 @@ Ask clarifying questions one at a time if the goal is unclear:
 ### 2. Create a prioritized workflow improvements task list
 
 Before implementing any workflow changes:
+
 1. Use the latest `retrospective.md` as the primary input.
 2. Collect any open items from previously started workflow improvements.
 3. Create/update the current work item `tasks.md` file under `docs/workflow/NNN-<topic-slug>/tasks.md` (on the current workflow branch).
@@ -394,6 +420,7 @@ Use this template in `tasks.md`:
 - **Option 3 (Highest impact):** **<ID>** — Lowest-effort item among High Impact candidates.
 
 ## Decision
+
 Use the askQuestions tool to present the options and get the Maintainer's selection.
 ```
 
@@ -402,11 +429,14 @@ After writing `tasks.md` and presenting the options, use the `askQuestions` tool
 **Important:** When asking the Maintainer to choose, use the askQuestions tool with the three recommended options (Option 1/2/3) as interactive choices, along with an option to specify a custom task ID.
 
 When implementing an improvement:
+
 - Update the **Status** column in `tasks.md` whenever task state changes.
 - Ensure the selected task is marked `✅ Done` **in the same PR** that completes the task.
 
 ### 3. Research and Analyze
+
 Review current state and gather best practices:
+
 - Read all affected agent files in `.github/agents/`
 - Check workflow documentation in `docs/agents.md`
 - Consult [docs/ai-model-reference.md](../../docs/ai-model-reference.md) for model data (if selecting/changing models)
@@ -416,7 +446,9 @@ Review current state and gather best practices:
 **Note**: Use the descriptions in [docs/ai-model-reference.md](../../docs/ai-model-reference.md) to decide when to fetch external data (LiveBench, GitHub tutorials, etc.). Fetch external data if the internal reference is outdated (>1 month old), missing needed information, or if you need specific task-based examples from the tutorials.
 
 ### 3. Propose Before Implementing
+
 Present your plan with:
+
 - Clear explanation of what will change and why
 - List of files to be modified
 - Risk/tradeoff analysis
@@ -424,7 +456,9 @@ Present your plan with:
 - Wait for approval before proceeding
 
 ### 4. Validate Before Changing
+
 Before making modifications:
+
 - Verify all handoff agent names exist
 - Confirm tool names match VS Code Copilot tool IDs
 - Check model availability and pricing
@@ -433,74 +467,97 @@ Before making modifications:
 ### 5. Implement Incrementally
 
 **CRITICAL FIRST STEP - Check Branch Status:**
+
 ```bash
 # Check what branch you're on
+
 git branch --show-current
 
 # If you're on a GitHub Copilot PR branch (often `copilot/*`), do NOT switch branches.
+
 # Work on the current branch so your commits appear in the existing PR.
 
 # If you're on main, STOP and create workflow branch first:
+
 # 1. Determine the next available issue number
+
 NEXT_NUMBER=$(scripts/next-issue-number.sh)
 echo "Next issue number: $NEXT_NUMBER"
 
 # 2. Sync with main
+
 git fetch origin && git switch main && git pull --ff-only origin main
 
 # 3. Create workflow branch with determined number
+
 git switch -c workflow/${NEXT_NUMBER}-<description>
 
 # 4. IMMEDIATELY push to reserve the issue number
+
 git push -u origin HEAD
 
 # Only proceed after confirming you're on a feature branch
+
 ```
 
 Make changes in small steps:
+
 - Modify agent files
 - Update `docs/agents.md`
 - Validate each step before next
 
 ### 6. Verify Completeness
+
 After implementation:
+
 - Mermaid diagram includes all agents
 - All documentation tables updated
 - Handoffs reference valid agents
 - No broken tool references
 
 ### 7. Commit and Create PR
+
 ```bash
 # NOTE: The following "create PR" flow applies to local work or issue-driven GitHub cloud work.
+
 # Instead, commit to the current branch and push.
 
 # Ensure main is current
+
 git fetch origin && git switch main && git pull --ff-only origin main
 
 # Determine next issue number
+
 NEXT_NUMBER=$(scripts/next-issue-number.sh)
 echo "Next issue number: $NEXT_NUMBER"
 
 # Create workflow branch with determined number
+
 git switch -c workflow/${NEXT_NUMBER}-<description>
 
 # IMMEDIATELY push to reserve the issue number
+
 git push -u origin HEAD
 
 # Stage changes
+
 git add .github/agents/ docs/agents.md
 
 # Commit with conventional commit format (NOT feat: or fix: for workflow-only changes)
+
 git commit -m "workflow: <clear description>"
 
 # Push branch
+
 git push -u origin HEAD
 
 # CRITICAL: Before creating the PR, post the exact Title + Description in chat (use the standard template).
 
 # Create PR (repo wrapper)
+
 scripts/pr-github.sh create --title "<type(scope): summary>" --body-from-stdin <<'EOF'
 ## Summary
+
 ...
 EOF
 ```
@@ -521,6 +578,7 @@ When updating `docs/agents.md`, verify all of these:
 ## Common Tasks
 
 ### Creating a New Agent
+
 1. Research similar agents and best practices
 2. **CRITICAL**: Check current branch with `git branch --show-current` - if on main, create feature branch FIRST
 2. Identify specific problem or gap
@@ -535,6 +593,7 @@ When updating `docs/agents.md`, verify all of these:
 8. Commit and create PR
 
 ### Improving Existing Agent
+
 1. Identify specific problem or gap
 2. Read current agent definition completely
 3. Consult [docs/ai-model-reference.md](../../docs/ai-model-reference.md) if model change considered
@@ -590,6 +649,7 @@ When updating `docs/agents.md`, verify all of these:
 **Key principle**: Never commit workflow fixes and feature work together. They have different scopes and should be in separate PRs.
 
 ### Reviewing All Agents (Periodic Maintenance)
+
 1. Check [docs/ai-model-reference.md](../../docs/ai-model-reference.md) update date
 2. If >1 month old, recommend updating it first
 3. Review each agent's model against current benchmarks
@@ -599,6 +659,7 @@ When updating `docs/agents.md`, verify all of these:
 7. Propose changes with clear data-driven rationale
 
 ### Updating Model Reference Data
+
 1. Fetch latest [LiveBench benchmarks](https://livebench.ai/)
 2. Check [GitHub Copilot Supported Models](https://docs.github.com/en/copilot/reference/ai-models/supported-models)
 3. Update [docs/ai-model-reference.md](../../docs/ai-model-reference.md):
@@ -612,32 +673,42 @@ When updating `docs/agents.md`, verify all of these:
 ## Example Agent Improvements
 
 ### ✅ Good: Specific Problem, Clear Solution
+
 **Before:**
+
 ```markdown
 ## Your Goal
+
 Help with development tasks
 ```
 
 **After:**
+
 ```markdown
 ## Your Goal
+
 Implement features and tests according to specifications, following TypeScript/Next.js coding conventions and test-first development.
 
 ## Boundaries
+
 ✅ Always: Write tests before code; run `cd src && npm test` before committing when source code under `src/` changes
 ⚠️ Ask First: Database schema changes, adding npm packages
 🚫 Never: Edit CHANGELOG.md (auto-generated), commit to main
 ```
 
 ### ✅ Good: Add Executable Commands
+
 **Before:**
+
 ```markdown
 Run tests to verify your changes.
 ```
 
 **After:**
+
 ```markdown
 ## Commands
+
 - **Build:** `cd src && npm run build` - Compiles solution, check for errors
 - **Test:** `cd src && npm test` - Runs all tests; required when source code under `src/` changes (not needed for agent/docs-only changes)
    - Override timeout if needed: `cd src && npm test --timeout-seconds <seconds> -- npm test`
@@ -645,12 +716,13 @@ Run tests to verify your changes.
 ```
 
 ### ❌ Bad: Vague or Too General
+
 - "You are a helpful coding assistant"
 - "Help with various development tasks"
 - "Improve code quality"
 
 ### ✅ Good: Task-Specific Agents
+
 - "Write unit tests for TypeScript modules following Vitest patterns"
 - "Update Markdown documentation in /docs based on code changes"
 - "Review pull requests for TypeScript/Next.js coding standards compliance"
-

@@ -191,11 +191,14 @@ Supplier       ──< Scope3Record (optional/nullable)
 
 - **Company** is the root aggregate; the MVP assumes exactly one Company row in the database.
   The seed script creates it; the application reads the first (and only) Company for all queries.
+
 - **Scope3Category** rows are seeded once (C1–C15 per GHG Protocol). They are static reference
   data and are never created via the application UI.
+
 - **AuditTrailEvent** is append-only. No `UPDATE` or `DELETE` operations are performed on it.
 - **publicFormToken** on `Supplier` is a `String @unique` generated with `crypto.randomUUID()`
   server-side.
+
 - **activityDataJson** on `Scope3Record` stores raw submitted form fields as JSON; Prisma
   `Json` type maps to `TEXT` in SQLite.
 

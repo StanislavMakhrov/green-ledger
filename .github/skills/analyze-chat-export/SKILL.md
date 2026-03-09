@@ -7,19 +7,24 @@ compatibility: Requires jq for JSON processing. Chat must be exported first usin
 # Analyze Chat Export
 
 ## Purpose
+
 Extract structured metrics from VS Code Copilot chat exports to support retrospective analysis. Provides data on model usage, tool invocations, manual approvals, rejection patterns, file edit statistics, and session timing.
 
 ## Hard Rules
+
 ### Must
+
 - Use the `extract-metrics.sh` script for analysis (consolidates all queries).
 - Redact sensitive information before committing chat logs.
 - Save analysis results alongside the chat export in the feature folder.
 
 ### Must Not
+
 - Commit unredacted chat logs containing passwords, tokens, API keys, secrets, or PII.
 - Load the entire JSON file into memory (use streaming jq queries).
 
 ## Pre-requisites
+
 - `jq` command-line JSON processor installed.
 - Chat export files (`.json`) saved via `workbench.action.chat.export` command. Multiple files may exist per feature, one per agent chat session (e.g., `developer.chat.json`, `architect.chat.json`).
 
@@ -30,6 +35,7 @@ Extract structured metrics from VS Code Copilot chat exports to support retrospe
 The chat export only contains the VS Code infrastructure agent (`github.copilot.editsAgent`), not the custom agent definition file (e.g., `developer.agent.md`, `@Developer`).
 
 **Impact:**
+
 - Cannot analyze metrics per custom agent
 - Cannot determine which agent definitions performed best
 - Cross-feature analysis loses agent context
@@ -39,22 +45,28 @@ The chat export only contains the VS Code infrastructure agent (`github.copilot.
 ## Quick Start
 
 **Recommended: Use the extraction script**
+
 ```bash
 # Generate analysis files (both markdown and JSON)
+
 .github/skills/analyze-chat-export/extract-metrics.sh docs/features/NNN-<feature-slug>/chat.json docs/features/NNN-<feature-slug>/chat-metrics
+
 ```
 
 This creates:
+
 - `chat-metrics.md` - Human-readable report for review
 - `chat-metrics.json` - Raw data for cross-feature analysis (**commit this file**)
 
 ## Export Structure Reference
 
 See these reference documents:
+
 - [Chat Export Structure](reference/chat-export-structure.md) - Empirical analysis of exported data
 - [Chat Export Format Specification](reference/chat-export-format.md) - VS Code source-based type definitions
 
 ### Quick Reference: Top-Level Keys
+
 ```json
 {
   "initialLocation": "panel",
@@ -62,9 +74,11 @@ See these reference documents:
   "responderAvatarIconUri": { "id": "copilot" },
   "responderUsername": "Copilot"
 }
+
 ```
 
 ### Quick Reference: Request Fields
+
 | Field | Description |
 |-------|-------------|
 | `modelId` | Model used (e.g., `copilot/gpt-5.1-codex-max`) |
@@ -79,6 +93,7 @@ See these reference documents:
 | `editedFileEvents[]` | Files edited with accept/reject status |
 
 ### Quick Reference: Confirmation Types (isConfirmed.type)
+
 | Type | Meaning |
 |------|---------|
 | 0 | Pending or cancelled |
@@ -87,6 +102,7 @@ See these reference documents:
 | 4 | Manually approved |
 
 ### Quick Reference: Response State (modelState.value)
+
 | Value | Meaning |
 |-------|---------|
 | 0 | Pending - still generating |
@@ -98,22 +114,29 @@ See these reference documents:
 ## Actions
 
 ### 1. Export Chat (Prerequisite)
+
 Ask the Maintainer to export each relevant agent session chat:
+
 1. Focus the chat panel for the agent session to export.
 2. Run command: `workbench.action.chat.export`
 3. Save to: `docs/features/NNN-<feature-slug>/<agent-name>.chat.json` (e.g., `developer.chat.json`, `architect.chat.json`)
 
 ### 2. Run Extraction Script (Recommended)
+
 ```bash
 # Generate analysis report (creates both .md and .json files)
+
 .github/skills/analyze-chat-export/extract-metrics.sh docs/features/NNN-<feature-slug>/chat.json docs/features/NNN-<feature-slug>/chat-metrics
+
 ```
 
 This creates two files:
+
 - `chat-metrics.md` - Human-readable markdown report
 - `chat-metrics.json` - Raw metrics data for cross-feature analysis (commit this file)
 
 The script outputs a markdown report with:
+
 - Session overview (duration, requests, time breakdown)
 - Model usage statistics
 - Tool usage breakdown (top 15)
@@ -124,22 +147,28 @@ The script outputs a markdown report with:
 - User feedback votes
 
 ### 3. Individual jq Queries (Advanced)
+
 For custom analysis or debugging, use individual jq queries.
 
 #### Session Metrics
+
 ```bash
 CHAT_FILE="docs/features/NNN-<feature-slug>/chat.json"
 
 # Total requests/turns
+
 jq '.requests | length' "$CHAT_FILE"
 
 # Session duration in minutes
+
 jq '((.requests | last.timestamp) - (.requests | first.timestamp)) / 1000 / 60 | floor' "$CHAT_FILE"
 
 # First and last timestamps (for start/end times)
+
 jq '.requests | first.timestamp, last.timestamp' "$CHAT_FILE"
 
 # Time breakdown (all in seconds)
+
 jq '
 {
   session_duration_sec: (((.requests | last.timestamp) - (.requests | first.timestamp)) / 1000 | floor),
@@ -153,6 +182,7 @@ jq '
 ' "$CHAT_FILE"
 
 # Format time breakdown as human-readable
+
 jq '
   def format_time(s): "\(s / 3600 | floor)h \((s % 3600) / 60 | floor)m";
   {
@@ -166,35 +196,49 @@ jq '
     agent_work_time: format_time(.agent_work)
   }
 ' "$CHAT_FILE"
+
 ```
 
 ### 3. Extract Model Usage
+
 ```bash
 # Models used with counts
+
 jq '[.requests[].modelId] | group_by(.) | map({model: .[0], count: length}) | sort_by(-.count)' "$CHAT_FILE"
+
 ```
 
 ### 4. Extract Tool Usage
+
 ```bash
 # Total tool invocations
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized")] | length' "$CHAT_FILE"
 
 # Tool usage breakdown
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized") | .toolId] | group_by(.) | map({tool: .[0], count: length}) | sort_by(-.count)' "$CHAT_FILE"
+
 ```
 
 ### 5. Extract Approval Patterns
+
 ```bash
 # Approval type distribution
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized") | .isConfirmed.type // "unknown"] | group_by(.) | map({type: .[0], count: length})' "$CHAT_FILE"
 
 # Count manual approvals (type 0 = pending/cancelled, type 4 = manual)
+
 jq '[.requests[].response[] | select(.kind == "toolInvocationSerialized") | select(.isConfirmed.type == 0 or .isConfirmed.type == 4)] | length' "$CHAT_FILE"
+
 ```
 
 ### 6. Calculate Premium Request Estimate
+
 ```bash
 # Model multipliers (update as needed based on docs/ai-model-reference.md)
+
 jq '
   def multiplier:
     if . == "copilot/gpt-5.1-codex-max" then 50
@@ -209,11 +253,14 @@ jq '
     end;
   [.requests[].modelId | multiplier] | add
 ' "$CHAT_FILE"
+
 ```
 
 ### 7. Redact Sensitive Data
+
 ```bash
 # Create redacted copy
+
 jq '
   .requests |= map(
     .message.text |= (
@@ -222,48 +269,67 @@ jq '
     )
   )
 ' "$CHAT_FILE" > "${CHAT_FILE%.json}-redacted.json"
+
 ```
 
 ### 8. Extract Response Timings
+
 ```bash
 # Average response time (totalElapsed) in seconds
+
 jq '[.requests[].result.timings.totalElapsed // 0] | add / length / 1000' "$CHAT_FILE"
 
 # Average time to first progress in milliseconds
+
 jq '[.requests[].result.timings.firstProgress // 0] | add / length' "$CHAT_FILE"
 
 # Response state distribution (1=Complete, 2=Cancelled, 3=Failed)
+
 jq '[.requests[].modelState.value] | group_by(.) | map({state: .[0], count: length})' "$CHAT_FILE"
+
 ```
 
 ### 9. Extract User Feedback
+
 ```bash
 # Vote distribution (0=down, 1=up)
+
 jq '[.requests[] | select(.vote != null) | .vote] | group_by(.) | map({vote: (if .[0] == 1 then "up" else "down" end), count: length})' "$CHAT_FILE"
 
 # Vote down reasons
+
 jq '[.requests[] | select(.voteDownReason != null) | .voteDownReason] | group_by(.) | map({reason: .[0], count: length})' "$CHAT_FILE"
+
 ```
 
 ### 10. Extract File Edit Statistics
+
 ```bash
 # Files edited with accept/reject status (1=Keep, 2=Undo, 3=UserModification)
+
 jq '[.requests[].editedFileEvents[]? | {uri: .uri.path, status: (if .eventKind == 1 then "kept" elif .eventKind == 2 then "undone" else "modified" end)}]' "$CHAT_FILE"
 
 # Count of edits by status
+
 jq '[.requests[].editedFileEvents[]?.eventKind] | group_by(.) | map({status: (if .[0] == 1 then "kept" elif .[0] == 2 then "undone" else "modified" end), count: length})' "$CHAT_FILE"
+
 ```
 
 ### 11. Detect Errors and Cancellations
+
 ```bash
 # Failed requests (modelState.value == 3)
+
 jq '[.requests[] | select(.modelState.value == 3) | {id: .requestId, error: .result.errorDetails.message}]' "$CHAT_FILE"
 
 # Cancelled requests (modelState.value == 2)
+
 jq '[.requests[] | select(.modelState.value == 2)] | length' "$CHAT_FILE"
 
 # Error codes
+
 jq '[.requests[] | select(.result.errorDetails != null) | .result.errorDetails.code] | group_by(.) | map({code: .[0], count: length})' "$CHAT_FILE"
+
 ```
 
 ### 11b. Rejection Analysis
@@ -272,6 +338,7 @@ Rejections include cancelled requests, failed requests, and cancelled/rejected t
 
 ```bash
 # Rejections grouped by model
+
 jq '
   [.requests[] | {
     model: .modelId,
@@ -293,6 +360,7 @@ jq '
 ' "$CHAT_FILE"
 
 # Common rejection reasons (error codes across all requests)
+
 jq '
   [.requests[] | select(.result.errorDetails != null) | {
     code: .result.errorDetails.code,
@@ -304,18 +372,21 @@ jq '
 ' "$CHAT_FILE"
 
 # User vote-down reasons (explicit rejection feedback)
+
 jq '
   [.requests[] | select(.voteDownReason != null) | .voteDownReason]
   | group_by(.)
   | map({reason: .[0], count: length})
   | sort_by(-.count)
 ' "$CHAT_FILE"
+
 ```
 
 ### 12. Terminal Commands Analysis (Automation Opportunities)
 
 ```bash
 # Identify repeated command patterns (candidates for scripts)
+
 jq '
   [.requests[].response[]
     | select(.kind == "toolInvocationSerialized" and .toolId == "run_in_terminal")
@@ -326,12 +397,14 @@ jq '
   | sort_by(-.count)
   | .[0:10]
 ' "$CHAT_FILE"
+
 ```
 
 ### 13. Model Performance
 
 ```bash
 # Response time statistics grouped by model
+
 jq '
   [.requests[] | select(.result.timings.totalElapsed != null) | {
     model: .modelId,
@@ -350,6 +423,7 @@ jq '
 ' "$CHAT_FILE"
 
 # Model effectiveness: cancelled/failed rate by model
+
 jq '
   [.requests[] | {model: .modelId, state: .modelState.value}]
   | group_by(.model)
@@ -367,11 +441,13 @@ jq '
     })
   | sort_by(-.total)
 ' "$CHAT_FILE"
+
 ```
 
 ## Metrics Available
 
 ### ✅ Reliably Extractable
+
 - Total requests/turns
 - Models used (with counts)
 - Session start/end timestamps
@@ -384,10 +460,12 @@ jq '
 - File edit acceptance/rejection status
 
 ### ⚠️ Partially Available
+
 - Extended thinking content (may be encrypted)
 - `timeSpentWaiting` - appears to be time waiting for user confirmation, not agent processing time
 
 ### ❌ Not Available
+
 - **Custom agent names** - export only shows `github.copilot.editsAgent`, not custom agent files (see Known Limitations)
 - Token counts
 - Actual cost in dollars
@@ -395,4 +473,5 @@ jq '
 - Agent handoff events as distinct records
 
 ## Output
+
 Metrics extracted from chat export for inclusion in `retrospective.md`.

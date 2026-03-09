@@ -21,6 +21,7 @@ are low-risk but influence the entire project's code conventions.
 - Use Next.js App Router with **server components as the default**. Mark components
   `"use client"` only when browser APIs or React state/effects are strictly required
   (e.g., interactive forms, copy-to-clipboard buttons, real-time UI state).
+
 - The root path `/` uses a `page.tsx` that calls Next.js `redirect('/dashboard')` to send
   users directly to the dashboard. No landing page is created for the MVP.
 
@@ -39,15 +40,18 @@ A landing page would add scope without value for the demo.
 ## Consequences
 
 **Positive:**
+
 - Server components give fast initial page loads with zero client-side JS for read-only views.
 - Clear `"use client"` boundaries make the codebase easier to audit and test.
 - Root redirect ensures demos start immediately at the most useful page.
 - Consistent with Next.js best practices documented in the official App Router guides.
 
 **Negative:**
+
 - Developers must be deliberate about the server/client boundary; accidental mixing can cause
   hydration errors or serialisation issues with Prisma model objects (which must not be passed
   directly as props to client components — use plain serialisable data shapes instead).
+
 - If a landing page is ever needed in the future, the root `page.tsx` must be refactored.
 
 ## Implementation Notes

@@ -19,6 +19,7 @@ company-lookup logic.
 
 1. Use **Prisma ORM** with the `sqlite` provider. The schema is written to be directly
    compatible with Postgres by:
+
    - Using `String @id @default(uuid())` for all primary keys (UUIDs, not auto-increment).
    - Avoiding SQLite-only pragmas or raw SQL.
    - Using Prisma `Json` fields (stored as `TEXT` in SQLite, native `jsonb` in Postgres).
@@ -26,6 +27,7 @@ company-lookup logic.
 2. **Single-company access pattern**: All API route handlers resolve the active company via
    `prisma.company.findFirst()`. No `companyId` is ever passed from the client. This is
    safe because the MVP is a single-tenant local demo with exactly one Company row.
+
 3. A **Prisma client singleton** is exported from `src/lib/prisma.ts` using the recommended
    Next.js pattern (module-level cache to avoid connection exhaustion in development hot-reload).
 
@@ -50,17 +52,22 @@ enum. This ensures behavioural parity without schema changes.
 ## Consequences
 
 **Positive:**
+
 - Schema changes are tracked via Prisma migrations — reproducible across environments.
 - Type safety for all database operations via generated Prisma Client types.
 - Switching from SQLite to Postgres for a hosted deployment requires only changing the
   `datasource` `provider` and `url` in `schema.prisma` and running `prisma migrate deploy`.
+
 - Simple developer experience: `prisma migrate dev` / `prisma studio` work without extra setup.
 
 **Negative:**
+
 - SQLite does not support concurrent writes well. This is acceptable for a local demo but
   means the architecture cannot scale to multi-user without switching databases.
+
 - `findFirst()` on Company will silently return `null` if the seed has not been run. API
   handlers must handle this case and return a 503 or helpful error message.
+
 - Prisma `Json` fields do not have query-level type safety; runtime validation (e.g., Zod)
   is recommended when reading `activityDataJson`.
 
@@ -68,10 +75,13 @@ enum. This ensures behavioural parity without schema changes.
 
 - `src/lib/prisma.ts`: Export a global singleton `PrismaClient` using the Next.js recommended
   pattern to avoid "too many connections" in dev mode hot-reload.
+
 - `src/prisma/schema.prisma`: Use `provider = "sqlite"` for MVP. All PKs `@default(uuid())`.
   All `DateTime` fields use `@default(now())` or `@updatedAt`.
+
 - Route handlers that need the active company call a shared `getCompany()` helper from
   `src/lib/prisma.ts` (or inline `findFirst()`) and return HTTP 503 with a descriptive message
   if no Company row exists.
+
 - The `AuditTrailEvent` table has no `UPDATE` or `DELETE` Prisma operations — treat it as
   append-only at the application layer.

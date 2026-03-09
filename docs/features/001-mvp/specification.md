@@ -1,6 +1,7 @@
 # Feature Specification: GreenLedger MVP
 
 ## Feature ID
+
 001-mvp
 
 ## Summary
@@ -49,37 +50,49 @@ German SMEs are under increasing pressure from large customers and auditors to s
 ## Functional Requirements
 
 ### FR-001: Dashboard — Emission KPI Cards
+
 The `/dashboard` page must display four KPI cards: Scope 1 total, Scope 2 total, Scope 3 total, and Grand Total (S1 + S2 + S3), all in tCO₂e for the current `reportingYear` configured on the Company record.
 
 ### FR-002: Supplier CRUD
+
 The `/suppliers` page must allow creating, reading, updating, and deleting Supplier records (name, country, sector, contactEmail, status).
 
 ### FR-003: Supplier Token Generation
+
 Each Supplier must have a unique `publicFormToken`. The UI must provide a "Generate / Refresh token" action and a "Copy link" action that copies the full public form URL to the clipboard. The URL format is `/public/supplier/[token]`.
 
 ### FR-004: Public Supplier Form
+
 The `/public/supplier/[token]` page must be publicly accessible (no authentication). It must present a minimal form allowing the supplier to submit one or more of: `spend_eur`, `ton_km`, `waste_kg`. Raw fields are stored in `activityDataJson`.
 
 ### FR-005: Automatic Scope 3 Record Creation from Form Submission
+
 On supplier form submission, the system must create a `Scope3Record` with `dataSource = "supplier_form"` linked to the supplier and a default material category (Purchased Goods & Services, C1). If only `spend_eur` is provided, the system must apply a proxy calculation: `valueTco2e = spend_eur × PROXY_FACTOR` (configurable constant), set `confidence < 1.0`, and record the factor source and assumptions. A corresponding `AuditTrailEvent` must be created with `actor = "supplier"`.
 
 ### FR-006: Proxy Calculation Configuration
+
 `PROXY_FACTOR` must be defined as a named constant (not a magic number) in application configuration, documented as a placeholder value for demo purposes, with the emission factor source string stored on the Scope 3 record.
 
 ### FR-007: Scope 1 Recording
+
 The `/scope-1` page must allow manually adding Scope 1 emission records (periodYear, valueTco2e, calculationMethod, emissionFactorsSource, assumptions) and listing all records for the company.
 
 ### FR-008: Scope 2 Recording
+
 The `/scope-2` page must allow manually adding Scope 2 emission records (location-based only; same fields as Scope 1) and listing all records for the company.
 
 ### FR-009: Scope 3 Categories and Records
+
 The `/scope-3` page must display Scope 3 categories (C1–C15) with their materiality status. It must allow marking a category as material/non-material and providing a `materialityReason`. It must list all Scope 3 records with supplier, category, value, data source, confidence, and assumptions.
 
 ### FR-010: Methodology Notes
+
 The `/methodology` page must allow editing freetext methodology notes for each scope (`scope_1`, `scope_2`, `scope_3`) stored in `MethodologyNote`. Changes must be persisted and reflected in the PDF export.
 
 ### FR-011: PDF Export — CSRD Climate Report
+
 The `/export` page must provide a download action that generates a PDF containing:
+
 1. **Cover page** — company name and reporting year
 2. **Summary table** — Scope 1, Scope 2, Scope 3, Total in tCO₂e
 3. **Scope 3 breakdown table** — one row per material category with tCO₂e; a note if non-material categories exist
@@ -89,38 +102,49 @@ The `/export` page must provide a download action that generates a PDF containin
 The PDF is generated server-side by rendering HTML and converting to PDF.
 
 ### FR-012: Audit Trail
+
 Every significant data-mutation event (supplier creation/update, Scope 1/2/3 record creation/update, form submission, PDF export) must create an `AuditTrailEvent` record with `entityType`, `entityId`, `action`, `actor`, `timestamp`, and optional `comment`.
 
 ## Non-Functional Requirements
 
 ### NFR-001: Tech Stack Compliance
+
 The application must be implemented as a single Next.js (App Router) application with TailwindCSS for styling, Prisma with SQLite for persistence, TypeScript strict mode throughout, and Vitest for unit/smoke tests.
 
 ### NFR-002: Database Portability
+
 The Prisma schema must be authored to be Postgres-migratable (use UUID primary keys, avoid SQLite-only types) so that a future hosted deployment can switch databases without schema redesign.
 
 ### NFR-003: Local Runability
+
 The application must be runnable locally via `docker compose up` (using the `docker-compose.yml` at the repo root) and via `make dev` or `npm run dev` from `src/`.
 
 ### NFR-004: CI/CD Pipeline
+
 The repository must have three GitHub Actions workflows:
+
 - **PR Validation** (`pr-validation.yml`): runs ESLint, TypeScript type-check, Vitest tests, `next build`, and markdownlint on every pull request to `main`.
 - **CI** (`ci.yml`): runs `commit-and-tag-version` to bump the version and create a tag on every push to `main`.
 - **Release** (`release.yml`): creates a GitHub Release and builds/pushes a Docker image to GHCR on every `v*` tag.
 
 ### NFR-005: Code Quality
+
 All TypeScript files must pass ESLint with the Next.js recommended config. Files must be kept under 200–300 lines; larger files must be refactored. Pre-commit hooks (Husky) must run lint and type-check before every commit.
 
 ### NFR-006: TypeScript Conventions
+
 Use TypeScript strict mode, prefer functional components with hooks, use `const` over `let`, use named exports (except Next.js page/layout conventions), prefer `async/await` over raw Promises, and use Prisma for all database access (no raw SQL).
 
 ### NFR-007: Performance (Demo-Level)
+
 The dashboard must load within 3 seconds on a local machine with seed data. PDF generation must complete within 10 seconds for a typical dataset.
 
 ### NFR-008: Test Coverage
+
 At a minimum, unit/smoke tests must cover: dashboard KPI calculation logic, proxy calculation (spend-based Scope 3), PDF report content assembly, and API route happy-path smoke tests. All tests must pass and `next build` must succeed in CI.
 
 ### NFR-009: Project Structure
+
 All application source code must reside in `src/`. The repo root contains only project-level files. Documentation lives in `docs/`. Key architecture decisions are documented as ADRs in `docs/adr-NNN-title.md`.
 
 ## Domain Model
@@ -139,6 +163,7 @@ The following entities are persisted via Prisma (SQLite for MVP, Postgres-migrat
 | **AuditTrailEvent** | id, entityType, entityId, action, actor, timestamp, comment | Belongs to Company; immutable append-only log |
 
 **Key enumerations:**
+
 - `orgBoundary`: `operational_control` | `financial_control` | `equity_share`
 - `Supplier.status`: `active` | `inactive`
 - `Scope1Record.dataSource` / `Scope2Record.dataSource`: `manual` | `csv_import`

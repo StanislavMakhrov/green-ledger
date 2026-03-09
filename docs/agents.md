@@ -26,18 +26,21 @@ For well-defined features or bugs, use the **Workflow Orchestrator** agent to au
 - **VS Code (Local) - LIMITED**: Use `@workflow-orchestrator` in chat for interactive orchestration. Note that full programmatic delegation is limited in VS Code context compared to GitHub.
 
 **How It Works**:
+
 - The orchestrator **never asks clarifying questions** - it immediately delegates to the appropriate entry point agent (Requirements Engineer for features, Issue Analyst for bugs)
 - The orchestrator **never implements anything itself** - it purely delegates to specialized agents in sequence
 - Entry point agents (Requirements Engineer, Issue Analyst) handle requirements gathering and ask any needed clarifying questions
 - The orchestrator tracks progress and handles feedback loops (code review rework, UAT failures)
 
 **Best for**:
+
 - Complete feature implementations with clear issue descriptions
 - Bug fixes needing full workflow (investigation → fix → release)
 - Reducing cognitive load on routine development tasks
 - GitHub issue-driven development
 
 **Not suitable for**:
+
 - Exploratory analysis or design work (use individual agents directly)
 - Single-agent tasks (just use that agent)
 - Highly interactive work requiring maintainer decisions at each step
@@ -51,16 +54,18 @@ For well-defined features or bugs, use the **Workflow Orchestrator** agent to au
 All agents exist in two variants optimized for their execution environment:
 
 ### Local Agents (VS Code)
+
 - **Usage**: `@agent-name` in VS Code Copilot chat
 - **Tools**: Explicitly configured tool list with local-only tools (execute, edit, vscode, todo, etc.)
 - **Behavior**: Interactive with Maintainer, asks one question at a time, runs tests/builds locally
 - **File naming**: Standard name (e.g., `developer.agent.md`)
 
 ### Coding Agents (GitHub Cloud)
+
 - **Usage**: Automatically used when GitHub assigns issues to `@copilot` or when running as PR coding agent
 - **Tools**: No explicit tool list (defaults to all available tools in cloud environment)
 - **Behavior**: Autonomous operation, may ask multiple questions via comments, relies on CI/CD for validation
-- **File naming**: Name with ` (coding agent)` suffix (e.g., `developer-coding-agent.agent.md`)
+- **File naming**: Name with `(coding agent)` suffix (e.g., `developer-coding-agent.agent.md`)
 
 The workflow diagram and agent descriptions below refer to the conceptual agent roles, not the specific variants. Both variants follow the same workflow patterns and handoff relationships.
 
@@ -86,12 +91,15 @@ The agent must author the PR description using this standard template:
 
 ```markdown
 ## Problem
+
 <why is this change needed?>
 
 ## Change
+
 <what changed?>
 
 ## Verification
+
 <how was it validated?>
 ```
 
@@ -118,6 +126,7 @@ Format:
 
 ```text
 **Next**
+
 - **Option 1:** <clear next action>
 - **Option 2:** <clear alternative>
 **Recommendation:** Option <n>, because <short reason>.
@@ -300,6 +309,7 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 10. **Release Manager** prepares, coordinates, and executes the release.
 
 **Meta-Agent:**
+
 - **Workflow Engineer** improves and maintains the agent workflow itself (operates outside the normal feature flow).
 - When requesting a Maintainer decision on a `tasks.md` item, the Workflow Engineer uses the `askQuestions` tool (in VS Code) or PR comments (in GitHub coding context) to present the 3 recommended options interactively.
 
@@ -332,6 +342,7 @@ The green-ledger workflow supports both **local agents** (running in VS Code) an
 **Key Differences Between Modes:**
 
 **Local (VS Code):**
+
 - Interactive chat with Maintainer
 - Ask one question at a time
 - Full tool access (execute, edit, todo)
@@ -339,6 +350,7 @@ The green-ledger workflow supports both **local agents** (running in VS Code) an
 - Real-time validation (tests, builds, previews)
 
 **Cloud (GitHub):**
+
 - Autonomous execution from issue specification
 - Can ask multiple questions in one comment (issue-driven)
 - Limited to GitHub-safe tools (search, web, github/*)
@@ -346,20 +358,24 @@ The green-ledger workflow supports both **local agents** (running in VS Code) an
 - Relies on CI/CD for validation
 
 **Cloud (GitHub PR coding agent):**
+
 - Works on an existing PR branch (often `copilot/*`) — do not switch branches and do not create a new branch
 - If clarification is needed, ask via PR comments and wait (do not guess)
 
-**Example: Workflow Engineer**
+#### Example: Workflow Engineer
+
 - **Local:** Interactive workflow analysis, design discussions, complex decisions
 - **Cloud:** Automated workflow improvements from GitHub issues (e.g., batch agent updates)
 
-**Example: Developer**
+#### Example: Developer
+
 - **Local:** Interactive implementation with immediate test feedback
 - **Cloud:** Autonomous code changes with CI/CD validation
 
 ### Context Detection
 
 Agents determine their execution environment by analyzing:
+
 - **VS Code:** Interactive chat session with Maintainer, real-time feedback
 - **GitHub Issue:** Issue body with task specification, autonomous execution expected
 - **GitHub PR coding agent:** Existing PR context (PR comments are the feedback loop; branch is typically `copilot/*`)
@@ -377,6 +393,7 @@ Agents determine their execution environment by analyzing:
 **All agents are cloud-enabled**, but some tasks are still better suited for local execution due to tool availability and interaction patterns.
 
 **Good Fit for Cloud:**
+
 - ✅ Well-scoped feature implementations with clear specifications
 - ✅ Routine refactoring tasks with clear scope
 - ✅ Batch documentation updates
@@ -388,6 +405,7 @@ Agents determine their execution environment by analyzing:
 - ✅ Tasks that don't require real-time guidance
 
 **Better as Local:**
+
 - ❌ Tasks requiring local tool access (VS Code extensions, terminals, Docker)
 - ❌ Interactive debugging with Maintainer
 - ❌ Complex decisions requiring iterative refinement
@@ -403,12 +421,13 @@ Agents determine their execution environment by analyzing:
 **Note:** All agents support both local (VS Code) and cloud (GitHub) execution modes. Each agent automatically detects its environment and adapts its behavior accordingly. See [Cloud Agents vs Local Agents](#cloud-agents-vs-local-agents) for details.
 
 ### 0. Workflow Orchestrator (Optional Automation)
+
 - **Goal:** Orchestrate complete development workflows from issue to release with minimal maintainer interaction.
 - **Use Cases:**
   - **GitHub Cloud (RECOMMENDED)**: Assign issue to `@copilot` for fully automated end-to-end execution with full delegation capabilities
   - **VS Code Local (LIMITED)**: Use `@workflow-orchestrator` for interactive workflow coordination with limited delegation capabilities
 - **Deliverables:** Complete workflow execution by delegating to all required specialized agents in sequence.
-- **Key Behavior:** 
+- **Key Behavior:**
   - **Never asks clarifying questions** - immediately delegates to entry point agents who handle requirements gathering
   - **Never implements anything** - purely orchestrates by delegating to specialized agents via `task` tool
   - Tracks progress, handles feedback loops (code review rework, UAT failures)
@@ -422,48 +441,57 @@ Agents determine their execution environment by analyzing:
 - **Not For:** Highly exploratory work, unclear requirements needing extensive clarification, tasks requiring frequent design decisions.
 
 ### 1. Issue Analyst
+
 - **Goal:** Investigate and document bugs, incidents, and technical issues.
 - **Deliverables:** Issue analysis with root cause, diagnostic data, and suggested fix approach.
 - **Definition of Done:** Issue is clearly documented and ready for Developer to implement fix.
 
 ### 2. Requirements Engineer
+
 - **Goal:** Gather, clarify, and document needs for new features (including non-functional improvements).
 - **Deliverables:** High level feature specification describing user outcomes and success criteria
 - **Definition of Done:** Requirements are clear, unambiguous, and approved.
 
 ### 3. Architect
+
 - **Goal:** Design the technical solution and document decisions.
 - **Deliverables:** Architecture overview, ADRs, technology choices.
 - **Key Behavior:** When multiple viable options exist, presents pros/cons with a recommendation and uses the `askQuestions` tool to let the maintainer choose the final approach interactively.
 - **Definition of Done:** Architecture is documented and approved.
 
 ### 4. Quality Engineer
+
 - **Goal:** Define how the feature will be tested and validated.
 - **Deliverables:** Test plan, test cases, quality criteria. For user-facing features, user acceptance scenarios for manual review.
 - **Model:** Claude Sonnet 4.6
 - **Definition of Done:** Test plan covers all acceptance criteria. User-facing features have clear acceptance scenarios defined.
 
 ### 5. Task Planner
+
 - **Goal:** Translate requirements and architecture into actionable work items.
 - **Deliverables:** User stories/tasks with acceptance criteria and priorities.
 - **Definition of Done:** Work items are clear, actionable, and prioritized.
 
 ### 6. Developer
+
 - **Goal:** Implement features and tests as specified.
 - **Deliverables:** Code, tests, passing CI.
 - **Definition of Done:** Code and tests meet requirements and pass all checks.
 
 ### 7. Technical Writer
+
 - **Goal:** Update and maintain all relevant documentation.
 - **Deliverables:** Updated user and developer docs.
 - **Definition of Done:** Documentation is accurate and complete.
 
 ### 8. Code Reviewer
+
 - **Goal:** Ensure code quality and process adherence.
 - **Deliverables:** Code review feedback or approval.
 - **Definition of Done:** Code is reviewed and approved or sent back for rework.
 
 ### 9. UAT Tester
+
 - **Goal:** Validate user-facing features by building and running the Docker image, then asking the Maintainer to manually verify.
 - **Deliverables:** UAT report documenting Docker run instructions, verification checklist, and Maintainer's PASS/FAIL decision.
 - **Workflow:** Build Docker image → start app → present checklist → wait for Maintainer verdict → document result.
@@ -471,18 +499,21 @@ Agents determine their execution environment by analyzing:
 - **Definition of Done:** Maintainer has manually checked the running app and given an explicit PASS or FAIL (with description) verdict. UAT report is written to `docs/features/NNN-<feature-slug>/uat-report.md`.
 
 ### 10. Release Manager
+
 - **Goal:** Plan, coordinate, and execute releases.
 - **Deliverables:** Pull request, release notes, versioning, deployment plan, and post-release checklist.
 - **Key Behavior:** Write release notes as honest, technical notes (not marketing), include ✨/🐛/📚 icons, include a 🔗 Commits section with user-facing commits, and only include ▶️ Getting started / 📸 Screenshots when applicable (screenshots required for user-visible output changes).
 - **Definition of Done:** PR is created and merged, release is published, documented, and verified.
 
 ### 11. Retrospective
+
 - **Goal:** Identify improvement opportunities for the development workflow.
 - **Deliverables:** Retrospective report with summary, successes, failures, and improvement opportunities.
 - **Key Behavior:** Be evidence-based and critical; prefer chat logs/artifacts/CI status checks for objective event history, cluster findings by theme, and apply a scoring rubric with explicit deductions.
 - **Definition of Done:** Report is generated with action items and a completeness checklist (DoD).
 
 ### 12. Workflow Engineer (Meta-Agent)
+
 - **Goal:** Analyze, improve, and maintain the agent-based workflow.
 - **Execution Modes:**
   - **Local (VS Code):** Interactive workflow analysis with Maintainer guidance
@@ -585,6 +616,7 @@ The first agent in the workflow creates `work-protocol.md` using this template:
 <!-- Each agent appends their entry below when they complete their work. -->
 
 ### <Agent Name>
+
 - **Date:** YYYY-MM-DD
 - **Summary:** <Brief description of work performed>
 - **Artifacts Produced:** <List of files created or updated>
@@ -732,6 +764,7 @@ When the **Code Reviewer** requests changes, the following process applies:
 5. This cycle continues until the Code Reviewer approves.
 
 For significant rework that affects requirements or architecture:
+
 - The Maintainer may need to consult the **Task Planner** or **Architect** agents for clarification.
 - If the rework reveals gaps in the original specification, the Maintainer may return to the **Requirements Engineer** agent.
 
@@ -811,6 +844,7 @@ Sub-agent costs vary by execution context:
 **Model override implications**: When a sub-agent uses a different model (via the `model` parameter on the `task` tool), the cost is determined by that model's premium multiplier. Use cheaper models (`explore` defaults to Haiku) for research and expensive models only when quality demands it.
 
 **Cost optimization tips**:
+
 - Use the `explore` agent type (Haiku model, low cost) for codebase questions before using heavier agents
 - Use the `task` agent type (Haiku model) for build/test runs where you only need pass/fail
 - Reserve `general-purpose` (Sonnet model) for complex multi-step work
@@ -819,6 +853,7 @@ Sub-agent costs vary by execution context:
 ---
 
 ## References
+
 - [GitHub Copilot: How to write a great agents.md](https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/)
 - [VS Code Copilot Custom Agents](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
 - [Microsoft: AI agent best practices](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/agent-patterns/)
