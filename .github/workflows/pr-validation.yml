@@ -93,6 +93,11 @@ jobs:
         working-directory: src
         run: npm ci
 
+      - name: Generate Prisma client
+        if: steps.filter.outputs.changed == 'true'
+        working-directory: src
+        run: npx prisma generate
+
       - name: Lint
         if: steps.filter.outputs.changed == 'true'
         working-directory: src
