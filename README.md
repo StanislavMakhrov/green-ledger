@@ -56,6 +56,8 @@ GreenLedger automates the complete workflow:
 - Node.js 20+
 - npm
 
+> **Note:** All application source code lives in the `src/` directory. All `npm` commands must be run from `src/`, not the repository root.
+
 ### Development
 
 ```bash
@@ -80,6 +82,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ### Docker
 
 ```bash
+# Run from the repository root
 docker compose up
 ```
 
@@ -88,7 +91,7 @@ Open [http://localhost:3000](http://localhost:3000) — the app is pre-seeded wi
 ### Testing
 
 ```bash
-# Enter the application directory (if not already there)
+# Run from src/ directory
 cd src
 
 # Run tests
@@ -113,6 +116,9 @@ npm run build
 ### Database Scripts
 
 ```bash
+# Run from src/ directory
+cd src
+
 # Apply pending migrations (production)
 npm run db:migrate
 
