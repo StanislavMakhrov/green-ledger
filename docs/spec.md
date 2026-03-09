@@ -5,6 +5,7 @@
 **GreenLedger** is a B2B SaaS application for German SMEs (Mittelstand) that automates CSRD/ESRS climate reporting with a deep focus on Scope 3 (supply chain emissions).
 
 **Pain points solved:**
+
 - SMEs are pressured by large customers and auditors to provide Scope 3 emissions data
 - Today it's Excel/PDF/email questionnaires, inconsistent supplier replies, missing data
 - They need proxy estimates, but with documented assumptions and audit trail
@@ -14,6 +15,7 @@
 ## MVP Demo Goal
 
 A 5-minute demo flow:
+
 1. Dashboard shows KPIs: Scope 1, Scope 2, Scope 3, Total
 2. Suppliers list + generate/copy tokenized public supplier form link
 3. Supplier submits data via public form
@@ -200,6 +202,7 @@ All models must be implemented as Prisma schema tables and used in both UI and A
 ### 5. PDF Export "CSRD Climate Report"
 
 Sections required:
+
 - **Cover page:** company, reportingYear
 - **Summary table:** Scope 1, Scope 2, Scope 3, Total
 - **Scope 3 breakdown table by category** (material categories)
@@ -276,6 +279,7 @@ Sections required:
 - Pull requests require passing validation checks before merge
 
 **Branch Protection Limitation (Private Repos):**
+
 - GitHub branch protection rules require GitHub Pro for private repositories
 - Until the repository is made public, PRs CAN be merged before PR Validation completes
 - **CRITICAL**: Agents and maintainers must manually verify PR Validation shows ✅ before merging

@@ -49,6 +49,7 @@ Run these steps **in order**. Stop at the first failure, fix it, then restart fr
 
 ```bash
 cd src && npm ci
+
 ```
 
 Only needed if `package-lock.json` changed or `node_modules/` is missing.
@@ -57,6 +58,7 @@ Only needed if `package-lock.json` changed or `node_modules/` is missing.
 
 ```bash
 cd src && npm run lint
+
 ```
 
 Checks ESLint rules. Fix any lint errors before proceeding.
@@ -65,6 +67,7 @@ Checks ESLint rules. Fix any lint errors before proceeding.
 
 ```bash
 cd src && npm run type-check
+
 ```
 
 Validates TypeScript types. Fix any type errors before proceeding.
@@ -73,6 +76,7 @@ Validates TypeScript types. Fix any type errors before proceeding.
 
 ```bash
 cd src && npm test
+
 ```
 
 Runs the Vitest test suite. All tests must pass. Fix any test failures before proceeding.
@@ -81,6 +85,7 @@ Runs the Vitest test suite. All tests must pass. Fix any test failures before pr
 
 ```bash
 cd src && npm run build
+
 ```
 
 Runs `next build` to validate the production build. Fix any build errors before proceeding.
@@ -89,6 +94,7 @@ Runs `next build` to validate the production build. Fix any build errors before 
 
 ```bash
 npx markdownlint-cli2 "**/*.md" "#node_modules" "#CHANGELOG.md"
+
 ```
 
 Run from the repository root. Checks all markdown files for style issues. Fix any markdown lint errors before proceeding.
@@ -99,6 +105,7 @@ Run all checks in sequence:
 
 ```bash
 cd src && npm run lint && npm run type-check && npm test && npm run build && cd .. && npx markdownlint-cli2 "**/*.md" "#node_modules" "#CHANGELOG.md"
+
 ```
 
 ## Determining If Validation Is Needed
@@ -112,6 +119,7 @@ Check which files changed:
 
 ```bash
 scripts/git-status.sh --short
+
 ```
 
 ## Troubleshooting
@@ -131,4 +139,3 @@ Ensure all imports are correct and new dependencies are in `package.json`. Run `
 ### Markdown lint fails
 
 Check the specific rule violation and fix the markdown formatting. Common issues: trailing whitespace, missing blank lines, inconsistent heading levels.
-

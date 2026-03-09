@@ -28,6 +28,7 @@ The exported JSON has the following top-level structure:
   "responderAvatarIconUri": ThemeIcon | UriComponents | undefined,
   "requests": ISerializableChatRequestData[]
 }
+
 ```
 
 **Source**: [`chatModel.ts` lines 1275-1280](https://github.com/microsoft/vscode/blob/1debf21160174ecaf114e8e043146da08ba25d4a/src/vs/workbench/contrib/chat/common/chatModel.ts#L1275-L1280)
@@ -96,6 +97,7 @@ Each item in the `requests` array represents a single user request and its corre
   // Code block information
   "responseMarkdownInfo": ISerializableMarkdownInfo[] | undefined
 }
+
 ```
 
 ### Field Descriptions
@@ -139,6 +141,7 @@ The `message` field can be a simple string (older format) or a parsed request ob
   "text": string,
   "parts": IParsedChatRequestPart[]
 }
+
 ```
 
 | Field | Description |
@@ -179,6 +182,7 @@ Each part includes position information:
     "endColumn": number
   }
 }
+
 ```
 
 ---
@@ -193,6 +197,7 @@ Contains context and attachments provided with the request.
 {
   "variables": IChatRequestVariableEntry[]
 }
+
 ```
 
 ### Variable Entry Types
@@ -239,6 +244,7 @@ Each entry has a `kind` field:
   "references": IChatContentReference[] | undefined,
   "omittedState": OmittedState | undefined
 }
+
 ```
 
 #### OmittedState Values
@@ -282,6 +288,7 @@ The `response` field is an array of content parts that make up the AI's response
   "inlineReferences": Record<string, IChatContentInlineReference> | undefined,
   "fromSubagent": boolean | undefined
 }
+
 ```
 
 ### Interactive Content Types
@@ -302,6 +309,7 @@ The `response` field is an array of content parts that make up the AI's response
   "buttons": string[],
   "isUsed": boolean
 }
+
 ```
 
 ### Code & File Types
@@ -328,6 +336,7 @@ The `response` field is an array of content parts that make up the AI's response
   "done":  boolean | undefined,
   "isExternalEdit": boolean | undefined
 }
+
 ```
 
 ### Reference Types
@@ -358,6 +367,7 @@ The `response` field is an array of content parts that make up the AI's response
   "toolSpecificData": any | undefined,
   "isConfirmed": boolean | undefined
 }
+
 ```
 
 ### Special Types
@@ -383,6 +393,7 @@ Used in `treeData` response parts.
   "uri": string,
   "children": IChatResponseProgressFileTreeData[] | undefined
 }
+
 ```
 
 | Field | Description |
@@ -418,6 +429,7 @@ Information about the chat agent that handled the request.
   "locations": ChatAgentLocation[],
   "modes": ChatModeKind[]
 }
+
 ```
 
 ### Agent Metadata
@@ -434,6 +446,7 @@ Information about the chat agent that handled the request.
   "followupPlaceholder": string | undefined,
   "isSticky": boolean | undefined
 }
+
 ```
 
 ---
@@ -452,6 +465,7 @@ Final result/status information for a response.
   "details": string | undefined,
   "nextQuestion": IChatQuestion | undefined
 }
+
 ```
 
 ### Error Details
@@ -464,6 +478,7 @@ Final result/status information for a response.
   "responseIsFiltered": boolean | undefined,
   "responseIsIncomplete": boolean | undefined
 }
+
 ```
 
 | Field | Description |
@@ -481,6 +496,7 @@ Final result/status information for a response.
   "firstProgress": number | undefined,
   "totalElapsed": number
 }
+
 ```
 
 | Field | Description |
@@ -496,6 +512,7 @@ Final result/status information for a response.
   "participant": string | undefined,
   "command": string | undefined
 }
+
 ```
 
 ---
@@ -511,6 +528,7 @@ The `modelState` field indicates the response completion status.
   "value": ResponseModelState,
   "completedAt": number | undefined
 }
+
 ```
 
 ### ResponseModelState Values
@@ -569,6 +587,7 @@ Suggested follow-up questions.
   "title": string | undefined,
   "tooltip": string | undefined
 }
+
 ```
 
 | Field | Description |
@@ -605,6 +624,7 @@ References cited in the response.
     "originalUri": URI | undefined
   } | undefined
 }
+
 ```
 
 ### Reference Status Kind
@@ -630,6 +650,7 @@ Documents/context that were used to generate the response.
     "ranges": IRange[]
   }>
 }
+
 ```
 
 ---
@@ -647,6 +668,7 @@ Attribution for code that may match public repositories.
   "snippet": string,
   "value": URI
 }
+
 ```
 
 | Field | Description |
@@ -672,6 +694,7 @@ For tool invocations, the `toolSpecificData` field contains tool-specific inform
     "userEdited": string | undefined
   }
 }
+
 ```
 
 | Field | Description |
@@ -693,6 +716,7 @@ Records what happened to files edited during the chat session.
   "uri": URI,
   "eventKind": ChatRequestEditedFileEventKind
 }
+
 ```
 
 ### Event Kind Values
@@ -876,6 +900,7 @@ Records what happened to files edited during the chat session.
     }
   ]
 }
+
 ```
 
 ---
@@ -883,58 +908,77 @@ Records what happened to files edited during the chat session.
 ## Notes for Analysis
 
 ### 1. Chronological Order
+
 Requests appear in the order they were made during the session.  The first item in the `requests` array is the first message sent. 
 
 ### 2. Message Reconstruction
+
 The full user message can be reconstructed from: 
+
 - `message.text` (if available as a parsed object)
 - Or by concatenating all `message.parts[]. text` values
 - Or directly from `message` if it's a plain string (older format)
 
 ### 3. Response Reconstruction
+
 The full response text can be reconstructed by:
+
 - Concatenating `markdownContent` parts' `content. value` fields
 - Including `inlineReference` parts as links/citations
 - Ignoring internal types like `progressMessage`, `codeblockUri`, `undoStop`
 
 ### 4.  Timestamps
+
 All timestamps are Unix milliseconds: 
+
 - `timestamp` - When the request was made
 - `modelState.completedAt` - When the response completed
 - Duration can be calculated as `completedAt - timestamp`
 
 ### 5. Error Detection
+
 Check for errors by:
+
 - `result.errorDetails` being present
 - `modelState.value === 2` for cancelled
 - `modelState.value === 3` for failed
 
 ### 6. Tool Invocations
+
 Look for `toolInvocationSerialized` parts to see: 
+
 - What tools were called (`toolId`)
 - Their invocation message (`invocationMessage`)
 - Their result (`result`, `resultDetails`)
 - Tool-specific data (`toolSpecificData`)
 
 ### 7. Edited Files
+
 The `editedFileEvents` field and `textEditGroup`/`notebookEditGroup` response parts indicate files that were modified during the session: 
+
 - `textEditGroup` contains the actual edits made
 - `editedFileEvents` indicates whether the user accepted, rejected, or modified the changes
 
 ### 8. User Satisfaction
+
 The `vote` field (when present) indicates whether the user found the response helpful: 
+
 - `1` = Helpful (thumbs up)
 - `0` = Unhelpful (thumbs down)
 - `voteDownReason` provides additional context for negative feedback
 
 ### 9. Context Usage
+
 The `usedContext` field shows which documents/files were used to generate the response, including specific line ranges.  The `contentReferences` field shows what was cited in the response. 
 
 ### 10. Agent Identification
+
 The `agent` field identifies which chat agent handled the request: 
+
 - `github.copilot.default` - Default Copilot agent
 - `github.copilot.workspace` - Workspace-aware agent
 - Other custom agents may be present
 
 ### 11. Follow-up Suggestions
+
 The `followups` array contains suggested next questions that were offered to the user after each response. 

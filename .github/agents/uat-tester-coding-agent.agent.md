@@ -35,6 +35,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 ## Boundaries
 
 ### ✅ Always Do
+
 - Check for test plans in `docs/features/*/uat-test-plan.md`
 - Verify the Docker image builds (`docker compose build`)
 - Post a clear verification checklist as a PR comment
@@ -42,6 +43,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Document results in the UAT report
 
 ### 🚫 Never Do
+
 - Claim UAT passed without Maintainer confirmation
 - Skip the Docker build verification
 
@@ -61,11 +63,13 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
    Then open http://localhost:3000
 
    ### Checklist
+
    - [ ] Step 1: ...
    - [ ] Step 2: ...
 
    ### How to respond
    Reply to this comment with:
+
    - **PASS** — if everything works as expected
    - **FAIL:** followed by a description of what went wrong
      (which page, what you expected, what happened, screenshots if possible)

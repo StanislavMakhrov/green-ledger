@@ -6,9 +6,11 @@ description: Guidelines for selecting appropriate language models for agents bas
 # Agent Model Selection Skill
 
 ## Purpose
+
 Provides data-driven guidance for selecting the most appropriate language model when creating or modifying agent definitions.
 
 ## When to Use
+
 - When creating a new agent and need to assign a model
 - When modifying an existing agent's model assignment
 - When troubleshooting agent performance issues related to model capabilities
@@ -17,6 +19,7 @@ Provides data-driven guidance for selecting the most appropriate language model 
 ## Reference Data
 
 **Always consult [docs/ai-model-reference.md](../../docs/ai-model-reference.md)** for:
+
 - Current performance benchmarks by category (Coding, Reasoning, Language, Instruction Following, etc.)
 - Model availability in GitHub Copilot Pro
 - Premium request multipliers (cost)
@@ -56,6 +59,7 @@ This reference is updated periodically with latest benchmark data.
    - The `model:` property is only valid for VS Code agents (files without `-coding-agent` suffix)
    - On GitHub.com, the `model:` property in `*-coding-agent.agent.md` files causes a hard
      `CAPIError: 400 The requested model is not supported` error (confirmed by experiment)
+
    - The GitHub docs say this property is "ignored" but in practice it prevents the agent from running
    - Apply model selection only to the corresponding VS Code agent file (e.g., `developer.agent.md`)
 
@@ -98,6 +102,7 @@ When selecting or changing a model:
 ## When to Update Model Assignments
 
 Reassess models when:
+
 - New benchmark data shows significant performance changes
 - Agent is underperforming its tasks consistently
 - New models are released with better performance

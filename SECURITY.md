@@ -10,15 +10,16 @@
 
 ### Preferred: GitHub Security Advisory
 
-1. Go to https://github.com/StanislavMakhrov/green-ledger/security/advisories/new
+1. Go to <https://github.com/StanislavMakhrov/green-ledger/security/advisories/new>
 2. Fill in the vulnerability details
 3. Submit the advisory
 
 ### Alternative: Email
 
-Send an email to: **support@green-ledger.dev**
+Send an email to: **<support@green-ledger.dev>**
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Impact assessment
@@ -56,6 +57,6 @@ When using GreenLedger:
 ## Questions
 
 - Open a [GitHub Discussion](https://github.com/StanislavMakhrov/green-ledger/discussions)
-- Email: support@green-ledger.dev
+- Email: <support@green-ledger.dev>
 
 Thank you for helping keep GreenLedger and its users safe!

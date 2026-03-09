@@ -8,7 +8,7 @@
 [![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?logo=prisma)](https://www.prisma.io/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-**Automated CSRD/ESRS Climate Reporting for German SMEs**
+## Automated CSRD/ESRS Climate Reporting for German SMEs
 
 GreenLedger is a B2B SaaS application that helps German Mittelstand companies automate their CSRD/ESRS climate reporting, with a deep focus on Scope 3 supply chain emissions.
 
@@ -45,7 +45,7 @@ GreenLedger automates the complete workflow:
 - **Framework:** Next.js (App Router) with TypeScript
 - **Styling:** TailwindCSS
 - **Database:** SQLite via Prisma (Postgres-migratable)
-- **PDF Export:** HTML-to-PDF rendering
+- **PDF Export:** Puppeteer (HTML-to-PDF rendering)
 - **Tests:** Vitest
 - **CI/CD:** GitHub Actions
 
@@ -56,9 +56,14 @@ GreenLedger automates the complete workflow:
 - Node.js 20+
 - npm
 
+> **Note:** All application source code lives in the `src/` directory. All `npm` commands must be run from `src/`, not the repository root.
+
 ### Development
 
 ```bash
+# Enter the application directory
+cd src
+
 # Install dependencies
 npm install
 
@@ -77,12 +82,18 @@ Open [http://localhost:3000](http://localhost:3000).
 ### Docker
 
 ```bash
+# Run from the repository root
 docker compose up
 ```
+
+Open [http://localhost:3000](http://localhost:3000) — the app is pre-seeded with demo data.
 
 ### Testing
 
 ```bash
+# Run from src/ directory
+cd src
+
 # Run tests
 npm test
 
@@ -95,27 +106,50 @@ npm run type-check
 # Lint
 npm run lint
 
+# Format code
+npm run format
+
 # Production build
 npm run build
+```
+
+### Database Scripts
+
+```bash
+# Run from src/ directory
+cd src
+
+# Apply pending migrations (production)
+npm run db:migrate
+
+# Seed demo data
+npm run db:seed
+
+# Reset database (dev only)
+npm run db:reset
 ```
 
 ## Project Structure
 
 ```text
 green-ledger/
-├── app/                    # Next.js App Router pages & API routes
-│   ├── api/                # API Route Handlers
-│   ├── dashboard/          # Dashboard page
-│   ├── suppliers/          # Supplier management
-│   ├── scope-1/            # Scope 1 records
-│   ├── scope-2/            # Scope 2 records
-│   ├── scope-3/            # Scope 3 records
-│   ├── methodology/        # Methodology notes
-│   ├── export/             # PDF export
-│   └── public/supplier/    # Public supplier form
-├── lib/                    # Shared utilities & business logic
-├── prisma/                 # Database schema & migrations
-├── public/                 # Static assets
+├── src/                    # Next.js application source
+│   ├── app/                # Next.js App Router pages & API routes
+│   │   ├── (app)/          # Authenticated app layout group
+│   │   │   ├── dashboard/  # Dashboard page
+│   │   │   ├── suppliers/  # Supplier management
+│   │   │   ├── scope-1/    # Scope 1 records
+│   │   │   ├── scope-2/    # Scope 2 records
+│   │   │   ├── scope-3/    # Scope 3 records & materiality
+│   │   │   ├── methodology/# Methodology notes
+│   │   │   └── export/     # PDF export
+│   │   ├── (public)/       # Public layout group
+│   │   │   └── public/supplier/[token]/  # Public supplier form
+│   │   └── api/            # API Route Handlers
+│   ├── lib/                # Shared utilities & business logic
+│   ├── prisma/             # Database schema & seed data
+│   ├── public/             # Static assets
+│   └── package.json        # npm package definition
 ├── docs/                   # Documentation
 │   ├── spec.md             # Project specification
 │   ├── features.md         # Feature descriptions

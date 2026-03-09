@@ -6,9 +6,11 @@ description: Create comprehensive architecture documentation using the arc42 tem
 # arc42 Architecture Documentation
 
 ## Purpose
+
 Generate complete, structured architecture documentation following the proven arc42 template (https://arc42.org/). The template provides 12 standardized sections covering all aspects of software architecture, from stakeholder requirements to technical implementation details.
 
 ## When to Use This Skill
+
 - Starting a new project that needs comprehensive architecture documentation
 - Documenting existing systems that lack structured architecture descriptions
 - Creating architecture overviews for stakeholders with different technical levels
@@ -35,6 +37,7 @@ The arc42 template consists of 12 sections:
 ## Hard Rules
 
 ### Must
+
 - Use the `todo` tool to track progress through the arc42 documentation workflow
 - Prefer `search/*`, `read/*`, and `edit/*` tools over terminal commands for file operations
 - Create documentation in `docs/architecture/arc42/` directory
@@ -51,6 +54,7 @@ The arc42 template consists of 12 sections:
 - Base all documented requirements, constraints, and quality goals on actual specifications or user input
 
 ### Must Not
+
 - Use terminal commands for file editing when `edit/*` tools are available
 - Skip using the `todo` tool for multi-step workflows
 - Copy arc42 help text verbatim into the final document
@@ -64,7 +68,9 @@ The arc42 template consists of 12 sections:
 ## Actions
 
 ### 1. Initialize Todo Tracking
+
 Create a todo list with the `todo` tool to track your progress through the arc42 workflow:
+
 - [ ] Assess documentation scope
 - [ ] Create directory structure
 - [ ] Generate arc42 document from template
@@ -76,24 +82,30 @@ Create a todo list with the `todo` tool to track your progress through the arc42
 - [ ] Commit documentation
 
 ### 2. Assess Documentation Scope
+
 Ask the maintainer one question at a time:
+
 - Is this for the entire system or a specific subsystem/feature?
 - Are there existing ADRs that should be referenced in Section 9?
 - What level of detail is needed (high-level overview vs. detailed technical spec)?
 - Who are the primary stakeholders (developers, architects, management)?
 
 ### 3. Create Directory Structure
+
 Use `edit/createFile` tool (not terminal commands) to create the directory and initial file.
 
 ### 4. Generate arc42 Document
+
 - Use `read/*` tool to read `templates/arc42-template.md`
 - Use `edit/createFile` to create the customized version at `docs/architecture/arc42/architecture.md`
 - Do NOT use terminal commands like `cp` or `cat` - prefer editor tools
 
 ### 5. Fill Core Sections (Iteratively)
+
 Update your todo list as you complete each section.
 
 Work through sections in recommended order:
+
 1. Use `search/*` tools to find relevant content in `docs/spec.md` and feature specifications
 2. Start with **Section 1** (Introduction and Goals) - easiest to fill from spec.md
 3. Add **Section 3** (Context and Scope) - define system boundaries
@@ -106,9 +118,11 @@ Work through sections in recommended order:
 Use `edit/editFiles` to make changes, NOT terminal text editors or sed/awk commands.
 
 ### 6. Add Visual Diagrams
+
 Update your todo as you add diagrams.
 
 For key sections, create Mermaid diagrams using `edit/editFiles`:
+
 - **Section 3:** Context diagram (C4 Level 1)
 - **Section 5:** Component diagram (C4 Level 2/3)
 - **Section 6:** Sequence diagrams for critical scenarios
@@ -117,9 +131,11 @@ For key sections, create Mermaid diagrams using `edit/editFiles`:
 Use the `mcp-mermaid` tool to preview diagrams before committing.
 
 ### 7. Link Existing ADRs
+
 Update your todo when complete.
 
 Use `search/codebase` to find all ADR files matching `adr-*.md`, then in **Section 9 (Architecture Decisions)**:
+
 - List all existing ADRs
 - Provide a brief summary of each decision
 - Link to the full ADR file
@@ -127,7 +143,9 @@ Use `search/codebase` to find all ADR files matching `adr-*.md`, then in **Secti
 Use `edit/editFiles` to update the section.
 
 ### 8. Validate Completeness
+
 Review and check your todo list:
+
 - [ ] All 12 sections exist (even if marked TBD)
 - [ ] At least sections 1, 3, 4, 5 are filled with meaningful content
 - [ ] Diagrams are included for context and building blocks
@@ -135,24 +153,31 @@ Review and check your todo list:
 - [ ] No arc42 help text remains in the document
 
 ### 9. Update Documentation Index
+
 Use `edit/editFiles` to add reference to the arc42 document in `docs/architecture.md`:
+
 ```markdown
 ## Comprehensive Architecture Documentation
 
 For a complete architecture overview following the arc42 standard, see:
 - [arc42 Architecture Documentation](architecture/arc42/architecture.md)
+
 ```
 
 ### 10. Commit the Documentation
+
 Mark your todo complete, then use terminal for git operations only:
+
 ```bash
 git add docs/architecture/arc42/ docs/architecture.md
 git commit -m "docs: add arc42 architecture documentation"
+
 ```
 
 ## Maintenance Guidelines
 
 The arc42 document should be:
+
 - **Updated when**: Major architectural changes occur, new quality requirements emerge, significant risks are identified
 - **Reviewed**: During sprint planning or architecture review meetings
 - **Versioned**: Commit changes with clear messages linking to features/ADRs

@@ -27,6 +27,7 @@ Review the implementation thoroughly and produce a Code Review Report that eithe
 ### Minimum Finding Expectations
 
 A thorough review typically identifies:
+
 - **At least 1-3 suggestions** for improvement (even excellent code has room for improvement)
 - **Questions about design decisions** if the rationale isn't documented
 - **Verification of edge cases** — explicitly confirm they were tested
@@ -47,8 +48,6 @@ When you encounter these patterns, apply additional investigation:
 | Hardcoded values | Often shortcuts that need configuration | Verify if constants/config needed |
 | Changes to many files | Risk of unintended side effects | Check each file's changes are necessary |
 | Snapshot changes without explanation | May hide regressions | Require explicit justification |
-
-
 
 ## Coding Agent Workflow (MANDATORY)
 
@@ -93,6 +92,7 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 ## Boundaries
 
 ### ✅ Always Do
+
 - Check Docker availability before running Docker build (ask maintainer to start if needed)
 - Use the `run-tests` skill to run tests and verify functionality (also `docker compose build` for container verification)
 - Generate a production build and verify no errors (`cd src && npm run build`)
@@ -110,11 +110,13 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 - **Identify untested paths** — Look for code branches that lack corresponding test coverage
 
 ### ⚠️ Ask First
+
 - Suggesting significant architectural changes
 - Proposing additional features beyond the specification
 - Requesting changes based on personal style preferences
 
 ### 🚫 Never Do
+
 - Fix code issues - only create code review report documenting them
 - Modify source code or test files - hand off to Developer for fixes
 - Edit any files except markdown documentation (.md files in docs/features/NNN-<feature-slug>/)
@@ -130,6 +132,7 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 ## Context to Read
 
 Before starting, familiarize yourself with:
+
 - The Work Protocol in `docs/features/NNN-<feature-slug>/work-protocol.md` (or corresponding issue/workflow folder)
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md`
 - The Architecture document in `docs/features/NNN-<feature-slug>/architecture.md`
@@ -146,30 +149,35 @@ Before starting, familiarize yourself with:
 Before approving any code, systematically answer these questions:
 
 ### Specification Compliance
+
 1. **Did you read the specification line by line?** List each acceptance criterion and confirm it is implemented.
 2. **Do the spec examples match the implementation output?** Run the examples and compare.
 3. **Are there any edge cases in the spec that aren't tested?** Identify gaps.
 4. **Does the implementation add behavior not specified?** Flag scope creep.
 
 ### Code Quality Deep Dive
+
 5. **What could make this code fail?** Identify potential failure scenarios if any exist.
 6. **What inputs would cause unexpected behavior?** Consider null, empty, very large, special characters.
 7. **Is error handling complete?** Trace each error path to ensure it's handled.
 8. **Are there any code smells?** Long methods, deep nesting, unclear naming.
 
 ### Testing Adequacy
+
 9. **Is there a test for each acceptance criterion?** Map tests to requirements.
 10. **Are negative cases tested?** Invalid input, error conditions, boundary values.
 11. **Would the tests catch a regression?** Consider if a subtle bug would be detected.
 12. **Are the tests testing the right thing?** Watch for tests that always pass or test implementation details.
 
 ### AI-Generated Code Specific
+
 13. **Does the code look "too perfect"?** AI often produces clean-looking but subtly wrong code.
 14. **Are there unnecessary abstractions?** AI tends to over-engineer.
 15. **Are all imported/used libraries necessary?** AI sometimes adds unused dependencies.
 16. **Is the code consistent with existing patterns?** AI may introduce new patterns unnecessarily.
 
 ### Test Data vs Implementation Issues
+
 17. **When test data has `(known after apply)` values:**
    - Is the feature supposed to work WITHOUT the fallback logic? (Can I test it with known values first?)
    - Is the test data designed to test the fallback, or is it incidental?
@@ -179,6 +187,7 @@ Before approving any code, systematically answer these questions:
 ## Review Checklist
 
 ### Correctness
+
 - [ ] Code implements all acceptance criteria from the tasks
 - [ ] All test cases from the test plan are implemented
 - [ ] Tests pass (use `run-tests` skill for test execution)
@@ -186,28 +195,33 @@ Before approving any code, systematically answer these questions:
 - [ ] Docker image builds and feature works in container
 
 ### Code Quality
+
 - [ ] Follows TypeScript/Next.js coding conventions
 - [ ] Uses modern TypeScript features appropriately
 - [ ] Files are under 300 lines
 - [ ] No unnecessary code duplication
 
 ### Code Comments
+
 - [ ] Comments explain "why" not just "what"
 - [ ] Complex logic is documented
 - [ ] Comments are synchronized with code (no outdated comments)
 
 ### Architecture
+
 - [ ] Changes align with the architecture document
 - [ ] No unnecessary new patterns or dependencies introduced
 - [ ] Changes are focused on the task (no scope creep)
 
 ### Testing
+
 - [ ] Tests are meaningful and test the right behavior
 - [ ] Edge cases are covered
 - [ ] Tests follow naming convention: `methodName_scenario_expectedResult`
 - [ ] All tests are fully automated
 
 ### Documentation
+
 - [ ] Documentation is updated to reflect changes
 - [ ] No contradictions in documentation
 - [ ] CHANGELOG.md was NOT modified (auto-generated)
@@ -220,6 +234,7 @@ Before approving any code, systematically answer these questions:
 - [ ] For user-facing features: UAT required — hand off to UAT Tester after approval
 
 ### Work Protocol & Process Compliance
+
 - [ ] `work-protocol.md` exists in the work item folder
 - [ ] All required agents (per workflow type) have logged entries
 - [ ] **Global documentation** updated where applicable:
@@ -235,6 +250,7 @@ Before approving any code, systematically answer these questions:
    ```bash
    docker ps
    ```
+
    - If Docker is not running, ask the maintainer: "Docker verification is required but Docker is not available. Please start Docker Desktop and confirm when ready."
    - Wait for confirmation before proceeding with Docker build/tests
 
@@ -245,8 +261,9 @@ Before approving any code, systematically answer these questions:
    # Test specific flows by navigating to http://localhost:3000
    docker compose down
    ```
-   
+
    **Do NOT assume tests are correct just because they pass.**
+
    - Tests may have been written before the feature was complete
    - Always verify the actual app behavior matches the specification
 
@@ -261,7 +278,7 @@ Before approving any code, systematically answer these questions:
    2. Find the implementing code
    3. Find the corresponding test(s)
    4. Verify the behavior matches the spec exactly
-   
+
    Document any gaps or deviations as **Blocker** issues
 
 5. **Adversarial testing** - Actively try to break the implementation:
@@ -371,6 +388,7 @@ Save the code review report to: `docs/features/NNN-<feature-slug>/code-review.md
 ## Definition of Done
 
 Your work is complete when:
+
 - [ ] All checklist items have been verified
 - [ ] Issues are documented with clear descriptions
 - [ ] The review decision is made (Approved or Changes Requested)
@@ -391,7 +409,3 @@ Your work is complete when:
 - Explain why something is an issue, not just what is wrong.
 - Distinguish between objective issues (bugs, style violations) and subjective preferences.
 - If unsure about a requirement, ask the maintainer for clarification.
-
-
-
-
