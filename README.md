@@ -45,7 +45,7 @@ GreenLedger automates the complete workflow:
 - **Framework:** Next.js (App Router) with TypeScript
 - **Styling:** TailwindCSS
 - **Database:** SQLite via Prisma (Postgres-migratable)
-- **PDF Export:** HTML-to-PDF rendering
+- **PDF Export:** Puppeteer (HTML-to-PDF rendering)
 - **Tests:** Vitest
 - **CI/CD:** GitHub Actions
 
@@ -59,6 +59,9 @@ GreenLedger automates the complete workflow:
 ### Development
 
 ```bash
+# Enter the application directory
+cd src
+
 # Install dependencies
 npm install
 
@@ -80,9 +83,14 @@ Open [http://localhost:3000](http://localhost:3000).
 docker compose up
 ```
 
+Open [http://localhost:3000](http://localhost:3000) — the app is pre-seeded with demo data.
+
 ### Testing
 
 ```bash
+# Enter the application directory (if not already there)
+cd src
+
 # Run tests
 npm test
 
@@ -95,27 +103,47 @@ npm run type-check
 # Lint
 npm run lint
 
+# Format code
+npm run format
+
 # Production build
 npm run build
+```
+
+### Database Scripts
+
+```bash
+# Apply pending migrations (production)
+npm run db:migrate
+
+# Seed demo data
+npm run db:seed
+
+# Reset database (dev only)
+npm run db:reset
 ```
 
 ## Project Structure
 
 ```text
 green-ledger/
-├── app/                    # Next.js App Router pages & API routes
-│   ├── api/                # API Route Handlers
-│   ├── dashboard/          # Dashboard page
-│   ├── suppliers/          # Supplier management
-│   ├── scope-1/            # Scope 1 records
-│   ├── scope-2/            # Scope 2 records
-│   ├── scope-3/            # Scope 3 records
-│   ├── methodology/        # Methodology notes
-│   ├── export/             # PDF export
-│   └── public/supplier/    # Public supplier form
-├── lib/                    # Shared utilities & business logic
-├── prisma/                 # Database schema & migrations
-├── public/                 # Static assets
+├── src/                    # Next.js application source
+│   ├── app/                # Next.js App Router pages & API routes
+│   │   ├── (app)/          # Authenticated app layout group
+│   │   │   ├── dashboard/  # Dashboard page
+│   │   │   ├── suppliers/  # Supplier management
+│   │   │   ├── scope-1/    # Scope 1 records
+│   │   │   ├── scope-2/    # Scope 2 records
+│   │   │   ├── scope-3/    # Scope 3 records & materiality
+│   │   │   ├── methodology/# Methodology notes
+│   │   │   └── export/     # PDF export
+│   │   ├── (public)/       # Public layout group
+│   │   │   └── public/supplier/[token]/  # Public supplier form
+│   │   └── api/            # API Route Handlers
+│   ├── lib/                # Shared utilities & business logic
+│   ├── prisma/             # Database schema & seed data
+│   ├── public/             # Static assets
+│   └── package.json        # npm package definition
 ├── docs/                   # Documentation
 │   ├── spec.md             # Project specification
 │   ├── features.md         # Feature descriptions
