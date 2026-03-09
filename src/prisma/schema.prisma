@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite does not support native enum types; all enum-like fields use String.
+// Valid values are enforced at the application layer.
+
+// OrgBoundary values: operational_control | financial_control | equity_share
+// SupplierStatus values: active | inactive
+// Scope12DataSource values: manual | csv_import
+// CalculationMethod values: spend_based | activity_based | supplier_specific
+// Scope3DataSource values: supplier_form | csv_import | proxy
+// MethodologyScope values: scope_1 | scope_2 | scope_3
+// AuditEntityType values: supplier | scope1 | scope2 | scope3 | methodology | export
+// AuditAction values: created | updated | submitted | exported
+
+model Company {
+  id            String @id @default(uuid())
+  name          String
+  country       String @default("DE")
+  reportingYear Int
+  /// OrgBoundary: operational_control | financial_control | equity_share
+  orgBoundary   String
+
+  suppliers        Supplier[]
+  scope1Records    Scope1Record[]
+  scope2Records    Scope2Record[]
+  scope3Records    Scope3Record[]
+  methodologyNotes MethodologyNote[]
+  auditEvents      AuditTrailEvent[]
+}
+
+model Supplier {
+  id              String @id @default(uuid())
+  companyId       String
+  name            String
+  country         String
+  sector          String
+  contactEmail    String
+  publicFormToken String @unique
+  /// SupplierStatus: active | inactive
+  status          String @default("active")
+
+  company       Company        @relation(fields: [companyId], references: [id])
+  scope3Records Scope3Record[]
+}
+
+model Scope1Record {
+  id                    String   @id @default(uuid())
+  companyId             String
+  periodYear            Int
+  valueTco2e            Float
+  calculationMethod     String
+  emissionFactorsSource String
+  /// Scope12DataSource: manual | csv_import
+  dataSource            String
+  assumptions           String?
+  createdAt             DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model Scope2Record {
+  id                    String   @id @default(uuid())
+  companyId             String
+  periodYear            Int
+  valueTco2e            Float
+  calculationMethod     String
+  emissionFactorsSource String
+  /// Scope12DataSource: manual | csv_import
+  dataSource            String
+  assumptions           String?
+  createdAt             DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model Scope3Category {
+  id                String  @id @default(uuid())
+  code              String  @unique
+  name              String
+  material          Boolean @default(false)
+  materialityReason String?
+
+  records Scope3Record[]
+}
+
+model Scope3Record {
+  id                   String   @id @default(uuid())
+  companyId            String
+  supplierId           String?
+  categoryId           String
+  periodYear           Int
+  valueTco2e           Float
+  /// CalculationMethod: spend_based | activity_based | supplier_specific
+  calculationMethod    String
+  emissionFactorSource String
+  /// Scope3DataSource: supplier_form | csv_import | proxy
+  dataSource           String
+  assumptions          String?
+  confidence           Float
+  /// JSON stored as string; parse with JSON.parse() when reading
+  activityDataJson     String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  company  Company        @relation(fields: [companyId], references: [id])
+  supplier Supplier?      @relation(fields: [supplierId], references: [id])
+  category Scope3Category @relation(fields: [categoryId], references: [id])
+}
+
+model MethodologyNote {
+  id        String   @id @default(uuid())
+  companyId String
+  /// MethodologyScope: scope_1 | scope_2 | scope_3
+  scope     String
+  text      String
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, scope])
+}
+
+model AuditTrailEvent {
+  id         String   @id @default(uuid())
+  companyId  String
+  /// AuditEntityType: supplier | scope1 | scope2 | scope3 | methodology | export
+  entityType String
+  entityId   String
+  /// AuditAction: created | updated | submitted | exported
+  action     String
+  actor      String
+  timestamp  DateTime @default(now())
+  comment    String?
+
+  company Company @relation(fields: [companyId], references: [id])
+}
