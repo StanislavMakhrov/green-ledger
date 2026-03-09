@@ -12,7 +12,7 @@
 | Requirements Engineer | ✅ Required | ✅ Done |
 | Architect | ✅ Required | ✅ Done |
 | Quality Engineer | ✅ Required | ✅ Done |
-| Task Planner | ✅ Required | ⬜ Pending |
+| Task Planner | ✅ Required | ✅ Done |
 | Developer | ✅ Required | ⬜ Pending |
 | Technical Writer | ✅ Required | ⬜ Pending |
 | Code Reviewer | ✅ Required | ⬜ Pending |
@@ -66,3 +66,17 @@
   - Proxy calculation logic location (inline vs utility function) is an open question flagged for the Developer — a utility function is strongly recommended for testability.
   - `@react-pdf/renderer` mocking strategy noted as a potential friction point; thin wrapper in `src/lib/pdf/generate-report.ts` recommended.
 - **Next Agent:** Task Planner — to break down the specification and test plan into actionable development tasks.
+
+### Task Planner
+- **Date:** 2025-07-14
+- **Summary:** Read the Feature Specification (`specification.md`), Architecture (`architecture.md`), Test Plan (`test-plan.md`), and `docs/spec.md` thoroughly. Broke down the greenfield MVP implementation into 25 ordered tasks across 7 phases. All 30+ specification acceptance criteria and 45 test cases from the test plan are covered. Tasks include file paths to create, acceptance criteria, dependencies, and implementation notes for the Developer.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/tasks.md` — 25 development tasks in 7 phases with acceptance criteria, file paths, and implementation notes
+- **Key Decisions:**
+  - Phase order: Bootstrap → Core Infrastructure → API Routes → UI Pages → Tests → PDF Export → Public Supplier Form
+  - Tests (T-020, T-021) placed after API routes but before PDF/public form to catch regressions early; T-020 unit tests can begin as soon as T-005 is complete
+  - PDF report template (T-022) separated from generation orchestrator + API (T-023) to isolate the `@react-pdf/renderer` component from the data-fetching layer — matches architecture's `report-template.tsx` / `generate-report.ts` split
+  - Proxy utility functions (T-005) modelled as pure functions in `src/lib/proxy.ts` for unit testability (TC-25–TC-30)
+  - `Dockerfile` noted as an open question — not in scope of task planning but flagged for Developer
+- **Problems Encountered:** None. Architecture and test plan were detailed and consistent. All 25 tasks map directly to architecture file paths.
+- **Next Agent:** Developer — to implement the 25 tasks starting with T-001 (project bootstrap).
