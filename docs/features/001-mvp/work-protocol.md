@@ -13,7 +13,7 @@
 | Architect | ✅ Required | ✅ Completed |
 | Quality Engineer | ✅ Required | ✅ Completed |
 | Task Planner | ✅ Required | ✅ Completed |
-| Developer | ✅ Required | ⏳ Pending |
+| Developer | ✅ Required | ✅ In Progress (T01-T07 complete) |
 | Technical Writer | ✅ Required | ⏳ Pending |
 | Code Reviewer | ✅ Required | ⏳ Pending |
 | UAT Tester | ⚠️ If user-facing | ⏳ Pending |
@@ -66,3 +66,36 @@
   - `docs/features/001-mvp/tasks.md` — 35 tasks (T01–T35), prioritised P1/P2, with acceptance
     criteria mapped to the test plan (TC-01–TC-24), implementation order table, and developer notes.
 - **Problems Encountered:** None — specification, architecture, and test plan were fully defined.
+
+### Developer
+
+- **Date:** 2025-07-15
+- **Summary:** Implemented Tasks T01-T07 (Project Scaffolding group). Scaffolded the entire Next.js 15 App Router project with TypeScript strict mode, TailwindCSS, ESLint, and Vitest. Set up all 8 Prisma domain models with SQLite. Created lib/constants.ts and lib/prisma.ts. Added seed file for demo data. Created Docker configuration.
+- **Artifacts Produced:**
+  - `src/package.json` — Next.js 15.5.12 (patched), React 19, Prisma 6, Puppeteer 24.15.0, Vitest
+  - `src/next.config.mjs` — Next.js config with `output: 'standalone'`
+  - `src/tsconfig.json` — TypeScript strict mode with `@/*` path alias
+  - `src/eslint.config.mjs` — ESLint with Next.js recommended config, ignoring generated files
+  - `src/tailwind.config.ts` — TailwindCSS config
+  - `src/vitest.config.ts` — Vitest config with React plugin and `@` alias
+  - `src/app/layout.tsx` — Root layout with minimal HTML wrapper
+  - `src/app/page.tsx` — Root redirect to /dashboard
+  - `src/app/(app)/layout.tsx` — App layout with sidebar navigation
+  - `src/app/(app)/*/page.tsx` — Placeholder pages for all 7 routes
+  - `src/app/(public)/public/supplier/[token]/page.tsx` — Public supplier form placeholder
+  - `src/prisma/schema.prisma` — All 8 domain models and 9 enums
+  - `src/prisma.config.ts` — Prisma config using `defineConfig`
+  - `src/prisma/seed.ts` — Idempotent seed with demo company, 15 Scope3 categories, 3 suppliers
+  - `src/lib/constants.ts` — Emission factors and DEMO_COMPANY_ID
+  - `src/lib/prisma.ts` — Singleton PrismaClient
+  - `src/tests/constants.test.ts` — 7 unit tests for constants
+  - `src/Dockerfile` — Multi-stage Docker build with Chromium for Puppeteer
+  - `docker-compose.yml` — Docker Compose with persistent data volume
+  - `Makefile` — Convenience targets for dev, build, up, down, seed
+- **Problems Encountered:**
+  - `next@15.2.1` (originally specified) had critical CVEs; upgraded to patched `15.5.12`
+  - `puppeteer@22.x` was deprecated; upgraded to `24.15.0`
+  - `prisma.config.ts` required `defineConfig` from `prisma/config` (not raw object with `satisfies PrismaConfig`)
+  - `earlyAccess: true` and `seed:` fields don't exist in Prisma 6.19.2 config type
+  - Next.js 15 requires `params` in dynamic routes to be `Promise<{...}>`
+  - ESLint was linting Prisma's generated client files; added `app/generated/**` to ignore list

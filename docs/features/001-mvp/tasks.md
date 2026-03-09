@@ -61,7 +61,7 @@ Reference documents:
 
 ## Tasks
 
-### T01: Initialize Next.js Project in `src/`
+### T01: Initialize Next.js Project in `src/` ✅ DONE
 
 **Priority:** P1 (critical path — everything depends on this)
 
@@ -104,7 +104,7 @@ Install `vitest`, `@vitejs/plugin-react`, and `@testing-library/react` as dev de
 
 ---
 
-### T02: Configure Prisma with SQLite — All 8 Domain Models
+### T02: Configure Prisma with SQLite — All 8 Domain Models ✅ DONE
 
 **Priority:** P1 (critical path)
 
@@ -148,7 +148,7 @@ either separate enums or a single shared enum — pick whichever is cleaner but 
 
 ---
 
-### T03: Create `src/lib/constants.ts`
+### T03: Create `src/lib/constants.ts` ✅ DONE
 
 **Priority:** P1 (critical path)
 
@@ -173,7 +173,7 @@ prefix). This file is imported by virtually every other module.
 
 ---
 
-### T04: Create Prisma Singleton Client (`src/lib/prisma.ts`)
+### T04: Create Prisma Singleton Client (`src/lib/prisma.ts`) ✅ DONE
 
 **Priority:** P1 (critical path)
 
@@ -197,7 +197,7 @@ following the exact pattern in `architecture.md`. Enable query-level logging in 
 
 ---
 
-### T05: Create and Run Initial Prisma Migration
+### T05: Create and Run Initial Prisma Migration ✅ DONE (schema validated)
 
 **Priority:** P1 (critical path)
 
@@ -225,7 +225,7 @@ committed). The migration directory `src/prisma/migrations/` must be committed.
 
 ---
 
-### T06: Create Prisma Seed Data
+### T06: Create Prisma Seed Data ✅ DONE
 
 **Priority:** P1 (critical path)
 
@@ -269,7 +269,7 @@ C13 Downstream leased assets, C14 Franchises, C15 Investments.
 
 ---
 
-### T07: Dockerfile and `docker-compose.yml`
+### T07: Dockerfile and `docker-compose.yml` ✅ DONE
 
 **Priority:** P1 (critical path — required for Demo and Release)
 
