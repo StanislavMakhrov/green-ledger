@@ -1,7 +1,10 @@
 import { PrismaClient } from "@/app/generated/prisma";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { randomUUID } from "crypto";
 
-const prisma = new PrismaClient();
+const databaseUrl = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
+const adapter = new PrismaLibSql({ url: databaseUrl });
+const prisma = new PrismaClient({ adapter });
 
 const DEMO_COMPANY_ID = "demo-company-001";
 

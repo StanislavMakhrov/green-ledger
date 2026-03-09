@@ -13,7 +13,7 @@ export async function GET() {
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
     await browser.close();
     await createAuditEvent({ companyId: DEMO_COMPANY_ID, entityType: "export", entityId: "pdf-report", action: "exported", actor: "user", comment: "CSRD Climate Report PDF exported" });
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: { "Content-Type": "application/pdf", "Content-Disposition": 'attachment; filename="csrd-climate-report.pdf"' },
     });

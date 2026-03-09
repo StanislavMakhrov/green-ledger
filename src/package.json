@@ -30,6 +30,8 @@
     ]
   },
   "dependencies": {
+    "@libsql/client": "^0.17.0",
+    "@prisma/adapter-libsql": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "next": "16.1.6",
     "prisma": "^7.4.2",
