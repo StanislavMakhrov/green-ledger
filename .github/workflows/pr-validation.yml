@@ -154,9 +154,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set lowercase repository name
+      - name: Set lowercase repository name and short SHA
         id: repo
-        run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        run: |
+          echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+          echo "sha=$(echo '${{ github.event.pull_request.head.sha }}' | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         if: steps.dockerfile_check.outputs.exists == 'true'
@@ -164,12 +166,14 @@ jobs:
         with:
           context: ./src
           push: true
-          tags: ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}
+          tags: |
+            ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}-${{ steps.repo.outputs.sha }}
+            ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}
 
       - name: UAT instructions
         if: steps.dockerfile_check.outputs.exists == 'true'
         run: |
-          IMAGE="ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}"
+          IMAGE="ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}-${{ steps.repo.outputs.sha }}"
           {
             echo "## 🐳 UAT — Docker image ready"
             echo ""
@@ -183,4 +187,5 @@ jobs:
             echo "Then open **http://localhost:3000** in your browser."
             echo ""
             echo "> The seed runs automatically on first start — demo data is pre-loaded."
+            echo "> The tag includes the commit SHA to ensure Docker always pulls the latest image."
           } | tee -a "$GITHUB_STEP_SUMMARY"
