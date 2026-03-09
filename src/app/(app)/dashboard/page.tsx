@@ -1,7 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 
-interface DashboardData { scope1: number; scope2: number; scope3: number; total: number; reportingYear: number; companyName: string; }
+interface DashboardData {
+  scope1: number;
+  scope2: number;
+  scope3: number;
+  total: number;
+  reportingYear: number;
+  companyName: string;
+}
+
 function KpiCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className={`rounded-lg p-6 text-white ${color}`}>
@@ -11,14 +19,23 @@ function KpiCard({ label, value, color }: { label: string; value: number; color:
     </div>
   );
 }
+
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    fetch("/api/dashboard").then(r => r.ok ? r.json().then(setData) : setError("Failed to load dashboard")).catch(() => setError("Failed to load dashboard"));
+    async function load() {
+      const res = await fetch("/api/dashboard");
+      if (!res.ok) { setError("Failed to load dashboard"); return; }
+      setData(await res.json());
+    }
+    void load();
   }, []);
+
   if (error) return <p className="text-red-500">{error}</p>;
   if (!data) return <p className="text-gray-500">Loading…</p>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-1">{data.companyName}</h1>

@@ -5,12 +5,16 @@ const emptyForm = { periodYear: new Date().getFullYear(), valueTco2e: "", calcul
 export default function Scope1Page() {
   const [records, setRecords] = useState<Rec[]>([]);
   const [form, setForm] = useState(emptyForm);
-  async function load() { const r = await fetch("/api/scope-1"); setRecords(await r.json()); }
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    async function load() { const r = await fetch("/api/scope-1"); setRecords(await r.json()); }
+    void load();
+  }, []);
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     await fetch("/api/scope-1", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, valueTco2e: Number(form.valueTco2e), periodYear: Number(form.periodYear) }) });
-    setForm(emptyForm); void load();
+    setForm(emptyForm);
+    const r = await fetch("/api/scope-1");
+    setRecords(await r.json());
   }
   return (
     <div>
