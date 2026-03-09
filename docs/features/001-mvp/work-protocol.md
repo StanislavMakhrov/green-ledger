@@ -10,7 +10,7 @@
 | Agent | Feature | Status |
 |-------|---------|--------|
 | Requirements Engineer | ✅ Required | ✅ Done |
-| Architect | ✅ Required | ⬜ Pending |
+| Architect | ✅ Required | ✅ Done |
 | Quality Engineer | ✅ Required | ⬜ Pending |
 | Task Planner | ✅ Required | ⬜ Pending |
 | Developer | ✅ Required | ⬜ Pending |
@@ -31,3 +31,27 @@
   - `docs/features/001-mvp/specification.md` — full Feature Specification
   - `docs/features/001-mvp/work-protocol.md` — this file
 - **Problems Encountered:** None. The project spec in `docs/spec.md` was comprehensive and unambiguous. All requirements were derived directly from it with no need for clarification from the Maintainer.
+
+### Architect
+- **Date:** 2025-07-14
+- **Summary:** Designed the full technical architecture for the GreenLedger MVP. Analysed the Feature Specification and project spec, evaluated implementation options for all key decisions, and documented them in four ADRs. Created a comprehensive architecture document covering system overview, directory structure, API route design, component hierarchy, data flows for the two key scenarios (supplier form submission and PDF generation), and the full database schema.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/architecture.md` — full architecture document with system overview, directory structure, API routes, component hierarchy, data flows, database schema, and key technical decisions
+  - `docs/adr-001-pdf-generation.md` — chose `@react-pdf/renderer` (pure JS, no headless browser, works in Next.js Route Handlers)
+  - `docs/adr-002-demo-seed-data.md` — chose rich seed (company + 15 Scope 3 categories + suppliers + sample records) for a compelling out-of-the-box demo
+  - `docs/adr-003-proxy-factor.md` — chose `src/lib/constants.ts` for proxy factor constants (PROXY_FACTOR_SPEND = 0.233 tCO₂e/EUR, with JSDoc warnings marking them as demo placeholders)
+  - `docs/adr-004-app-router-structure.md` — chose route groups `(app)` and `(public)` for clean layout separation between the management UI and the public supplier form
+- **Key Decisions Made:**
+  - PDF library: `@react-pdf/renderer` — pure JS, no Chromium/native binaries, React-like API
+  - Demo seed: Rich seed with sample records for an immediately compelling demo
+  - Proxy factors: Constants in `src/lib/constants.ts` with explicit JSDoc warnings
+  - App Router: Route groups `(app)` + `(public)`; all API routes under `src/app/api/`
+  - `DEMO_COMPANY_ID = "demo-company-001"` as a fixed primary key in constants
+  - All pages use `export const dynamic = "force-dynamic"` to prevent static build errors
+- **Open Questions Resolved:**
+  1. Demo seed: Rich seed chosen (pre-populated demo is more compelling)
+  2. Reporting year: Seeded from `REPORTING_YEAR` env var (default 2024), read from `Company.reportingYear` at runtime
+  3. PROXY_FACTOR: 0.233 tCO₂e/EUR (as specified; documented as demo placeholder)
+  4. Scope 3 categories: All 15 seeded; C1, C3, C4 pre-marked as material for demo
+  5. PDF library: `@react-pdf/renderer` (pure JS, minimal deps)
+- **Problems Encountered:** None. All decisions were made with clear rationale aligned to the spec constraints.
