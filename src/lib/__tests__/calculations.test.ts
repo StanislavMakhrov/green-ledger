@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateProxy } from "../calculations";
-import {
-  PROXY_FACTOR_SOURCE,
-  PROXY_CONFIDENCE,
-} from "../constants";
+import { PROXY_CONFIDENCE } from "../constants";
 
 describe("calculateProxy", () => {
   it("TC-21: with spend_eur returns correct tCO2e and metadata", () => {

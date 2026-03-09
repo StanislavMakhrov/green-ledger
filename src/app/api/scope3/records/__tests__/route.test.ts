@@ -16,7 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { GET, POST } from "../route";
 import { NextRequest } from "next/server";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   scope3Record: {
     findMany: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;

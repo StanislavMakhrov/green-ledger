@@ -21,10 +21,10 @@ vi.mock("@/lib/token", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { GET, POST } from "../route";
-import { GET as GETById, PUT, DELETE } from "../[id]/route";
+import { PUT, DELETE } from "../[id]/route";
 import { NextRequest } from "next/server";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   supplier: {
     findMany: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;

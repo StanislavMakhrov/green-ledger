@@ -24,7 +24,7 @@ import { prisma } from "@/lib/prisma";
 import { GET, POST } from "../route";
 import { NextRequest } from "next/server";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   supplier: { findUnique: ReturnType<typeof vi.fn> };
   company: { findUnique: ReturnType<typeof vi.fn> };
   scope3Category: { findFirst: ReturnType<typeof vi.fn> };

@@ -22,7 +22,7 @@ vi.mock("@/lib/prisma", () => ({
 import { prisma } from "@/lib/prisma";
 import { GET } from "../route";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   company: { findUnique: ReturnType<typeof vi.fn> };
   scope1Record: { aggregate: ReturnType<typeof vi.fn> };
   scope2Record: { aggregate: ReturnType<typeof vi.fn> };

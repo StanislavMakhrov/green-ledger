@@ -17,7 +17,7 @@ import { prisma } from "@/lib/prisma";
 import { POST } from "../route";
 import { NextRequest } from "next/server";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   supplier: {
     findFirst: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;

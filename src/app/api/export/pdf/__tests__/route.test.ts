@@ -20,7 +20,7 @@ import { prisma } from "@/lib/prisma";
 import { generateReport } from "@/lib/pdf";
 import { GET } from "../route";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   company: { findUnique: ReturnType<typeof vi.fn> };
   scope1Record: { findMany: ReturnType<typeof vi.fn> };
   scope2Record: { findMany: ReturnType<typeof vi.fn> };

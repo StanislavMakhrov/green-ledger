@@ -14,7 +14,7 @@ import { GET } from "../route";
 import { PUT } from "../[id]/route";
 import { NextRequest } from "next/server";
 
-const mockPrisma = prisma as {
+const mockPrisma = prisma as unknown as {
   scope3Category: {
     findMany: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
