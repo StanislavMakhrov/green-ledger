@@ -154,18 +154,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repository name
+        id: repo
+        run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         if: steps.dockerfile_check.outputs.exists == 'true'
         uses: docker/build-push-action@v6
         with:
           context: ./src
           push: true
-          tags: ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
+          tags: ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}
 
       - name: UAT instructions
         if: steps.dockerfile_check.outputs.exists == 'true'
         run: |
-          IMAGE="ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}"
+          IMAGE="ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}"
           {
             echo "## 🐳 UAT — Docker image ready"
             echo ""
