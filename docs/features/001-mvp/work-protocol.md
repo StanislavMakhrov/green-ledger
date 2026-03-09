@@ -108,3 +108,22 @@
   5. All tasks are P1 (Critical) except T-26 Makefile (P2) and T-27 CI Verification (P2).
 - **Problems Encountered:** None — the specification, architecture, and test plan were
   comprehensive and mutually consistent. No ambiguities required escalation.
+
+### UAT Plan (Correction)
+
+- **Date:** 2026-03-09
+- **Summary:** The Quality Engineer incorrectly skipped UAT on the grounds that "MVP has no
+  user-facing rendering output requiring verification." This was wrong — GreenLedger MVP is a
+  user-facing web application with 8 pages, a public supplier form, and a PDF export. UAT is
+  always required for user-facing features. A UAT test plan has been added as a correction.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/uat-test-plan.md` — Full UAT test plan covering 8-step end-to-end
+    demo flow (E-01–E-08) and 36 page-level checks across all 8 pages (UAT-01 through UAT-08).
+- **Key Decisions Made:**
+  1. UAT covers the exact 5-minute demo flow described in `docs/spec.md § MVP Demo Goal`.
+  2. All 8 pages verified: dashboard, suppliers, scope-1, scope-2, scope-3, methodology,
+     export, and the public supplier form.
+  3. PDF contents verified by human inspection (all 5 sections: cover, summary, Scope 3
+     breakdown, methodology, assumptions & data quality).
+  4. Follows the `run-uat` skill convention: plan saved as `uat-test-plan.md`; results to be
+     saved as `uat-report.md` after the Maintainer runs the app.
