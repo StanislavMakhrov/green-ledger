@@ -1,8 +1,15 @@
-export default function SuppliersPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Suppliers</h1>
-      <p className="text-gray-600">Manage your suppliers and their emission data.</p>
-    </div>
-  )
+import { prisma } from "@/lib/prisma";
+import { DEMO_COMPANY_ID } from "@/lib/constants";
+import SuppliersClient from "./suppliers-client";
+
+// Force dynamic rendering — page requires database access at request time
+export const dynamic = "force-dynamic";
+
+export default async function SuppliersPage() {
+  const suppliers = await prisma.supplier.findMany({
+    where: { companyId: DEMO_COMPANY_ID },
+    orderBy: { name: "asc" },
+  });
+
+  return <SuppliersClient initialSuppliers={suppliers} />;
 }

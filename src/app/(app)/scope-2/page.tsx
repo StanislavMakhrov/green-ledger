@@ -1,8 +1,29 @@
-export default function Scope2Page() {
+import { prisma } from "@/lib/prisma";
+import { DEMO_COMPANY_ID } from "@/lib/constants";
+import Scope2Client from "./scope2-client";
+
+// Force dynamic rendering — page requires database access at request time
+export const dynamic = "force-dynamic";
+
+export default async function Scope2Page() {
+  const company = await prisma.company.findUnique({
+    where: { id: DEMO_COMPANY_ID },
+  });
+  const records = await prisma.scope2Record.findMany({
+    where: {
+      companyId: DEMO_COMPANY_ID,
+      periodYear: company?.reportingYear,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Serialize Date to ISO string for client component props
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Scope 2 Emissions</h1>
-      <p className="text-gray-600">Indirect emissions from purchased electricity, steam, heat, and cooling.</p>
-    </div>
-  )
+    <Scope2Client
+      initialRecords={records.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      }))}
+    />
+  );
 }

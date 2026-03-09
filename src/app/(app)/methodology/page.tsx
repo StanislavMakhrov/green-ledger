@@ -1,8 +1,15 @@
-export default function MethodologyPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Methodology</h1>
-      <p className="text-gray-600">Document your calculation methodology and emission factor sources.</p>
-    </div>
-  )
+import { prisma } from "@/lib/prisma";
+import { DEMO_COMPANY_ID } from "@/lib/constants";
+import MethodologyClient from "./methodology-client";
+
+// Force dynamic rendering — page requires database access at request time
+export const dynamic = "force-dynamic";
+
+export default async function MethodologyPage() {
+  const notes = await prisma.methodologyNote.findMany({
+    where: { companyId: DEMO_COMPANY_ID },
+    orderBy: { scope: "asc" },
+  });
+
+  return <MethodologyClient initialNotes={notes} />;
 }
