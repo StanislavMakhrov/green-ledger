@@ -183,4 +183,4 @@ jobs:
             echo "Then open **http://localhost:3000** in your browser."
             echo ""
             echo "> The seed runs automatically on first start — demo data is pre-loaded."
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
