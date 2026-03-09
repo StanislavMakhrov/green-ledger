@@ -43,23 +43,13 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Commit after EACH task with descriptive conventional commit message
 - **Commit Amending:** If you need to fix issues or apply feedback for the commit you just created, use `git commit --amend --no-edit` (or with an updated message) instead of creating a new "fix" commit. This ensures a clean "1 topic per commit" history.
 - Update task status in tasks.md after each task completion
-- For user-facing features (CLI changes, rendering changes), ensure the output is easy to validate in User Acceptance PRs (handled by Code Reviewer)
+- For user-facing features (UI changes, API behavior changes, new pages), ensure the output is easy to validate in User Acceptance Testing (handled by UAT Tester)
 - **Detail Checklist (REQUIRED for UI/UX features):** For features with many small visual items (icons, spacing, alignment), maintain a checklist in the task description or a separate file to ensure no detail is missed during implementation.
 - When tests are skipped, identify why and ask Maintainer to resolve (e.g., start Docker) before marking work complete
 - Before reporting **Status: Done** (or suggesting merge/release readiness), run applicable tests (scoped for the change, or full suite for feature completion) and report the results
-- **MANDATORY TEST VERIFICATION:** Use the `run-dotnet-tests` skill for all test execution. Confirm all tests pass before claiming task completion or pushing changes.
+- **MANDATORY TEST VERIFICATION:** Use the `run-tests` skill for all test execution. Confirm all tests pass before claiming task completion or pushing changes.
 - Write tests before implementation (test-first approach)
 - Run full test suite with NO skipped tests after ALL tasks complete
-- Use `generate-demo-artifacts` skill to regenerate all demo artifacts after ALL tasks complete
-- **MANDATE: Use `update-test-snapshots` skill for ALL intentional snapshot changes** - When markdown output logic changes, you MUST use the `update-test-snapshots` skill (which runs `scripts/update-test-snapshots.sh`) to regenerate snapshot baselines. Verify snapshots pass afterwards.
-- **Include `SNAPSHOT_UPDATE_OK` token in commit messages** - When committing snapshot changes, include `SNAPSHOT_UPDATE_OK` in the commit message to signal the change is intentional (example: `git commit -m "test: update snapshots for <feature-name>\n\nSNAPSHOT_UPDATE_OK"`).
-- Never update snapshots to "make tests pass" without first diagnosing what behavior changed and why the new output is correct
-- Follow C# coding conventions and use modern C# features
-- Keep files under 300 lines, refactor if larger
-- Check for existing code to reuse before creating new code
-- Use `_camelCase` for private fields
-- Update `examples/comprehensive-demo/plan.json` when features have visible impact on generated markdown
-- Follow [docs/report-style-guide.md](../../docs/report-style-guide.md) for all markdown rendering code
 - Provide explicit status at end of every turn using the Status Template (see Response Style section)
 - During long-running work, proactively communicate progress:
    - Before a longer “heads-down” stretch (multiple tool calls / edits), post a 1–2 sentence update saying what you’re about to do and when you’ll report back.
@@ -67,7 +57,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 
 ### ⚠️ Ask First
 - Changes that affect architecture decisions
-- Adding new NuGet packages or dependencies
+- Adding new npm packages or dependencies
 - Database schema changes
 - Modifying CI/CD configuration
 - Edge cases not covered in the test plan
@@ -83,9 +73,8 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Create code without verifying no duplication exists
 - Mix multiple unrelated changes in a single commit (keep commits focused on one topic)
 - Create "fixup" or "fix" commits for work you just committed; use `git commit --amend` instead.
-- **NO TEST CHEATING:** Modify test expectations (including snapshots) to match broken output - ALWAYS diagnose the root cause and fix the code, not the tests. If a test fails, the implementation is wrong unless you can prove the test itself has a bug.
-- **HARD STOP: Put provider-specific logic in core modules** - All Terraform provider-specific code (e.g., azurerm, azapi, azuredevops resource enhancements, display name logic) MUST be isolated in `src/GreenLedger/Providers/<ProviderName>/`. Provider-specific logic MUST NOT appear in `src/GreenLedger/MarkdownGeneration/` or other core modules. See [docs/architecture.md § Building Block View](../../docs/architecture.md) for architectural boundaries.
-- **HARD STOP: Manually update snapshot files** - NEVER use `cp` or manually edit files in `src/tests/GreenLedger.TUnit/TestData/Snapshots/` unless explicitly instructed for a specific reason beyond general updates. Always use the `update-test-snapshots` skill (which runs `scripts/update-test-snapshots.sh`) for snapshot regeneration.
+- **NO TEST CHEATING:** Modify test expectations to match broken output - ALWAYS diagnose the root cause and fix the code, not the tests. If a test fails, the implementation is wrong unless you can prove the test itself has a bug.
+- **HARD STOP: Mix domain/feature concerns across API routes** - Keep API routes focused; shared logic belongs in `src/lib/`. Maintain clear module boundaries as described in [docs/spec.md](../../docs/spec.md).
 
 ## Context to Read
 
@@ -95,8 +84,6 @@ Before starting, familiarize yourself with:
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - **Code documentation requirements**
-- [docs/report-style-guide.md](../../docs/report-style-guide.md) - **Report formatting and styling standards**
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - **GitHub CLI fallback guidance (when checking failed workflows)**
 - Existing source code in `src/` and tests in `src/tests/`
@@ -106,27 +93,15 @@ Before starting, familiarize yourself with:
 Follow the project's coding conventions strictly:
 
 ### Code Style
-- Follow C# coding conventions
-- Use `_camelCase` for private fields
-- Prefer immutable data structures (`IReadOnlyList<T>`, `IReadOnlyDictionary<K,V>`)
-- Use modern C# features: collection expressions, primary constructors, pattern matching
+- Follow TypeScript coding conventions
+- Prefer `const` for immutable variables; use `let` only when reassignment is needed
+- Use modern TypeScript features: generics, union types, type guards, async/await
 - Keep files under 200-300 lines; refactor if larger
 
-### Access Modifiers
-- **Use the most restrictive access modifier that works**
-  - Prefer `private` for members whenever possible
-  - Use `internal` for cross-assembly visibility
-  - Avoid `public` unless absolutely necessary (main entry points only)
-- **Never use `public` for testing** - Use `InternalsVisibleTo` instead
-- **This is NOT a class library** - No external consumers exist, so no API compatibility concerns
-
 ### Code Comments
-- **All members must have XML doc comments** (public, internal, AND private)
-- Follow [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) strictly
 - Comments must explain **"why"** not just **"what"**
-- Required tags: `<summary>`, `<param>`, `<returns>`
-- Reference features/specs for traceability: `/// Related feature: docs/features/...`
-- Use `<example>` with `<code>` for complex methods
+- Document complex logic and non-obvious behavior
+- Reference features/specs for traceability where helpful
 
 ### Development Approach
 - **Simple solutions first** - Avoid overengineering
@@ -170,7 +145,7 @@ Follow the project's coding conventions strictly:
    
    c. **Verify acceptance criteria** for the current task:
       - All acceptance criteria for THIS task must be satisfied
-      - Run relevant tests: `scripts/test-with-timeout.sh -- dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/<TestClass>/*`
+      - Run relevant tests: `cd src && npx vitest run path/to/relevant.test.ts`
       - Check for errors: Use `problems` to verify no workspace errors
    
    d. **Commit the task**:
@@ -195,59 +170,21 @@ Follow the project's coding conventions strictly:
    
    a. **Run full test suite**:
       ```bash
-   scripts/test-with-timeout.sh
+      cd src && npm test
       ```
-      - This runs the TUnit test project: `dotnet test --project src/tests/GreenLedger.TUnit/`
-      - All tests must pass with ZERO skipped tests
-      - If tests are skipped, identify reason and ask Maintainer to resolve
+      - All tests must pass
+      - If tests fail, diagnose and fix before proceeding
    
-   b. **Verify markdown quality (REQUIRED)**:
-      - Use `generate-demo-artifacts` skill to regenerate all demo artifacts
-      - **For features with UAT test plans, create feature-specific UAT artifacts (REQUIRED)**:
-        1. Read the UAT test plan at `docs/features/NNN-<feature-slug>/uat-test-plan.md`
-        2. Create `docs/features/NNN-<feature-slug>/uat-plan.json` based on the plan requirements
-        3. Generate `docs/features/NNN-<feature-slug>/uat-plan.md`:
-           ```bash
-           green-ledger docs/features/NNN-<feature-slug>/uat-plan.json > docs/features/NNN-<feature-slug>/uat-plan.md
-           ```
-        4. Verify the generated markdown contains all resources and edge cases specified in the UAT test plan
-        5. Commit both files:
-           ```bash
-           git add docs/features/NNN-<feature-slug>/uat-plan.json docs/features/NNN-<feature-slug>/uat-plan.md
-           git commit -m "test: add UAT plan artifacts for <feature-name>"
-           ```
-      - Verify comprehensive-demo.md passes markdownlint with 0 errors:
-        ```bash
-        scripts/markdownlint.sh artifacts/comprehensive-demo.md
-        ```
-      - If feature changes markdown output, update `examples/comprehensive-demo/plan.json` to demonstrate it
+   b. **Check for errors**:
+      - Use `problems` to verify no workspace errors after `cd src && npm run build`
    
-   c. **Update test snapshots (if markdown output changed)**:
-      - Use `update-test-snapshots` skill to regenerate snapshot baselines
-         - Review generated snapshots with `scripts/git-diff.sh src/tests/GreenLedger.TUnit/TestData/Snapshots`
-      - Commit snapshots if changes are expected:
-        ```bash
-      git add src/tests/GreenLedger.TUnit/TestData/Snapshots/
-            git commit -m "test: update snapshots for <feature-name>\n\nSNAPSHOT_UPDATE_OK"
-        ```
-   
-   d. **Check for errors**:
-      - Use `problems` to verify no workspace errors after `dotnet build`
-   
-   e. **Commit demo artifacts** (if updated):
-      ```bash
-      # Commit both comprehensive demo and feature-specific artifacts
-      git add artifacts/ examples/comprehensive-demo/ examples/<feature-slug>.json
-      git commit -m "docs: update demo artifacts for <feature-name>"
-      ```
-
-   f. **Run pre-push validation (MANDATORY)**:
+   c. **Run pre-push validation (MANDATORY)**:
       - Load and follow the `pre-push-validation` skill
       - Run all PR Validation checks locally: lint, type-check, test, build, markdownlint
       - Fix any failures and re-validate until all checks pass
       - **Do not push code that fails validation** — the Maintainer should only review, not fix CI
 
-   g. **Monitor CI after push (coding agent only)**:
+   d. **Monitor CI after push (coding agent only)**:
       - After `report_progress` pushes changes, check the PR Validation workflow status
       - Use GitHub MCP tools or `scripts/check-workflow-status.sh list` to monitor
       - If CI fails, inspect logs, fix the issue, re-run pre-push validation, and push again
@@ -261,64 +198,35 @@ Follow the project's coding conventions strictly:
 
 Build the project:
 ```bash
-dotnet build
+cd src && npm run build
 ```
 
-**For running tests**, use the `run-dotnet-tests` skill which provides:
-- Complete instructions for using the `scripts/test-with-timeout.sh` wrapper
-- Explanation of .NET 10 dual test runner issue and why direct `dotnet test` calls fail
-- TUnit-specific filtering syntax and examples
-- Common test commands and troubleshooting guidance
+**For running tests**, use the `run-tests` skill which provides complete instructions for using Vitest.
 
 **Quick reference** (see skill for full details):
 ```bash
 # Run all tests
-scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger
+cd src && npm test
 
-# Run specific project
-scripts/test-with-timeout.sh -- dotnet test --project tests/GreenLedger.TUnit/
+# Run a specific test file
+cd src && npx vitest run path/to/test.test.ts
 
-# Filter by class (TUnit uses --treenode-filter, not --filter)
-scripts/test-with-timeout.sh -- dotnet test --project tests/GreenLedger.TUnit/ --treenode-filter /*/*/MarkdownRendererTests/*
-```
-
-Filter by category:
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /**[Category=Unit]
-```
-
-Exclude by category (e.g., skip Docker tests):
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /**[Category!=Docker]
-```
-
-### TUnit Output Control
-
-Show detailed output (all tests, real-time):
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --output Detailed
-```
-
-Show debug logs:
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --output Detailed --log-level Debug
-```
-
-Combine filtering and output:
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/MarkdownRendererTests/* --output Detailed --log-level Debug
+# Run tests matching a pattern
+cd src && npx vitest run --reporter=verbose -t "pattern"
 ```
 
 ### Docker Commands
 
 Build the Docker image:
 ```bash
-docker build -t green-ledger:local .
+docker compose build
 ```
 
-Run the tool in Docker (example):
+Run the app locally with Docker:
 ```bash
-docker run --rm -v $(pwd):/data green-ledger:local /data/plan.json
+docker compose up -d
+# App available at http://localhost:3000
+docker compose down
 ```
 
 ### Checking Failed Workflows
@@ -362,13 +270,9 @@ Verify:
 
 Verify:
 - [ ] All tasks are complete and marked as done in tasks.md
-- [ ] Full test suite passes with ZERO skipped tests (`scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger`)
-- [ ] Docker image builds successfully (`docker build`)
-- [ ] Feature works correctly when running in the Docker container
-- [ ] Demo artifacts regenerated using `generate-demo-artifacts` skill (REQUIRED)
-- [ ] Comprehensive demo passes markdownlint with 0 errors (REQUIRED)
-- [ ] Snapshots updated using `update-test-snapshots` skill if markdown output changed (REQUIRED)
-- [ ] Comprehensive demo plan.json updated if feature has visible markdown impact
+- [ ] Full test suite passes (`cd src && npm test`)
+- [ ] Docker image builds successfully (`docker compose build`)
+- [ ] Feature works correctly when running in the Docker container (`docker compose up -d`)
 - [ ] Pre-push validation passed (`pre-push-validation` skill): lint, type-check, test, build, markdownlint all green
 - [ ] CI checks are green after push (PR Validation workflow passed) — do not hand off with red checks
 - [ ] The Maintainer has reviewed the implementation

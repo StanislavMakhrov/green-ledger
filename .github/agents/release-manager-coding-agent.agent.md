@@ -115,13 +115,13 @@ Before proceeding with the release, **verify the Work Protocol** (`work-protocol
 
 ### ✅ Always Do
 - Verify code review is approved before proceeding
-- Trust CI pipeline for test validation — only run local tests (`scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger`) if diagnosing a specific CI failure
+- Trust CI pipeline for test validation — only run local tests (`cd src && npm test`) if diagnosing a specific CI failure
 - Verify Docker image builds successfully (only if not recently verified by Code Reviewer)
 - Check that working directory is clean
 - Verify branch is up to date with main
 - Review commit messages follow conventional commit format
 - **Enforce commit type guardrails:** Verify that PRs which only change workflow/internal tooling (`.github/`, `scripts/`, `docs/`, `website/`) do NOT use `feat:` or `fix:` commit types. These must use `workflow:`, `docs:`, `chore:`, or `ci:` instead. Using `feat:` or `fix:` for non-code changes causes incorrect Versionize version bumps.
-- **Generate screenshots for visual features (MANDATORY):** If the release involves visual changes (Markdown rendering, layout, colors, UI/UX), screenshots are required and non-negotiable. Use `scripts/generate-release-screenshots.sh` which includes automatic retry logic.
+- **Generate screenshots for visual features (MANDATORY):** If the release involves visual changes (layout, colors, UI/UX changes), screenshots are required and non-negotiable. Use a browser automation tool or take manual screenshots from the running Docker image.
 - Execute release steps autonomously (create PR, trigger workflows, monitor pipelines)
 - **Conflict Check (REQUIRED):** Before finalizing a merge, manually verify that critical documentation files (like `docs/architecture.md` or `docs/spec.md`) have not been accidentally reverted or corrupted by the merge process, even if the CLI reports success.
 - **Enforce `Rebase and merge` only** when merging PRs. If GitHub shows merge-commit or squash options, stop and fix branch protection; do not proceed until rebase-only is available. Use `scripts/pr-github.sh create-and-merge` (runs `--rebase --delete-branch`). Only use raw `gh pr merge --rebase --delete-branch` as a final fallback if the wrapper is unavailable.
@@ -160,9 +160,8 @@ Before starting, familiarize yourself with:
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md`
 - The Code Review Report in `docs/features/NNN-<feature-slug>/code-review.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - Code documentation requirements
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) - Contribution and release guidelines
-- Current version in `src/Directory.Build.props`
+- Current version in `src/package.json`
 
 ## Release Process
 
@@ -204,12 +203,12 @@ Before releasing, verify:
 2. **Tests Pass** (trust CI — only run locally if debugging a failure)
    ```bash
    # Only if CI failed and you need to reproduce:
-   scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger
+   cd src && npm test
    ```
 
 3. **Docker Build Succeeds** (only if not recently verified by Code Reviewer)
    ```bash
-   docker build -t green-ledger:local .
+   docker compose build
    ```
 
 4. **No Pending Changes**
@@ -264,10 +263,10 @@ Before releasing, verify:
    - Performance improvements
    - CLI flag changes
    - Output format enhancements
-   - New terraform feature support
+   - New feature support
 
     **Required Sections and Style:**
-    - Technical blog-post style written by a developer for Terraform practitioners (not marketing copy)
+    - Technical blog-post style written by a developer for application users (not marketing copy)
     - Be honest about scope (what changed / what didn’t)
     - Use icons consistently:
        - ✨ Features
@@ -277,22 +276,11 @@ Before releasing, verify:
     - **🔗 Commits is mandatory**: list relevant user-facing commits for the release (short SHA + link + summary)
     - **▶️ Getting started**: include only if usage changed (new flags, env vars, required steps, migration notes)
 - **📸 Screenshots (MANDATORY for visual features)**:
-       - **CRITICAL**: If the release involves visual changes (Markdown rendering, layout, colors, UI/UX), screenshots are **MANDATORY** and non-negotiable.
-       - **PREREQUISITE — Install Playwright first**: Build the ScreenshotGenerator (`dotnet build src/tools/GreenLedger.ScreenshotGenerator/`), then install the browser via `pwsh src/tools/GreenLedger.ScreenshotGenerator/bin/Debug/net10.0/playwright.ps1 install chromium --with-deps`. Do NOT use `npx playwright install` — the npm version differs from the .NET package. Skipping this step causes all screenshot generation to fail.
-       - **MUST STOP if generation fails**: If screenshot generation fails due to timeouts or tooling issues, **DO NOT proceed with release**. Instead:
-           1. Report the failure to the Maintainer with full error details
-           2. Document the specific error (timeout, CDN failure, etc.)
-           3. Wait for tooling fix or Maintainer guidance
-           4. **Never** mark screenshots as "optional" or proceed with text-only release notes
-       - **Generate if missing**: Use `scripts/generate-release-screenshots.sh` which includes retry logic and verbose error reporting:
-           - `scripts/generate-release-screenshots.sh --plan <plan.json> --output-prefix <name> --output-dir docs/features/NNN/ --selector "..."`
-           - or `scripts/generate-release-screenshots.sh --markdown-file <md> --output-prefix <name> --output-dir docs/features/NNN/ --target-resource-id "..."`
-           - Script automatically retries 3 times with 5-second delays between attempts
-           - Provides detailed troubleshooting guidance on failure
-       - **Choose selectors carefully**: Match the selector to the actual visual change. Use the `generate-release-screenshots` skill's Selector Guide for detailed guidance. Key rule: do NOT use `--target-terraform-resource-id` for summary-line changes (emoji/spacing fixes) — it captures the full expanded details block instead of the summary where the fix is visible. Use `--selector "summary:has-text('resource_name')"` instead.
-       - Release notes screenshots must be focused and small: **max 580×400 pixels**.
-       - Use only `*-crop*.png` files in release notes, or generate single screenshots using the release wrapper.
-       - **Alternative tool**: Use `scripts/generate-screenshot.sh` for full control (light/dark, 1x/2x, thumbnails, lightbox)
+       - **CRITICAL**: If the release involves visual changes (layout, colors, new pages, UI/UX changes), screenshots are **MANDATORY** and non-negotiable.
+       - Build and run the Docker image: `docker compose build && docker compose up -d`
+       - Take screenshots of the affected pages/features while the app runs at `http://localhost:3000`
+       - Stop the app: `docker compose down`
+       - **MUST STOP if unable to capture screenshots**: Report to Maintainer; do not proceed with text-only release notes
        - Prefer showing a single "after" screenshot for features; for bug fixes, include before/after when feasible.
        - **Quality over speed**: Screenshots are critical evidence of visual improvements. Do not compromise release quality for workflow completion.
        - **Image URLs in release notes**: Use absolute `raw.githubusercontent.com` URLs, NOT relative paths. Relative paths like `./image.png` break in GitHub Release pages. Format: `https://raw.githubusercontent.com/StanislavMakhrov/green-ledger/v{VERSION}/docs/{path}/image.png`. Verify all referenced filenames actually exist before committing.

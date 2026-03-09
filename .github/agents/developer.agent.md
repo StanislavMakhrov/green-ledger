@@ -44,23 +44,16 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Commit after EACH task with descriptive conventional commit message
 - **Commit Amending:** If you need to fix issues or apply feedback for the commit you just created, use `git commit --amend --no-edit` (or with an updated message) instead of creating a new "fix" commit. This ensures a clean "1 topic per commit" history.
 - Update task status in tasks.md after each task completion
-- For user-facing features (CLI changes, rendering changes), ensure the output is easy to validate in User Acceptance PRs (handled by Code Reviewer)
+- For user-facing features (UI changes, API behavior changes, new pages), ensure the output is easy to validate in User Acceptance Testing (handled by UAT Tester)
 - **Detail Checklist (REQUIRED for UI/UX features):** For features with many small visual items (icons, spacing, alignment), maintain a checklist in the task description or a separate file to ensure no detail is missed during implementation.
 - When tests are skipped, identify why and ask Maintainer to resolve (e.g., start Docker) before marking work complete
 - Before reporting **Status: Done** (or suggesting merge/release readiness), run applicable tests (scoped for the change, or full suite for feature completion) and report the results
-- **MANDATORY TEST VERIFICATION:** Run `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` and confirm all tests pass before claiming task completion or pushing changes
+- **MANDATORY TEST VERIFICATION:** Run `cd src && npm test` and confirm all tests pass before claiming task completion or pushing changes
 - Write tests before implementation (test-first approach)
 - Run full test suite with NO skipped tests after ALL tasks complete
-- Use `generate-demo-artifacts` skill to regenerate all demo artifacts after ALL tasks complete
-- **MANDATE: Use `update-test-snapshots` skill for ALL intentional snapshot changes** - When markdown output logic changes, you MUST use the `update-test-snapshots` skill (which runs `scripts/update-test-snapshots.sh`) to regenerate snapshot baselines. Verify snapshots pass afterwards.
-- **Include `SNAPSHOT_UPDATE_OK` token in commit messages** - When committing snapshot changes, include `SNAPSHOT_UPDATE_OK` in the commit message to signal the change is intentional (example: `git commit -m "test: update snapshots for <feature-name>\n\nSNAPSHOT_UPDATE_OK"`).
-- Never update snapshots to "make tests pass" without first diagnosing what behavior changed and why the new output is correct
-- Follow C# coding conventions and use modern C# features
+- Follow TypeScript coding conventions and use modern TypeScript features
 - Keep files under 300 lines, refactor if larger
 - Check for existing code to reuse before creating new code
-- Use `_camelCase` for private fields
-- Update `examples/comprehensive-demo/plan.json` when features have visible impact on generated markdown
-- Follow [docs/report-style-guide.md](../../docs/report-style-guide.md) for all markdown rendering code
 - Provide explicit status at end of every turn using the Status Template (see Response Style section)
 - During long-running work, proactively communicate progress:
    - Before a longer “heads-down” stretch (multiple tool calls / edits), post a 1–2 sentence update saying what you’re about to do and when you’ll report back.
@@ -68,7 +61,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 
 ### ⚠️ Ask First
 - Changes that affect architecture decisions
-- Adding new NuGet packages or dependencies
+- Adding new npm packages or dependencies
 - Database schema changes
 - Modifying CI/CD configuration
 - Edge cases not covered in the test plan
@@ -85,8 +78,8 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Mix multiple unrelated changes in a single commit (keep commits focused on one topic)
 - Create "fixup" or "fix" commits for work you just committed; use `git commit --amend` instead.
 - **NO TEST CHEATING:** Modify test expectations (including snapshots) to match broken output - ALWAYS diagnose the root cause and fix the code, not the tests. If a test fails, the implementation is wrong unless you can prove the test itself has a bug.
-- **HARD STOP: Put provider-specific logic in core modules** - All Terraform provider-specific code (e.g., azurerm, azapi, azuredevops resource enhancements, display name logic) MUST be isolated in `src/GreenLedger/Providers/<ProviderName>/`. Provider-specific logic MUST NOT appear in `src/GreenLedger/MarkdownGeneration/` or other core modules. See [docs/architecture.md § Building Block View](../../docs/architecture.md) for architectural boundaries.
-- **HARD STOP: Manually update snapshot files** - NEVER use `cp` or manually edit files in `src/tests/GreenLedger.TUnit/TestData/Snapshots/` unless explicitly instructed for a specific reason beyond general updates. Always use the `update-test-snapshots` skill (which runs `scripts/update-test-snapshots.sh`) for snapshot regeneration.
+- **HARD STOP: Mix domain/feature concerns across modules** - Keep API routes, lib utilities, and UI components properly separated. Domain logic belongs in `src/lib/`. Maintain clear module boundaries as described in [docs/spec.md](../../docs/spec.md).
+
 
 ## Response Style
 
@@ -153,8 +146,7 @@ Before starting, familiarize yourself with:
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - **Code documentation requirements**
-- [docs/report-style-guide.md](../../docs/report-style-guide.md) - **Report formatting and styling standards**
+- [docs/spec.md](../../docs/spec.md) - Project specification
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - **GitHub CLI fallback guidance (when checking failed workflows)**
 - Existing source code in `src/` and tests in `src/tests/`
@@ -164,10 +156,9 @@ Before starting, familiarize yourself with:
 Follow the project's coding conventions strictly:
 
 ### Code Style
-- Follow C# coding conventions
-- Use `_camelCase` for private fields
+- Follow TypeScript/Next.js coding conventions
 - Prefer immutable data structures (`IReadOnlyList<T>`, `IReadOnlyDictionary<K,V>`)
-- Use modern C# features: collection expressions, primary constructors, pattern matching
+- Use modern TypeScript features: generics, union types, type guards, async/await
 - Keep files under 200-300 lines; refactor if larger
 
 ### Access Modifiers
@@ -179,8 +170,6 @@ Follow the project's coding conventions strictly:
 - **This is NOT a class library** - No external consumers exist, so no API compatibility concerns
 
 ### Code Comments
-- **All members must have XML doc comments** (public, internal, AND private)
-- Follow [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) strictly
 - Comments must explain **"why"** not just **"what"**
 - Required tags: `<summary>`, `<param>`, `<returns>`
 - Reference features/specs for traceability: `/// Related feature: docs/features/...`
@@ -239,7 +228,7 @@ Follow the project's coding conventions strictly:
    
    c. **Verify acceptance criteria** for the current task:
       - All acceptance criteria for THIS task must be satisfied
-      - Run relevant tests: `scripts/test-with-timeout.sh -- dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/<TestClass>/*`
+      - Run relevant tests: `cd src && npx vitest run path/to/relevant.test.ts`
       - Check for errors: Use `problems` to verify no workspace errors
    
    d. **Commit the task**:
@@ -264,45 +253,13 @@ Follow the project's coding conventions strictly:
    
    a. **Run full test suite**:
       ```bash
-   scripts/test-with-timeout.sh
+      cd src && npm test
       ```
-      - This runs the TUnit test project: `dotnet test --project src/tests/GreenLedger.TUnit/`
-      - All tests must pass with ZERO skipped tests
-      - If tests are skipped, identify reason and ask Maintainer to resolve
+      - All tests must pass
+      - If tests fail, diagnose and fix before proceeding
    
-   b. **Generate UAT artifacts (CRITICAL - Check Test Plan First)**:
-      - **Read the test plan's User Acceptance Scenarios section**
-      - If test plan specifies a **feature-specific artifact** (e.g., `artifacts/<feature-slug>-uat.md`):
-        - Create that exact artifact as specified
-        - Use a minimal test plan that exercises the feature changes
-        - **DO NOT substitute the comprehensive demo**
-      - If no feature-specific artifact is mentioned or for regression testing:
-        - Use `generate-demo-artifacts` skill to regenerate all demo artifacts
-   
-   c. **Verify markdown quality (REQUIRED)**:
-      - Verify comprehensive-demo.md passes markdownlint with 0 errors:
-        ```bash
-        scripts/markdownlint.sh artifacts/comprehensive-demo.md
-        ```
-      - If feature changes markdown output, update `examples/comprehensive-demo/plan.json` to demonstrate it
-   
-   c. **Update test snapshots (if markdown output changed)**:
-      - Use `update-test-snapshots` skill to regenerate snapshot baselines
-         - Review generated snapshots with `scripts/git-diff.sh src/tests/GreenLedger.TUnit/TestData/Snapshots`
-      - Commit snapshots if changes are expected:
-        ```bash
-      git add src/tests/GreenLedger.TUnit/TestData/Snapshots/
-            git commit -m "test: update snapshots for <feature-name>\n\nSNAPSHOT_UPDATE_OK"
-        ```
-   
-   d. **Check for errors**:
-      - Use `problems` to verify no workspace errors after `dotnet build`
-   
-   e. **Commit demo artifacts** (if updated):
-      ```bash
-      git add artifacts/ examples/comprehensive-demo/
-      git commit -m "docs: update demo artifacts for <feature-name>"
-      ```
+   b. **Check for errors**:
+      - Use `problems` to verify no workspace errors after `cd src && npm run build`
 
 6. **Ask one question at a time** - If clarification is needed, ask focused questions.
 
@@ -312,70 +269,46 @@ Follow the project's coding conventions strictly:
 
 Build the project:
 ```bash
-dotnet build
+cd src && npm run build
 ```
 
-Run all tests (TUnit):
+Run all tests:
 ```bash
-scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger
+cd src && npm test
 ```
 
-Override timeout (if needed):
+Run a specific test file:
 ```bash
-scripts/test-with-timeout.sh --timeout-seconds <seconds> -- dotnet test
+cd src && npx vitest run path/to/test.test.ts
 ```
 
-### TUnit Test Filtering
-
-**Important**: TUnit uses `--treenode-filter` (not xUnit's `--filter`). All TUnit flags must come after `--`.
-
-Filter by class name (hierarchical pattern):
+Run tests matching a pattern:
 ```bash
-scripts/test-with-timeout.sh -- dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/MarkdownRendererTests/*
-```
-
-Filter by test name:
+cd src && npx vitest run --reporter=verbose -t "pattern"
 ```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/*/Render_ValidPlan_ContainsSummarySection
-```
-
-Filter by category:
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /**[Category=Unit]
-```
-
-Exclude by category (e.g., skip Docker tests):
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /**[Category!=Docker]
-```
-
-### TUnit Output Control
-
-Show detailed output (all tests, real-time):
-```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --output Detailed
+cd src && npx vitest run --output Detailed
 ```
 
 Show debug logs:
 ```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --output Detailed --log-level Debug
+cd src && npx vitest run --output Detailed --log-level Debug
 ```
 
 Combine filtering and output:
 ```bash
-dotnet test --project src/tests/GreenLedger.TUnit/ --treenode-filter /*/*/MarkdownRendererTests/* --output Detailed --log-level Debug
+cd src && npx vitest run --reporter=verbose path/to/test.test.ts
 ```
 
 ### Docker Commands
 
 Build the Docker image:
 ```bash
-docker build -t green-ledger:local .
+docker compose build
 ```
 
 Run the tool in Docker (example):
 ```bash
-docker run --rm -v $(pwd):/data green-ledger:local /data/plan.json
+docker compose up -d  # App at http://localhost:3000
 ```
 
 ### Checking Failed Workflows
@@ -419,20 +352,13 @@ Verify:
 
 Verify:
 - [ ] All tasks are complete and marked as done in tasks.md
-- [ ] Full test suite passes with ZERO skipped tests (`scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger`)
-- [ ] **Coverage thresholds met** (line ≥84.48%, branch ≥72.80%):
+- [ ] Full test suite passes with ZERO skipped tests (`cd src && npm test`)
+- [ ] **Coverage verified**:
   ```bash
-  # Run tests with coverage
-  dotnet test --project src/tests/GreenLedger.TUnit/ --configuration Release -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-  # Verify thresholds
-  dotnet run --project src/tools/GreenLedger.CoverageEnforcer/GreenLedger.CoverageEnforcer.csproj -- --report ./src/TestResults/coverage.cobertura.xml --line-threshold 84.48 --branch-threshold 72.80
+  cd src && npm test -- --coverage
   ```
-- [ ] Docker image builds successfully (`docker build`)
+- [ ] Docker image builds successfully (`docker compose build`)
 - [ ] Feature works correctly when running in the Docker container
-- [ ] Demo artifacts regenerated using `generate-demo-artifacts` skill (REQUIRED)
-- [ ] Comprehensive demo passes markdownlint with 0 errors (REQUIRED)
-- [ ] Snapshots updated using `update-test-snapshots` skill if markdown output changed (REQUIRED)
-- [ ] Comprehensive demo plan.json updated if feature has visible markdown impact
 - [ ] The Maintainer has reviewed the implementation
 
 ## Handoff

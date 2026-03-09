@@ -32,7 +32,7 @@ Before handing off, **append your log entry** to the `## Agent Work Log` section
 - Use conventional commit messages — **but NOT `feat:` or `fix:`** for workflow/agent-only changes, as these trigger Versionize version bumps. Use `workflow:`, `docs:`, `chore:`, `ci:`, or `refactor:` instead.
 - Ensure Mermaid diagram reflects all agents and artifacts
 - Test proposed changes incrementally
-- Skip `dotnet test` when changes are limited to agent instructions / skills / documentation (e.g., `.github/agents/`, `.github/skills/`, `.github/copilot-instructions.md`, `docs/`) since the test suite doesn't validate those changes; run tests via `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` when C# code changes
+- Skip `npm test` when changes are limited to agent instructions / skills / documentation (e.g., `.github/agents/`, `.github/skills/`, `.github/copilot-instructions.md`, `docs/`) since the test suite doesn't validate those changes; run tests via `cd src && npm test` when source code under `src/` changes
 - **Commit Amending:** If you need to fix issues or apply feedback for the commit you just created, use `git commit --amend` instead of creating a new "fix" commit.
 
 ### ⚠️ Ask First
@@ -315,7 +315,7 @@ What this agent produces
 
 **Key principles:**
 - **Specific over general** - "Write unit tests for React components" beats "Help with testing"
-- **Commands over descriptions** - Include exact commands: `npm test`, `dotnet build`
+- **Commands over descriptions** - Include exact commands: `npm test`, `cd src && npm run build`
 - **Examples over explanations** - Show real code examples, not abstract descriptions
 - **Boundaries first** - Clear rules prevent mistakes
 
@@ -621,11 +621,11 @@ Help with development tasks
 **After:**
 ```markdown
 ## Your Goal
-Implement features and tests according to specifications, following C# coding conventions and test-first development.
+Implement features and tests according to specifications, following TypeScript/Next.js coding conventions and test-first development.
 
 ## Boundaries
-✅ Always: Write tests before code; run `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` before committing when C# code changes
-⚠️ Ask First: Database schema changes, adding NuGet packages
+✅ Always: Write tests before code; run `cd src && npm test` before committing when source code under `src/` changes
+⚠️ Ask First: Database schema changes, adding npm packages
 🚫 Never: Edit CHANGELOG.md (auto-generated), commit to main
 ```
 
@@ -638,10 +638,10 @@ Run tests to verify your changes.
 **After:**
 ```markdown
 ## Commands
-- **Build:** `dotnet build` - Compiles solution, check for errors
-- **Test:** `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` - Runs all tests; required when C# code changes (not needed for agent/docs-only changes)
-   - Override timeout if needed: `scripts/test-with-timeout.sh --timeout-seconds <seconds> -- dotnet test`
-- **Format:** `dotnet format` - Auto-formats code to match .editorconfig
+- **Build:** `cd src && npm run build` - Compiles solution, check for errors
+- **Test:** `cd src && npm test` - Runs all tests; required when source code under `src/` changes (not needed for agent/docs-only changes)
+   - Override timeout if needed: `cd src && npm test --timeout-seconds <seconds> -- npm test`
+- **Format:** `npm run lint` - Auto-formats code to match .editorconfig
 ```
 
 ### ❌ Bad: Vague or Too General
@@ -650,7 +650,7 @@ Run tests to verify your changes.
 - "Improve code quality"
 
 ### ✅ Good: Task-Specific Agents
-- "Write unit tests for C# classes following xUnit patterns"
+- "Write unit tests for TypeScript modules following Vitest patterns"
 - "Update Markdown documentation in /docs based on code changes"
-- "Review pull requests for C# coding standards compliance"
+- "Review pull requests for TypeScript/Next.js coding standards compliance"
 

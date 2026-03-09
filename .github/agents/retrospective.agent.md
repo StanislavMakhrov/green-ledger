@@ -412,7 +412,7 @@ Apply deductions consistently and cite examples.
 ### Terminal Command Patterns
 | Pattern | Count | Current | Recommendation |
 |---------|-------|---------|----------------|
-| `dotnet test` | N | Auto | ✅ Already automated |
+| `npm test` | N | Auto | ✅ Already automated |
 | `git commit` | N | Manual | Consider: wrapper script |
 | `gh pr create` | N | Manual | Use: `scripts/pr-github.sh` |
 

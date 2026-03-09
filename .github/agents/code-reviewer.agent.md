@@ -13,9 +13,9 @@ handoffs:
     agent: "UAT Tester"
     prompt: The code review is approved. Build the Docker image, start the app, and ask the Maintainer to manually verify the feature. Document the PASS/FAIL result in a UAT report.
     send: false
-  - label: Prepare Release (No UAT Needed)
+  - label: Prepare Release (Internal Change Only)
     agent: "Release Manager"
-    prompt: The code review is approved and this change does not require UAT. Prepare the release.
+    prompt: The code review is approved and this is a purely internal change (no user-facing features, no UI changes, no API behavior changes) that does not require UAT. Prepare the release.
     send: false
 ---
 
@@ -103,22 +103,20 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 
 ### ✅ Always Do
 - Check Docker availability before running Docker build (ask maintainer to start if needed)
-- Run `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` and `docker build` to verify functionality
-- Generate comprehensive demo output and verify it passes markdownlint (always, not just when feature impacts markdown)
+- Run `cd src && npm test` and `docker build` to verify functionality
 - **Line-by-line specification comparison** — Read each acceptance criterion and verify it is implemented AND tested
 - **Cross-check examples** — If the spec includes examples, verify the implementation matches them exactly
 - **Verify UAT artifact requirements** — Check test plan's User Acceptance Scenarios section for feature-specific artifacts (e.g., `artifacts/<feature-slug>-uat.md`). If specified, verify the artifact exists and matches requirements. Missing or incorrect artifacts are **Blocker** issues.
-- **Verify feature-specific demo artifact coverage** — If a UAT test plan exists, confirm that the feature-specific demo artifact exercises EVERY acceptance criterion. For cross-cutting rendering features (icons, summaries, display names), verify all resource types and touch-points are covered.
+- **Verify UAT acceptance criteria coverage** — If a UAT test plan exists, confirm that all acceptance criteria are exercised and verifiable. Check that all user-facing behaviors (UI, output, navigation) are covered in the test scenarios.
 - Check that all acceptance criteria are met
-- Verify adherence to C# coding conventions
+- Verify adherence to TypeScript/Next.js coding conventions
 - Ensure tests follow naming convention and are meaningful
 - Confirm documentation is updated
 - Check that CHANGELOG.md was NOT modified
-- Treat snapshot changes (`src/tests/GreenLedger.Tests/TestData/Snapshots/*.md`) as high-risk and require explicit justification
 - Categorize issues by severity (Blocker/Major/Minor/Suggestion)
 - When reviewing rework from failed PR/CI pipelines, verify the specific failure is resolved
-- For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
-- Verify markdown rendering changes follow [docs/report-style-guide.md](../../docs/report-style-guide.md)
+- For user-facing features (UI changes, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
+- Verify UI changes follow the project spec
 - **Challenge assumptions** — If code looks "obviously correct," ask what could make it fail
 - **Identify untested paths** — Look for code branches that lack corresponding test coverage
 
@@ -178,12 +176,11 @@ Before starting, familiarize yourself with:
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - **Code documentation requirements**
-- [docs/report-style-guide.md](../../docs/report-style-guide.md) - **Report formatting and styling standards**
+- [docs/spec.md](../../docs/spec.md) - Project specification
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
 - [docs/testing-strategy.md](../../docs/testing-strategy.md) - Testing conventions
-- The implementation in `src/` and `src/tests/`
+- The implementation in `src/`
 
 ## Critical Questions for Every Review
 
@@ -219,40 +216,25 @@ Before approving any code, systematically answer these questions:
 ### Correctness
 - [ ] Code implements all acceptance criteria from the tasks
 - [ ] All test cases from the test plan are implemented
-- [ ] Tests pass (`scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger`)
-- [ ] **Coverage thresholds met** (line ≥84.48%, branch ≥72.80%):
+- [ ] Tests pass (`cd src && npm test`)
+- [ ] **Coverage verified**:
   ```bash
-  # Run tests with coverage
-  dotnet test --project src/tests/GreenLedger.TUnit/ --configuration Release -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-  # Verify thresholds
-  dotnet run --project src/tools/GreenLedger.CoverageEnforcer/GreenLedger.CoverageEnforcer.csproj -- --report ./src/TestResults/coverage.cobertura.xml --line-threshold 84.48 --branch-threshold 72.80
+  cd src && npm test -- --coverage
   ```
 - [ ] No workspace problems (`problems`) after build/test
 - [ ] Docker image builds and feature works in container
-- [ ] If snapshots changed, PR includes `SNAPSHOT_UPDATE_OK` in a commit message and the review notes explain why the diff is correct
 
 ### Code Quality
-- [ ] Follows C# coding conventions
-- [ ] Uses `_camelCase` for private fields
+- [ ] Follows TypeScript/Next.js coding conventions
 - [ ] Prefers immutable data structures where appropriate
-- [ ] Uses modern C# features appropriately
+- [ ] Uses modern TypeScript features appropriately
 - [ ] Files are under 300 lines
 - [ ] No unnecessary code duplication
 
-### Access Modifiers
-- [ ] Uses most restrictive access modifier (prefer `private`, then `internal`)
-- [ ] No `public` members except main entry points
-- [ ] Test access uses `InternalsVisibleTo`, not `public`
-- [ ] No false concerns about API backwards compatibility
-
 ### Code Comments
-- [ ] All members have XML doc comments (public, internal, private)
 - [ ] Comments explain "why" not just "what"
-- [ ] Required tags present: `<summary>`, `<param>`, `<returns>`
-- [ ] Complex methods have `<example>` with `<code>`
 - [ ] Feature/spec references included where applicable
 - [ ] Comments are synchronized with code (no outdated comments)
-- [ ] Follows [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md)
 
 ### Architecture
 - [ ] Changes align with the architecture document
@@ -262,7 +244,7 @@ Before approving any code, systematically answer these questions:
 ### Testing
 - [ ] Tests are meaningful and test the right behavior
 - [ ] Edge cases are covered
-- [ ] Tests follow naming convention: `MethodName_Scenario_ExpectedResult`
+- [ ] Tests follow naming convention: `methodName_scenario_expectedResult`
 - [ ] All tests are fully automated
 
 ### Documentation
@@ -274,10 +256,6 @@ Before approving any code, systematically answer these questions:
   - [ ] Spec examples match actual implementation behavior
   - [ ] No conflicting requirements between documents
   - [ ] Feature descriptions are consistent across all docs
-- [ ] Comprehensive demo output passes markdownlint (required for all reviews):
-  - [ ] artifacts/comprehensive-demo.md regenerated
-  - [ ] Markdown linter shows 0 errors
-  - [ ] examples/comprehensive-demo/plan.json updated if feature has visible markdown impact
 - [ ] **UAT Artifact Requirements Met** (user-facing features):
   - [ ] Check test plan's User Acceptance Scenarios section for feature-specific artifact requirements
   - [ ] If feature-specific artifact specified (e.g., `artifacts/<feature-slug>-uat.md`), verify it exists and is correct
@@ -291,7 +269,7 @@ Before approving any code, systematically answer these questions:
   - [ ] `docs/features.md` updated (required for all features)
   - [ ] `docs/architecture.md` updated (if architectural changes)
   - [ ] `docs/testing-strategy.md` updated (if new test approaches)
-  - [ ] `README.md` updated (if usage/CLI changes)
+  - [ ] `README.md` updated (if usage/UI changes)
   - [ ] `docs/agents.md` updated (if workflow changes)
 
 ## Review Approach
@@ -305,14 +283,15 @@ Before approving any code, systematically answer these questions:
 
 2. **Run verification** - Execute tests and check for errors:
    ```bash
-  scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger
-   docker build -t green-ledger:local .
+  cd src && npm test
+   docker compose build
    ```
 
-   Generate and lint the comprehensive demo output:
+   Verify the app works by running it:
    ```bash
-   dotnet run --project src/GreenLedger/GreenLedger.csproj -- examples/comprehensive-demo/plan.json --principal-mapping examples/comprehensive-demo/demo-principals.json --code-analysis-results "examples/static-analysis/*.sarif" --output artifacts/comprehensive-demo.md
-   scripts/markdownlint.sh artifacts/comprehensive-demo.md
+   docker compose up -d
+   # Test relevant flows at http://localhost:3000
+   docker compose down
    ```
 
 3. **Line-by-line specification comparison** - For each acceptance criterion in the spec:
@@ -354,7 +333,7 @@ Brief summary of what was reviewed and the overall assessment.
 ## Verification Results
 
 - Tests: Pass / Fail (X passed, Y failed)
-- Coverage: Line X% (threshold ≥84.48%), Branch Y% (threshold ≥72.80%)
+- Coverage: Pass / Fail (see coverage report)
 - Build: Success / Failure
 - Docker: Builds / Fails
 - Errors: None / List
@@ -381,12 +360,6 @@ Brief summary of what was reviewed and the overall assessment.
 ## Review Decision
 
 **Status:** Approved | Changes Requested
-
-## Snapshot Changes (if any)
-
-- Snapshot files changed: Yes / No
-- Commit message token `SNAPSHOT_UPDATE_OK` present: Yes / No / N/A
-- Why the snapshot diff is correct (what changed, and why it matches the expected behavior): <explanation>
 
 ## Issues Found
 
@@ -438,7 +411,6 @@ Your work is complete when:
 - [ ] All checklist items have been verified
 - [ ] Issues are documented with clear descriptions
 - [ ] The review decision is made (Approved or Changes Requested)
-- [ ] If snapshots changed, the review report includes a clear justification for the diff and confirms `SNAPSHOT_UPDATE_OK` is present
 - [ ] The maintainer has acknowledged the review
 
 ## Handoff
@@ -454,9 +426,9 @@ After committing:
 - If **Changes Requested**: Use the handoff button to return to the **Developer** agent.
   - This applies to both initial reviews and reviews of rework after failed PR/CI validation
   - After Developer fixes issues, work returns to Code Reviewer for re-approval
-- If **Approved** and **user-facing feature** (UI changes, PDF export, API behavior changes, or any visible user output): Use the handoff button to proceed to the **UAT Tester** agent.
+- If **Approved** and **user-facing feature** (UI changes, API behavior changes, or any visible user output): Use the handoff button to proceed to the **UAT Tester** agent.
   - UAT Tester will build the Docker image and ask the Maintainer to verify the feature manually
-- If **Approved** and **no UAT needed** (internal changes, non-user-facing features): Use the handoff button to proceed to the **Release Manager** agent.
+- If **Approved** and **purely internal change** (no user-visible changes — e.g., refactoring, DB migrations, internal utility code): Use the handoff button to proceed to the **Release Manager** agent.
 
 ## Communication Guidelines
 

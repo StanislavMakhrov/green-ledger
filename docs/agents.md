@@ -295,7 +295,7 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 5. **Task Planner** creates and prioritizes actionable work items (consumes test plan).
 6. **Developer** implements features/fixes and tests.
 7. **Technical Writer** updates all relevant documentation (markdown files in the repository).
-8. **Code Reviewer** reviews and approves the work. Hands off to UAT Tester for user-facing features, or directly to Release Manager for internal changes.
+8. **Code Reviewer** reviews and approves the work. Hands off to UAT Tester for user-facing features, or directly to Release Manager for purely internal/non-UI changes.
 9. **UAT Tester** validates user-facing features by building the Docker image and asking the Maintainer to manually verify the app. Waits for Maintainer PASS/FAIL.
 10. **Release Manager** prepares, coordinates, and executes the release.
 
@@ -650,7 +650,7 @@ Each agent hands off to the next by producing a specific deliverable. The workfl
 | Task Planner            | Developer               | User Stories / Tasks with Acceptance Criteria        |
 | Developer               | Technical Writer        | Code & Tests                                         |
 | Technical Writer        | Code Reviewer           | Updated Documentation                                |
-| Code Reviewer           | UAT Tester (user-facing features) <br/> Release Manager (internal changes) <br/> Developer (rework needed) | Code Review Report |
+| Code Reviewer           | UAT Tester (user-facing features) <br/> Release Manager (purely internal changes) <br/> Developer (rework needed) | Code Review Report |
 | UAT Tester              | Release Manager (approved) <br/> Developer (issues found) | Maintainer verified Docker image manually |
 | Release Manager         | CI/CD Pipeline, GitHub  | Pull Request, Release Notes                          |
 | Release Manager         | Retrospective           | Deployment Complete                                  |
@@ -710,7 +710,6 @@ Non-default prompts add a suffix describing what the agent should do instead of 
 - `/dev-rework-uat-failed` Developer rework (UAT found issues)
 - `/dev-fix-build-failed` Developer fix (CI/release build failed)
 - `/dev-fix-ia-handoff` Developer fix (Issue Analyst -> Developer transition; uses `analysis.md`)
-- `/rm-no-uat` Release Manager (prepare release with no UAT)
 
 For prompts that correspond to a workflow handoff, the prompt text is kept identical to the handoff button prompt.
 

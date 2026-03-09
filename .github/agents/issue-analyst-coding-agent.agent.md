@@ -158,7 +158,7 @@ Collect relevant data:
 - Error messages (full stack traces)
 - Log files
 - Workflow run output (if CI/CD failure)
-- Environment details (OS, .NET version, Docker version)
+- Environment details (OS, Node.js version, Docker version)
 - Recent changes: `git log --oneline --since="1 week ago"`
 - Recent changes: `scripts/git-log.sh --oneline --since="1 week ago"`
 - Current branch status: `scripts/git-status.sh`
@@ -181,10 +181,10 @@ scripts/check-workflow-status.sh watch <run-id>
 scripts/git-log.sh --oneline --since="1 week ago" -- <relevant-path>
 
 # Check for build errors
-dotnet build --no-restore
+cd src && npm run build
 
 # Run tests
-scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger --verbosity normal
+cd src && npm test
 
 # Check for problems in workspace
 # Use the 'problems' tool to see diagnostics
@@ -308,7 +308,7 @@ Your work is complete when:
 
 ### ✅ Good: Asking for Reproduction Steps
 **User**: "The parser crashes sometimes"
-**SE**: "Can you describe what input causes the crash? Do you have an example Terraform plan file that triggers it?"
+**SE**: "Can you describe what input causes the crash? Do you have example data or steps to reproduce it?"
 
 ### ❌ Bad: Implementing Without Analysis
 **User**: "Build is broken"
