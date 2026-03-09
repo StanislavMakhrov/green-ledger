@@ -53,3 +53,12 @@
 - **Artifacts Produced:**
   - `docs/features/001-mvp/tasks.md` — 38 implementation tasks in 7 phases with priorities, acceptance criteria, dependencies, and test case references
 - **Problems Encountered:** None. All architectural decisions were resolved in ADRs; no maintainer clarification required.
+
+### Technical Writer
+
+- **Date:** 2025-07-18
+- **Summary:** Reviewed the completed MVP implementation and updated both `README.md` and `docs/features.md` to accurately reflect the delivered application.
+- **Artifacts Produced:**
+  - `README.md` — Updated Project Structure (correct `src/` layout with route groups), clarified Quick Start commands to note all npm scripts run from `src/`, added explicit note for Docker commands running from repo root, expanded Testing section with `npm run format`, added Database Scripts section (`db:migrate`, `db:seed`, `db:reset`), updated Tech Stack PDF Export to specify Puppeteer.
+  - `docs/features.md` — Changed "Planned Features" to "Features", updated "MVP Features (to be implemented)" to "MVP Features ✅" with an implementation confirmation statement and Puppeteer detail for PDF Export.
+- **Problems Encountered:** None. The existing README was already well-structured; changes were targeted corrections and additions to match the actual implementation. Markdown lint passed on both changed files (0 errors).
