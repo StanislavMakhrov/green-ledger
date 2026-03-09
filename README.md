@@ -58,15 +58,19 @@ GreenLedger automates the complete workflow:
 
 ### Development
 
+All source code lives in the `src/` directory. Run commands from there:
+
 ```bash
+cd src
+
 # Install dependencies
 npm install
 
-# Set up database
-npx prisma db push
+# Set up database and apply migrations
+npm run db:migrate
 
-# Seed demo data
-npx prisma db seed
+# Seed demo data (company, suppliers, sample records)
+npm run db:seed
 
 # Start development server
 npm run dev
@@ -74,16 +78,22 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+> **Reporting Year:** The demo company's reporting year defaults to `2024`. Override with the `REPORTING_YEAR` environment variable (e.g. `REPORTING_YEAR=2023 npm run dev`).
+
 ### Docker
 
 ```bash
 docker compose up
 ```
 
+This builds the image from `src/` and starts the app on port 3000 with a local SQLite database.
+
 ### Testing
 
 ```bash
-# Run tests
+cd src
+
+# Run all tests
 npm test
 
 # Run tests in watch mode
@@ -103,24 +113,33 @@ npm run build
 
 ```text
 green-ledger/
-├── app/                    # Next.js App Router pages & API routes
-│   ├── api/                # API Route Handlers
-│   ├── dashboard/          # Dashboard page
-│   ├── suppliers/          # Supplier management
-│   ├── scope-1/            # Scope 1 records
-│   ├── scope-2/            # Scope 2 records
-│   ├── scope-3/            # Scope 3 records
-│   ├── methodology/        # Methodology notes
-│   ├── export/             # PDF export
-│   └── public/supplier/    # Public supplier form
-├── lib/                    # Shared utilities & business logic
-├── prisma/                 # Database schema & migrations
-├── public/                 # Static assets
+├── src/                    # All application source code
+│   ├── app/                # Next.js App Router pages & API routes
+│   │   ├── (app)/          # Authenticated management UI (layout + sidebar)
+│   │   │   ├── dashboard/  # Dashboard page
+│   │   │   ├── suppliers/  # Supplier management
+│   │   │   ├── scope-1/    # Scope 1 records
+│   │   │   ├── scope-2/    # Scope 2 records
+│   │   │   ├── scope-3/    # Scope 3 records & categories
+│   │   │   ├── methodology/# Methodology notes
+│   │   │   └── export/     # PDF export
+│   │   ├── (public)/       # Public-facing routes (no auth)
+│   │   │   └── supplier/   # Supplier form (/public/supplier/[token])
+│   │   └── api/            # API Route Handlers
+│   ├── components/         # Reusable UI components
+│   ├── lib/                # Shared utilities & business logic
+│   │   ├── constants.ts    # Proxy factors, company ID, etc.
+│   │   ├── proxy.ts        # Proxy emission calculations
+│   │   ├── audit.ts        # Audit trail helpers
+│   │   └── pdf/            # PDF report template & generator
+│   ├── prisma/             # Database schema, migrations & seed
+│   └── tests/              # Vitest unit and smoke tests
 ├── docs/                   # Documentation
 │   ├── spec.md             # Project specification
 │   ├── features.md         # Feature descriptions
 │   └── agents.md           # Agent workflow documentation
 ├── .github/                # CI/CD, agents, skills
+├── docker-compose.yml      # Docker Compose for local demo
 └── scripts/                # Development & CI scripts
 ```
 
