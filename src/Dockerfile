@@ -25,7 +25,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 COPY package*.json ./
-RUN npm ci --only=production
+ENV HUSKY=0
+RUN npm ci
 
 COPY . .
 
