@@ -15,7 +15,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN npx prisma generate
 RUN npm run build
 RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/prisma db push --skip-generate
-RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/prisma db seed
+RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/tsx prisma/seed.ts
 
 FROM node:20-alpine AS runner
 RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
