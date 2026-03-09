@@ -120,7 +120,7 @@ Before proceeding with the release, **verify the Work Protocol** (`work-protocol
 
 ### ✅ Always Do
 - Verify code review is approved before proceeding
-- Trust CI pipeline for test validation — only run local tests (`scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger`) if diagnosing a specific CI failure
+- Trust CI pipeline for test validation — only run local tests (`cd src && npm test`) if diagnosing a specific CI failure
 - Verify Docker image builds successfully (only if not recently verified by Code Reviewer)
 - Check that working directory is clean
 - Verify branch is up to date with main
@@ -161,9 +161,8 @@ Before starting, familiarize yourself with:
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md`
 - The Code Review Report in `docs/features/NNN-<feature-slug>/code-review.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - Code documentation requirements
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) - Contribution and release guidelines
-- Current version in `src/Directory.Build.props`
+- Current version in `src/package.json`
 
 ## Release Process
 
@@ -204,12 +203,12 @@ Before releasing, verify:
 2. **Tests Pass** (trust CI — only run locally if debugging a failure)
    ```bash
    # Only if CI failed and you need to reproduce:
-   scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger
+   cd src && npm test
    ```
 
 3. **Docker Build Succeeds** (only if not recently verified by Code Reviewer)
    ```bash
-   docker build -t green-ledger:local .
+   docker compose build
    ```
 
 4. **No Pending Changes**
@@ -262,10 +261,9 @@ Before releasing, verify:
    - New features and capabilities
    - Bug fixes that affected users
    - Performance improvements
-   - CLI flag changes
-   - Output format enhancements
-   - New terraform feature support
-
+   - New pages and features
+   - UI/UX enhancements
+   
     **Required Sections and Style:**
     - Technical blog-post style written by a developer for Terraform practitioners (not marketing copy)
     - Be honest about scope (what changed / what didn’t)
@@ -278,16 +276,10 @@ Before releasing, verify:
     - **▶️ Getting started**: include only if usage changed (new flags, env vars, required steps, migration notes)
     - **📸 Screenshots**:
        - Only include a screenshots section if you actually have screenshots to show.
-       - If the release changes rendered output / review experience, screenshots are required; generate them if missing.
-       - **PREREQUISITE — Install Playwright first**: Build the ScreenshotGenerator (`dotnet build src/tools/GreenLedger.ScreenshotGenerator/`), then install the browser via `pwsh src/tools/GreenLedger.ScreenshotGenerator/bin/Debug/net10.0/playwright.ps1 install chromium --with-deps`. Do NOT use `npx playwright install` — the npm version differs from the .NET package.
+       - If the release changes UI or visual behavior, screenshots are required; generate them if missing.
+       - Run `docker compose build && docker compose up -d` to build and start the app, then take screenshots of the relevant pages/features at `http://localhost:3000`, then `docker compose down`.
        - Release notes screenshots must be focused and small: **max 580×400**.
-       - Use only `*-crop*.png` files in release notes, or generate single screenshots using the release wrapper.
-       - **Recommended**: Use `scripts/generate-release-screenshots.sh` for release notes (optimized with sensible defaults):
-          - `scripts/generate-release-screenshots.sh --plan <plan.json> --output-prefix <name> --output-dir docs/features/NNN/ --selector "..."`
-          - or `scripts/generate-release-screenshots.sh --markdown-file <md> --output-prefix <name> --output-dir docs/features/NNN/ --target-resource-id "..."`
-       - **Choose selectors carefully**: Match the selector to the actual visual change. Use the `generate-release-screenshots` skill’s Selector Guide for detailed guidance. Key rule: do NOT use `--target-terraform-resource-id` for summary-line changes (emoji/spacing fixes) — use `--selector "summary:has-text('resource_name')"` instead.
-       - **Alternative**: Use `scripts/generate-screenshot.sh` for full control (light/dark, 1x/2x, thumbnails, lightbox)
-       - Prefer showing a single “after” screenshot for features; for bug fixes, include before/after when feasible.
+       - Prefer showing a single "after" screenshot for features; for bug fixes, include before/after when feasible.
        - **Image URLs in release notes**: Use absolute `raw.githubusercontent.com` URLs, NOT relative paths. Relative paths like `./image.png` break in GitHub Release pages. Format: `https://raw.githubusercontent.com/StanislavMakhrov/green-ledger/v{VERSION}/docs/{path}/image.png`. Verify all referenced filenames actually exist before committing.
    
     **Save:** Create `release-notes.md` in the current work item folder (`docs/features/.../`, `docs/issues/.../`, or `docs/workflow/.../`).

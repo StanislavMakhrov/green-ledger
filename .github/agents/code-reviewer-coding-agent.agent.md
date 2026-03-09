@@ -94,12 +94,12 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 
 ### ✅ Always Do
 - Check Docker availability before running Docker build (ask maintainer to start if needed)
-- Use the `run-dotnet-tests` skill to run tests and verify functionality (also `docker build` for container verification)
-- Generate comprehensive demo output and verify it passes markdownlint (always, not just when feature impacts markdown)
+- Use the `run-tests` skill to run tests and verify functionality (also `docker compose build` for container verification)
+- Generate a production build and verify no errors (`cd src && npm run build`)
 - **Line-by-line specification comparison** — Read each acceptance criterion and verify it is implemented AND tested
 - **Cross-check examples** — If the spec includes examples, verify the implementation matches them exactly
 - Check that all acceptance criteria are met
-- Verify adherence to C# coding conventions
+- Verify adherence to TypeScript/Next.js coding conventions
 - Ensure tests follow naming convention and are meaningful
 - Confirm documentation is updated
 - Check that CHANGELOG.md was NOT modified
@@ -107,7 +107,6 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 - Categorize issues by severity (Blocker/Major/Minor/Suggestion)
 - When reviewing rework from failed PR/CI pipelines, verify the specific failure is resolved
 - For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
-- Verify markdown rendering changes follow [docs/report-style-guide.md](../../docs/report-style-guide.md)
 - **Challenge assumptions** — If code looks "obviously correct," ask what could make it fail
 - **Identify untested paths** — Look for code branches that lack corresponding test coverage
 
@@ -138,12 +137,10 @@ Before starting, familiarize yourself with:
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
 - [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
-- [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md) - **Code documentation requirements**
-- [docs/report-style-guide.md](../../docs/report-style-guide.md) - **Report formatting and styling standards**
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
 - [docs/testing-strategy.md](../../docs/testing-strategy.md) - Testing conventions
-- The implementation in `src/` and `src/tests/`
+- The implementation in `src/` and tests
 
 ## Critical Questions for Every Review
 
@@ -185,38 +182,20 @@ Before approving any code, systematically answer these questions:
 ### Correctness
 - [ ] Code implements all acceptance criteria from the tasks
 - [ ] All test cases from the test plan are implemented
-- [ ] Tests pass (use `run-dotnet-tests` skill for test execution)
+- [ ] Tests pass (use `run-tests` skill for test execution)
 - [ ] No workspace problems (`problems`) after build/test
 - [ ] Docker image builds and feature works in container
-- [ ] If snapshots changed, PR includes `SNAPSHOT_UPDATE_OK` in a commit message and the review notes explain why the diff is correct
-
-### Rendering Verification (for features modifying rendering)
-- [ ] Verify resource rendering changes are implemented in C# renderers
-- [ ] For parent-child features: Verify the parent renderer triggers child resource rendering (and the generated artifact contains the expected child heading, e.g., `grep "#### Members" test-output.md`)
-- [ ] Compare renderer structure against architectural design notes in the feature docs (e.g., architecture.md section describing rendering changes)
 
 ### Code Quality
-- [ ] Follows C# coding conventions
-- [ ] Uses `_camelCase` for private fields
-- [ ] Prefers immutable data structures where appropriate
-- [ ] Uses modern C# features appropriately
+- [ ] Follows TypeScript/Next.js coding conventions
+- [ ] Uses modern TypeScript features appropriately
 - [ ] Files are under 300 lines
 - [ ] No unnecessary code duplication
 
-### Access Modifiers
-- [ ] Uses most restrictive access modifier (prefer `private`, then `internal`)
-- [ ] No `public` members except main entry points
-- [ ] Test access uses `InternalsVisibleTo`, not `public`
-- [ ] No false concerns about API backwards compatibility
-
 ### Code Comments
-- [ ] All members have XML doc comments (public, internal, private)
 - [ ] Comments explain "why" not just "what"
-- [ ] Required tags present: `<summary>`, `<param>`, `<returns>`
-- [ ] Complex methods have `<example>` with `<code>`
-- [ ] Feature/spec references included where applicable
+- [ ] Complex logic is documented
 - [ ] Comments are synchronized with code (no outdated comments)
-- [ ] Follows [docs/commenting-guidelines.md](../../docs/commenting-guidelines.md)
 
 ### Architecture
 - [ ] Changes align with the architecture document
@@ -226,7 +205,7 @@ Before approving any code, systematically answer these questions:
 ### Testing
 - [ ] Tests are meaningful and test the right behavior
 - [ ] Edge cases are covered
-- [ ] Tests follow naming convention: `MethodName_Scenario_ExpectedResult`
+- [ ] Tests follow naming convention: `methodName_scenario_expectedResult`
 - [ ] All tests are fully automated
 
 ### Documentation
@@ -238,17 +217,8 @@ Before approving any code, systematically answer these questions:
   - [ ] Spec examples match actual implementation behavior
   - [ ] No conflicting requirements between documents
   - [ ] Feature descriptions are consistent across all docs
-- [ ] **UAT Plan Artifacts** (REQUIRED for features with UAT test plans):
-  - [ ] `docs/features/NNN-<feature-slug>/uat-plan.json` exists
-  - [ ] `docs/features/NNN-<feature-slug>/uat-plan.md` exists and is up-to-date (matches the JSON)
-  - [ ] UAT plan covers all changes that affect markdown output
-  - [ ] UAT plan includes edge cases specified in the UAT test plan
-  - [ ] Generated markdown matches the specification examples
-- [ ] Comprehensive demo output passes markdownlint (required for all reviews):
-  - [ ] artifacts/comprehensive-demo.md regenerated
-  - [ ] Markdown linter shows 0 errors
-  - [ ] examples/comprehensive-demo/plan.json updated if feature has visible markdown impact
-- [ ] For user-facing features: UAT required (hand off to UAT Tester after approval)
+- [ ] For user-facing features: UAT test plan exists (`docs/features/NNN-<feature-slug>/uat-test-plan.md`)
+- [ ] For user-facing features: UAT required — hand off to UAT Tester after approval
 
 ### Work Protocol & Process Compliance
 - [ ] `work-protocol.md` exists in the work item folder
@@ -257,7 +227,7 @@ Before approving any code, systematically answer these questions:
   - [ ] `docs/features.md` updated (required for all features)
   - [ ] `docs/architecture.md` updated (if architectural changes)
   - [ ] `docs/testing-strategy.md` updated (if new test approaches)
-  - [ ] `README.md` updated (if usage/CLI changes)
+  - [ ] `README.md` updated (if usage/UI changes)
   - [ ] `docs/agents.md` updated (if workflow changes)
 
 ## Review Approach
@@ -269,84 +239,33 @@ Before approving any code, systematically answer these questions:
    - If Docker is not running, ask the maintainer: "Docker verification is required but Docker is not available. Please start Docker Desktop and confirm when ready."
    - Wait for confirmation before proceeding with Docker build/tests
 
-2. **Generate test artifacts manually** - Before trusting snapshot tests:
+2. **Generate test artifacts manually** - Before trusting automated tests, run the app locally:
    ```bash
-   # Generate a simple test case for the feature
-   dotnet run --project src/GreenLedger/GreenLedger.csproj -- [simple-test-plan].json --output test-output.md
-   
-   # Verify the feature-specific output is present
-   grep "[expected-pattern]" test-output.md || echo "FEATURE NOT RENDERING"
+   docker compose build
+   docker compose up -d
+   # Test specific flows by navigating to http://localhost:3000
+   docker compose down
    ```
    
-   **Do NOT assume snapshot tests are correct just because they exist.**
-   - Snapshots may have been generated before the feature was complete
-   - Snapshots may have been approved with `SNAPSHOT_UPDATE_OK` despite being incorrect
-   - Always verify the actual rendered output matches the specification examples
+   **Do NOT assume tests are correct just because they pass.**
+   - Tests may have been written before the feature was complete
+   - Always verify the actual app behavior matches the specification
 
-3. **Run verification** - Execute tests and check for errors (use `run-dotnet-tests` skill):
+3. **Run verification** - Execute tests and check for errors (use `run-tests` skill):
    ```bash
-   docker build -t green-ledger:local .
-   ```
-
-   Generate and lint the comprehensive demo output:
-   ```bash
-   dotnet run --project src/GreenLedger/GreenLedger.csproj -- examples/comprehensive-demo/plan.json --principal-mapping examples/comprehensive-demo/demo-principals.json --code-analysis-results "examples/static-analysis/*.sarif" --output artifacts/comprehensive-demo.md
-   scripts/markdownlint.sh artifacts/comprehensive-demo.md
-   ```
-
-   **For features with UAT test plans, validate UAT plan artifacts (REQUIRED):**
-   ```bash
-   # Check if UAT test plan exists
-   if [ -f "docs/features/NNN-<feature-slug>/uat-test-plan.md" ]; then
-     # Verify uat-plan.json exists
-     if [ ! -f "docs/features/NNN-<feature-slug>/uat-plan.json" ]; then
-       echo "BLOCKER: uat-plan.json is missing but required by UAT test plan"
-     fi
-     
-     # Verify uat-plan.md exists
-     if [ ! -f "docs/features/NNN-<feature-slug>/uat-plan.md" ]; then
-       echo "BLOCKER: uat-plan.md is missing but required by UAT test plan"
-     fi
-     
-     # Regenerate uat-plan.md and check if it matches
-     green-ledger docs/features/NNN-<feature-slug>/uat-plan.json > /tmp/uat-plan-check.md
-     if ! diff -q docs/features/NNN-<feature-slug>/uat-plan.md /tmp/uat-plan-check.md; then
-       echo "BLOCKER: uat-plan.md is out of sync with uat-plan.json"
-     fi
-     
-     # Verify the plan covers the feature as specified in the UAT test plan
-     # Read the UAT test plan and check that all specified resources/edge cases are in uat-plan.md
-   fi
+   cd src && npm test
+   cd src && npm run build
    ```
 
 4. **Line-by-line specification comparison** - For each acceptance criterion in the spec:
    1. Read the criterion
-   2. **For rendering features:** Find the relevant example in `rendering-examples.md`
-   3. **Generate an artifact that should match that example** (create test data if needed)
-   4. **Compare the generated output to the example character-by-character**
-   5. Find the implementing code
-   6. Find the corresponding test(s)
-   7. Verify the behavior matches the spec exactly
-   
-   **Red Flag:** If you cannot find a way to generate output that matches the spec examples, the feature may not be implemented correctly.
+   2. Find the implementing code
+   3. Find the corresponding test(s)
+   4. Verify the behavior matches the spec exactly
    
    Document any gaps or deviations as **Blocker** issues
 
 5. **Adversarial testing** - Actively try to break the implementation:
-   
-   **Start with the simplest possible test case:**
-   1. For rendering features, create the minimal example (e.g., 1 parent + 1 child)
-   2. Generate the artifact manually
-   3. Verify the core feature works before testing edge cases
-   4. If the simple case fails, diagnose before reviewing complex scenarios
-   
-   Example for parent-child rendering:
-   - 1 azuread_group with 1 inline member (CREATE action)
-   - Generate markdown
-   - Verify "#### Members" heading and 1-row table exist
-   - **If this fails, the feature is fundamentally broken regardless of edge case coverage**
-   
-   **Then test edge cases:**
    - Test with edge case inputs (empty, null, very large, special characters)
    - Test error paths and exception handling
    - Look for race conditions or state management issues
@@ -406,12 +325,6 @@ Brief summary of what was reviewed and the overall assessment.
 
 **Status:** Approved | Changes Requested
 
-## Snapshot Changes (if any)
-
-- Snapshot files changed: Yes / No
-- Commit message token `SNAPSHOT_UPDATE_OK` present: Yes / No / N/A
-- Why the snapshot diff is correct (what changed, and why it matches the expected behavior): <explanation>
-
 ## Issues Found
 
 ### Blockers
@@ -462,7 +375,6 @@ Your work is complete when:
 - [ ] All checklist items have been verified
 - [ ] Issues are documented with clear descriptions
 - [ ] The review decision is made (Approved or Changes Requested)
-- [ ] If snapshots changed, the review report includes a clear justification for the diff and confirms `SNAPSHOT_UPDATE_OK` is present
 - [ ] The maintainer has acknowledged the review
 
 ## Handoff
@@ -470,9 +382,9 @@ Your work is complete when:
 - If **Changes Requested**: create a PR comment recommending the **Developer** agent as the next step.
   - This applies to both initial reviews and reviews of rework after failed PR/CI validation
   - After Developer fixes issues, work returns to Code Reviewer for re-approval
-- If **Approved** and **user-facing feature** (UI changes, PDF export, API behavior changes, or any visible user output): create a PR comment recommending the **UAT Tester** agent as the next step.
+- If **Approved** and **user-facing feature** (UI changes, new pages, API behavior changes, or any visible user output): create a PR comment recommending the **UAT Tester** agent as the next step.
   - UAT Tester will build the Docker image and ask the Maintainer to verify the feature manually
-- If **Approved** and **no UAT needed** (internal changes, non-user-facing features): create a PR comment recommending the **Release Manager** agent as the next step.
+- If **Approved** and **purely internal change** (no user-visible changes — e.g., refactoring, DB migrations, internal utility code): create a PR comment recommending the **Release Manager** agent as the next step.
 
 ## Communication Guidelines
 

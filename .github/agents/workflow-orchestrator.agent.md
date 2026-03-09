@@ -82,7 +82,7 @@ task({
 "Implementation Note: Running in GitHub Cloud context without file creation tools. 
 The complete template content is documented above. Manual file creation required:
 1. Create directory: mkdir -p src/Templates
-2. Create renderer file: src/GreenLedger/.../Renderers/ExampleRenderer.cs with content..."
+2. Create renderer file: src/app/components/ExampleComponent.tsx with content..."
 ```
 ❌ **Why this is wrong**: You're doing the Developer's work. The Developer agent has the tools needed.
 
@@ -90,8 +90,8 @@ The complete template content is documented above. Manual file creation required
 ```typescript
 task({
   agent_type: "developer",
-        description: "Create renderer",
-        prompt: "Create the C# renderer (implementing the project’s renderer interface and registering it) based on the requirements in the issue..."
+        description: "Create component",
+        prompt: "Create the TypeScript component (following the project’s Next.js conventions) based on the requirements in the issue..."
 })
 ```
 ✅ **Why this is right**: You delegate; the Developer implements using their tools.

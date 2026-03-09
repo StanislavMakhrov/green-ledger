@@ -90,8 +90,8 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 **Summary:** Implemented feature X with tests and documentation
 
 **Changes:**
-- Added FeatureX.cs with core logic
-- Added FeatureXTests.cs with 15 test cases
+- Added FeatureX.ts with core logic
+- Added FeatureX.test.ts with 15 test cases
 - Updated README.md
 
 **Next Agent:** Technical Writer (to review documentation)

@@ -37,10 +37,10 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 ### ✅ Always Do
 - Map every acceptance criterion to at least one test case
 - Ensure all automated tests are fully automated (no manual steps)
-- For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), define **UAT Test Plans** for Maintainer review via PRs in `docs/features/NNN-<feature-slug>/uat-test-plan.md`
-- Follow xUnit and AwesomeAssertions patterns
-- Use test naming convention: `MethodName_Scenario_ExpectedResult`
-- Verify tests can run via `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` without human intervention
+- For user-facing features (UI changes, new pages, API behavior changes, or any visible user output), define **UAT Test Plans** for Maintainer review in `docs/features/NNN-<feature-slug>/uat-test-plan.md`
+- Follow Vitest naming conventions
+- Use test naming convention: `methodName_scenario_expectedResult`
+- Verify tests can run via `cd src && npm test` without human intervention
 - Consider edge cases, error conditions, and boundary values
 - Create test plan markdown file at `docs/features/NNN-<feature-slug>/test-plan.md`
 - Create UAT test plan (if needed) at `docs/features/NNN-<feature-slug>/uat-test-plan.md`
@@ -53,7 +53,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Proposing tests that cannot be fully automated
 
 ### 🚫 Never Do
-- Write or modify test implementation code (.cs files) - only create test plan documentation
+- Write or modify test implementation code (`.ts` files) - only create test plan documentation
 - Edit any files except markdown documentation (.md files)
 - Create manual test steps (all must be automated) EXCEPT for UAT visual verification
 - Skip testing error conditions or edge cases
@@ -69,125 +69,67 @@ Before starting, familiarize yourself with:
 - [docs/testing-strategy.md](../../docs/testing-strategy.md) - Project testing conventions and infrastructure
 - [docs/agents.md](../../docs/agents.md) - Workflow overview and artifact formats
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
-- Existing tests in `src/tests/` to understand patterns and conventions
+- Existing tests in `src/` to understand patterns and conventions
 
 ## Project Testing Conventions
 
 This project uses:
-- **Framework**: xUnit
-- **Assertions**: AwesomeAssertions (fluent-style)
-- **Test Data**: JSON files in `src/tests/GreenLedger.Tests/TestData/`
-- **Docker Integration Tests**: For end-to-end CLI testing
+- **Framework**: Vitest
+- **Test Location**: Test files co-located with source or in dedicated test directories under `src/`
+- **Docker Integration Tests**: For end-to-end app testing via `docker compose`
 
-**Important constraint:** All tests must be fully automated. No manual testing steps are acceptable. Every test case must be executable via `dotnet test` without human intervention (typically executed via `scripts/test-with-timeout.sh -- dotnet test --solution src/green-ledger` to prevent hangs). If a custom timeout is required, add `--timeout-seconds <seconds>`.
+**Important constraint:** All tests must be fully automated. No manual testing steps are acceptable. Every test case must be executable via `cd src && npm test` without human intervention.
 
-Follow the existing test naming convention: `MethodName_Scenario_ExpectedResult`
+Follow the existing test naming convention: `methodName_scenario_expectedResult`
 
 ## UAT Test Plans
 
-For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), you must create a **UAT Test Plan** in `docs/features/NNN-<feature-slug>/uat-test-plan.md`. This plan guides the Maintainer (and the UAT Tester agent) on what to verify visually.
+For user-facing features (UI changes, new pages, API behavior changes, or any visible user output), you **MUST** create a **UAT Test Plan** in `docs/features/NNN-<feature-slug>/uat-test-plan.md`. This plan guides the Maintainer (and the UAT Tester agent) on what to verify manually in the running app.
 
 ### UAT Plan Template
-
-**CRITICAL**: For features that affect markdown output, you MUST create BOTH:
-1. A feature-specific test plan JSON file at `docs/features/NNN-<feature-slug>/uat-plan.json`
-2. The rendered markdown file at `docs/features/NNN-<feature-slug>/uat-plan.md`
-
-These artifacts are REQUIRED and will be validated by the Code Reviewer and used by the UAT Tester.
 
 ```markdown
 # UAT Test Plan: <Feature Name>
 
 ## Goal
-Verify that <feature description> renders correctly in GitHub and Azure DevOps PR comments.
-
-## Artifacts
-
-### Feature-Specific Test Artifact (REQUIRED)
-**Purpose:** Focus testing on the specific changes in this feature. This artifact MUST be real green-ledger output, not synthetic or simulated.
-
-**Source Plan Path:** `docs/features/NNN-<feature-slug>/uat-plan.json`
-
-**Rendered Output Path:** `docs/features/NNN-<feature-slug>/uat-plan.md`
-
-**Plan Requirements:**
-- **MUST be a real Terraform plan JSON** that exercises the feature
-- **MUST cover all changes** that affect markdown output
-- **MUST include edge cases** relevant to the feature
-- **Rationale:** <Why this specific plan/configuration tests the feature>
-- **Key Resources:** List the 2-3 specific resources that demonstrate the feature
-- **Coverage:** Explicitly list what aspects of the feature are tested
-
-**Example Creation Command:**
-```bash
-# Generate the rendered output from the plan
-green-ledger docs/features/NNN-<feature-slug>/uat-plan.json > docs/features/NNN-<feature-slug>/uat-plan.md
-```
-
-### Comprehensive Demo (Regression Test)
-**Purpose:** Ensure no unintended side effects in other areas.
-
-**Artifact Path:** 
-- GitHub: `artifacts/comprehensive-demo-simple-diff.md`
-- Azure DevOps: `artifacts/comprehensive-demo.md`
-
-**Note:** This artifact is generated automatically by the Developer using `generate-demo-artifacts` skill.
+Verify that <feature description> works correctly in the running app.
 
 ## Test Steps
-1. Developer creates `uat-plan.json` based on this specification
-2. Developer generates `uat-plan.md` from the plan
-3. Code Reviewer validates both files exist and are complete
-4. UAT Tester uses `uat-plan.md` for testing
-5. UAT will post TWO separate PR comments:
-   - **Feature-Specific Report**: Tests the specific changes using `uat-plan.md`
-   - **Comprehensive Demo**: Regression test for side effects
-6. Verify both reports on GitHub and Azure DevOps
 
-## Validation Instructions (Test Description)
+### Step 1: <Descriptive Name>
+1. Run the app: `docker compose up -d` (or `cd src && npm run dev`)
+2. Navigate to <URL/page>
+3. Perform <action>
+4. Verify <expected result>
 
-**Feature-Specific Validation:**
+### Step 2: <Descriptive Name>
+...
 
-In the **feature-specific report** (first comment, labeled "🎯 Feature Test"):
+## Expected Results
+- <Result 1>: <description of what should be visible/working>
+- <Result 2>: ...
 
-**Specific Resources/Sections:**
-- <Resource 1> (e.g., `module.security.azurerm_key_vault_secret.audit_policy`)
-- <Resource 2>
-
-**Exact Attributes:**
-- <Attribute> (e.g., `key_vault_id`)
-
-**Expected Outcome:**
-- <Description of what to see> (e.g., "displays as 'Key Vault `kv-name`' instead of full ID")
-
-**Before/After Context:**
-- <Explanation of improvement>
-
----
-
-**Regression Validation:**
-
-In the **comprehensive demo** (second comment, labeled "🔄 Regression Test"):
-
-**Verify:**
-- No unintended changes to existing resources
-- Feature changes appear correctly in comprehensive context
-- All sections render correctly (summaries, details, static analysis)
+## Verification Checklist
+- [ ] <Feature behavior 1> works as expected
+- [ ] <Feature behavior 2> works as expected
+- [ ] Error cases are handled gracefully
+- [ ] No regressions in related features
 ```
 
 ### Writing Effective Validation Instructions
 
-The "Validation Instructions" section is critical. It will be used verbatim by the UAT Tester agent as the PR description.
+The test plan should clearly communicate what the Maintainer will verify manually.
 
 **Guidelines:**
-1.  **Be Specific:** Name 2-3 exact resources or sections affected.
-2.  **Be Actionable:** State exactly what attribute to check and what value to look for.
-3.  **Provide Context:** Explain the "before" state so the reviewer understands the improvement.
+1. **Be Specific:** Name 2-3 exact pages, sections, or flows affected.
+2. **Be Actionable:** State exactly what to do and what to verify.
+3. **Provide Context:** Explain the expected behavior so the reviewer knows what "passing" looks like.
 
 **Good Example:**
-> In the `module.security.azurerm_key_vault_secret.audit_policy` resource, verify the `key_vault_id` attribute displays as 'Key Vault `kv-name` in resource group `rg-name`' instead of the full `/subscriptions/.../` path.
+> Navigate to `/suppliers`, click "Generate Link" for a supplier. Verify that a tokenized URL appears in the dialog, and that navigating to that URL as an unauthenticated user shows the supplier form.
 
 **Bad Example:**
-> Verify Azure resource IDs display correctly.
+> Verify the supplier form works.
 
 ## Conversation Approach
 
@@ -227,29 +169,30 @@ Brief summary of what is being tested and reference to the specification.
 
 ## User Acceptance Scenarios
 
-> **Purpose**: For user-facing features (especially rendering changes), define scenarios for manual Maintainer review via Test PRs in GitHub and Azure DevOps. These help catch rendering bugs and validate real-world usage before merge.
+> **Purpose**: For user-facing features (UI changes, new pages, API behaviors), define scenarios for manual Maintainer review by running the app locally. These help catch visual/interaction bugs and validate real-world usage before merge.
 
 ### Scenario 1: <Descriptive Name>
 
-**User Goal**: What the user wants to accomplish (e.g., "View built-in template documentation")
+**User Goal**: What the user wants to accomplish (e.g., "Submit supplier emissions data via public form")
 
-**Test PR Context**:
-- **GitHub**: Verify rendering in GitHub PR comments/description.
-- **Azure DevOps**: Verify rendering in Azure DevOps PR description.
+**Test Steps**:
+1. Run `docker compose up -d` (or `cd src && npm run dev`)
+2. Navigate to <URL>
+3. Perform <action>
 
 **Expected Output**:
-- Describe what the Maintainer should see in the PR
-- Key visual elements, format, content
+- Describe what the Maintainer should see
+- Key visual elements, behavior, data
 
 **Success Criteria**:
-- [ ] Output renders correctly in GitHub Markdown
-- [ ] Output renders correctly in Azure DevOps Markdown
+- [ ] Feature works as described in the specification
 - [ ] Information is accurate and complete
 - [ ] Feature solves the stated user problem
+- [ ] No UI regressions observed
 
 **Feedback Opportunities**:
 - What could be improved?
-- Does format meet user needs?
+- Does the UX meet user needs?
 - Are there edge cases to consider?
 
 ---
