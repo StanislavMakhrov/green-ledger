@@ -12,7 +12,7 @@
 | Requirements Engineer | ✅ Required | ✅ Completed |
 | Architect | ✅ Required | ✅ Completed |
 | Quality Engineer | ✅ Required | ✅ Completed |
-| Task Planner | ✅ Required | ⏳ Pending |
+| Task Planner | ✅ Required | ✅ Completed |
 | Developer | ✅ Required | ⏳ Pending |
 | Technical Writer | ✅ Required | ⏳ Pending |
 | Code Reviewer | ✅ Required | ⏳ Pending |
@@ -51,3 +51,18 @@
   - `docs/adr-004-supplier-token-auth.md` — Random UUID token in URL, no user auth, token stored on Supplier model
   - `docs/features/001-mvp/architecture.md` — Full architecture overview with directory structure and implementation guidance
 - **Problems Encountered:** None.
+
+### Task Planner
+
+- **Date:** 2025-07-14
+- **Summary:** Created a comprehensive implementation task plan for the GreenLedger MVP. Decomposed
+  the feature into 35 tasks across 6 groups (Project Scaffolding, Core API Routes, Business Logic,
+  UI Pages, Tests, Validation). Each task includes a description, file list, prioritised acceptance
+  criteria, and explicit task dependencies. Added a "Notes for Developer" section resolving
+  implementation ambiguities (e.g., `calculations.ts` vs `proxy.ts` naming, hyphen vs no-hyphen
+  API route directories, Puppeteer Docker setup, seed idempotency). Provided a 17-step
+  implementation order table derived from the dependency graph.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/tasks.md` — 35 tasks (T01–T35), prioritised P1/P2, with acceptance
+    criteria mapped to the test plan (TC-01–TC-24), implementation order table, and developer notes.
+- **Problems Encountered:** None — specification, architecture, and test plan were fully defined.
