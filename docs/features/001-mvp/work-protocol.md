@@ -11,7 +11,7 @@
 |-------|---------|--------|
 | Requirements Engineer | ✅ Required | ✅ Done |
 | Architect | ✅ Required | ✅ Done |
-| Quality Engineer | ✅ Required | ⬜ Pending |
+| Quality Engineer | ✅ Required | ✅ Done |
 | Task Planner | ✅ Required | ⬜ Pending |
 | Developer | ✅ Required | ⬜ Pending |
 | Technical Writer | ✅ Required | ⬜ Pending |
@@ -55,3 +55,14 @@
   4. Scope 3 categories: All 15 seeded; C1, C3, C4 pre-marked as material for demo
   5. PDF library: `@react-pdf/renderer` (pure JS, minimal deps)
 - **Problems Encountered:** None. All decisions were made with clear rationale aligned to the spec constraints.
+
+### Quality Engineer
+- **Date:** 2025-07-14
+- **Summary:** Read the Feature Specification and Architecture documents for the GreenLedger MVP. Mapped all 30+ acceptance criteria to automated test cases across two layers: unit tests for pure business-logic functions (proxy calculations, constants, utils) and API smoke tests for every route handler (dashboard, suppliers, scope 1/2/3, public form, methodology, PDF export). Defined Prisma mocking strategy (`vi.mock`), shared fixture helpers, coverage targets (≥ 90 % for `src/lib/`, ≥ 80 % for API routes), and edge-case matrix. No UAT test plan required — this MVP has no markdown-rendering output; the PDF is a binary file best verified in the UAT flow via Docker.
+- **Artifacts Produced:**
+  - `docs/features/001-mvp/test-plan.md` — full test plan with 45 test cases, coverage matrix, fixtures, edge cases, and open questions for the Developer
+- **Problems Encountered:**
+  - `src/` directory does not yet exist (greenfield); test cases are specified as documentation for the Developer to implement.
+  - Proxy calculation logic location (inline vs utility function) is an open question flagged for the Developer — a utility function is strongly recommended for testability.
+  - `@react-pdf/renderer` mocking strategy noted as a potential friction point; thin wrapper in `src/lib/pdf/generate-report.ts` recommended.
+- **Next Agent:** Task Planner — to break down the specification and test plan into actionable development tasks.
