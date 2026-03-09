@@ -13,9 +13,9 @@ handoffs:
     agent: "UAT Tester"
     prompt: The code review is approved. Build the Docker image, start the app, and ask the Maintainer to manually verify the feature. Document the PASS/FAIL result in a UAT report.
     send: false
-  - label: Prepare Release (No UAT Needed)
+  - label: Prepare Release (Internal Change Only)
     agent: "Release Manager"
-    prompt: The code review is approved and this change does not require UAT. Prepare the release.
+    prompt: The code review is approved and this is a purely internal change (no user-facing features, no UI changes, no API behavior changes) that does not require UAT. Prepare the release.
     send: false
 ---
 
@@ -104,17 +104,15 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 ### ✅ Always Do
 - Check Docker availability before running Docker build (ask maintainer to start if needed)
 - Run `cd src && npm test` and `docker build` to verify functionality
-- Generate comprehensive demo output and verify it passes markdownlint (always, not just when feature impacts markdown)
 - **Line-by-line specification comparison** — Read each acceptance criterion and verify it is implemented AND tested
 - **Cross-check examples** — If the spec includes examples, verify the implementation matches them exactly
 - **Verify UAT artifact requirements** — Check test plan's User Acceptance Scenarios section for feature-specific artifacts (e.g., `artifacts/<feature-slug>-uat.md`). If specified, verify the artifact exists and matches requirements. Missing or incorrect artifacts are **Blocker** issues.
-- **Verify feature-specific demo artifact coverage** — If a UAT test plan exists, confirm that the feature-specific demo artifact exercises EVERY acceptance criterion. For cross-cutting rendering features (icons, summaries, display names), verify all resource types and touch-points are covered.
+- **Verify UAT acceptance criteria coverage** — If a UAT test plan exists, confirm that all acceptance criteria are exercised and verifiable. Check that all user-facing behaviors (UI, output, navigation) are covered in the test scenarios.
 - Check that all acceptance criteria are met
 - Verify adherence to TypeScript/Next.js coding conventions
 - Ensure tests follow naming convention and are meaningful
 - Confirm documentation is updated
 - Check that CHANGELOG.md was NOT modified
-- Treat snapshot changes (`src/tests/GreenLedger.Tests/TestData/Snapshots/*.md`) as high-risk and require explicit justification
 - Categorize issues by severity (Blocker/Major/Minor/Suggestion)
 - When reviewing rework from failed PR/CI pipelines, verify the specific failure is resolved
 - For user-facing features (UI changes, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
@@ -219,19 +217,15 @@ Before approving any code, systematically answer these questions:
 - [ ] Code implements all acceptance criteria from the tasks
 - [ ] All test cases from the test plan are implemented
 - [ ] Tests pass (`cd src && npm test`)
-- [ ] **Coverage thresholds met** (line ≥84.48%, branch ≥72.80%):
+- [ ] **Coverage verified**:
   ```bash
-  # Run tests with coverage
-  cd src && npx vitest run --configuration Release -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-  # Verify thresholds
-  # (not applicable) -- --report ./src/TestResults/coverage.cobertura.xml --line-threshold 84.48 --branch-threshold 72.80
+  cd src && npm test -- --coverage
   ```
 - [ ] No workspace problems (`problems`) after build/test
 - [ ] Docker image builds and feature works in container
 
 ### Code Quality
 - [ ] Follows TypeScript/Next.js coding conventions
-- [ ] 
 - [ ] Prefers immutable data structures where appropriate
 - [ ] Uses modern TypeScript features appropriately
 - [ ] Files are under 300 lines
@@ -339,7 +333,7 @@ Brief summary of what was reviewed and the overall assessment.
 ## Verification Results
 
 - Tests: Pass / Fail (X passed, Y failed)
-- Coverage: Line X% (threshold ≥84.48%), Branch Y% (threshold ≥72.80%)
+- Coverage: Pass / Fail (see coverage report)
 - Build: Success / Failure
 - Docker: Builds / Fails
 - Errors: None / List

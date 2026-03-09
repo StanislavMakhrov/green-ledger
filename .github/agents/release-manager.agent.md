@@ -265,7 +265,7 @@ Before releasing, verify:
    - UI/UX enhancements
    
     **Required Sections and Style:**
-    - Technical blog-post style written by a developer for Terraform practitioners (not marketing copy)
+    - Technical blog-post style written by a developer for application users (not marketing copy)
     - Be honest about scope (what changed / what didn’t)
     - Use icons consistently:
        - ✨ Features

@@ -103,10 +103,9 @@ Missing documentation updates that are clearly needed are a **Major** issue. Inc
 - Ensure tests follow naming convention and are meaningful
 - Confirm documentation is updated
 - Check that CHANGELOG.md was NOT modified
-- Treat snapshot changes (`src/tests/GreenLedger.Tests/TestData/Snapshots/*.md`) as high-risk and require explicit justification
 - Categorize issues by severity (Blocker/Major/Minor/Suggestion)
 - When reviewing rework from failed PR/CI pipelines, verify the specific failure is resolved
-- For user-facing features (UI changes, PDF export, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
+- For user-facing features (UI changes, CSV export, API behavior changes, or any visible user output), hand off to UAT Tester after code approval
 - **Challenge assumptions** — If code looks "obviously correct," ask what could make it fail
 - **Identify untested paths** — Look for code branches that lack corresponding test coverage
 

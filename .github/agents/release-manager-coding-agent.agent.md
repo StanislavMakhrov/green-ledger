@@ -263,10 +263,10 @@ Before releasing, verify:
    - Performance improvements
    - CLI flag changes
    - Output format enhancements
-   - New terraform feature support
+   - New feature support
 
     **Required Sections and Style:**
-    - Technical blog-post style written by a developer for Terraform practitioners (not marketing copy)
+    - Technical blog-post style written by a developer for application users (not marketing copy)
     - Be honest about scope (what changed / what didn’t)
     - Use icons consistently:
        - ✨ Features

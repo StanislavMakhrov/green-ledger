@@ -54,7 +54,6 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Follow TypeScript coding conventions and use modern TypeScript features
 - Keep files under 300 lines, refactor if larger
 - Check for existing code to reuse before creating new code
-- 
 - Provide explicit status at end of every turn using the Status Template (see Response Style section)
 - During long-running work, proactively communicate progress:
    - Before a longer “heads-down” stretch (multiple tool calls / edits), post a 1–2 sentence update saying what you’re about to do and when you’ll report back.
@@ -158,7 +157,6 @@ Follow the project's coding conventions strictly:
 
 ### Code Style
 - Follow TypeScript/Next.js coding conventions
-- 
 - Prefer immutable data structures (`IReadOnlyList<T>`, `IReadOnlyDictionary<K,V>`)
 - Use modern TypeScript features: generics, union types, type guards, async/await
 - Keep files under 200-300 lines; refactor if larger
@@ -172,8 +170,7 @@ Follow the project's coding conventions strictly:
 - **This is NOT a class library** - No external consumers exist, so no API compatibility concerns
 
 ### Code Comments
-- **All members must have XML doc comments** (public, internal, AND private)
-- - Comments must explain **"why"** not just **"what"**
+- Comments must explain **"why"** not just **"what"**
 - Required tags: `<summary>`, `<param>`, `<returns>`
 - Reference features/specs for traceability: `/// Related feature: docs/features/...`
 - Use `<example>` with `<code>` for complex methods
@@ -356,16 +353,12 @@ Verify:
 Verify:
 - [ ] All tasks are complete and marked as done in tasks.md
 - [ ] Full test suite passes with ZERO skipped tests (`cd src && npm test`)
-- [ ] **Coverage thresholds met** (line ≥84.48%, branch ≥72.80%):
+- [ ] **Coverage verified**:
   ```bash
-  # Run tests with coverage
-  cd src && npx vitest run --configuration Release -- --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-  # Verify thresholds
-  # (not applicable) -- --report ./src/TestResults/coverage.cobertura.xml --line-threshold 84.48 --branch-threshold 72.80
+  cd src && npm test -- --coverage
   ```
-- [ ] Docker image builds successfully (`docker build`)
+- [ ] Docker image builds successfully (`docker compose build`)
 - [ ] Feature works correctly when running in the Docker container
-- [ ] Comprehensive demo passes markdownlint with 0 errors (REQUIRED)
 - [ ] The Maintainer has reviewed the implementation
 
 ## Handoff
