@@ -60,7 +60,7 @@ The overall direction is **correct and necessary** — the project has clearly m
 
 ## Review Decision
 
-**Status: Changes Requested**
+**Status:** Changes Requested
 
 The commit successfully removes the bulk of C# references and correctly tightens UAT framing, but leaves too many incomplete substitutions and process violations to approve as-is. All findings below are Minor or lower (no Blockers beyond the missing work-protocol), so the rework is straightforward.
 
@@ -110,13 +110,14 @@ The commands were correctly updated (`dotnet test` → `npm test`), but the trai
 The `workflow-engineer-coding-agent.agent.md` (the coding-agent variant) was correctly updated to `when source code under 'src/' changes`. The `.agent.md` (VS Code local) version was missed.
 
 **Files:**
+
 - `.github/agents/workflow-engineer.agent.md`, lines 35, 627, 642
 
 **Fix:** Replace `when C# code changes` with `when source code under 'src/' changes` (matching the coding-agent variant).
 
 ---
 
-**M2 — Both reviewer agents: Stale C# snapshot path**
+**M2** — Both reviewer agents: Stale C# snapshot path
 
 The commit removed `SNAPSHOT_UPDATE_OK`, the snapshot checklist items, and the "Snapshot Changes" review report section — but left a standalone bullet referencing the old C# test path. This path no longer exists in a TypeScript project:
 
@@ -125,6 +126,7 @@ src/tests/GreenLedger.Tests/TestData/Snapshots/*.md
 ```
 
 **Files:**
+
 - `.github/agents/code-reviewer-coding-agent.agent.md`, line 106
 - `.github/agents/code-reviewer.agent.md`, line 117
 
@@ -146,6 +148,7 @@ PDF export was a feature of the old .NET CLI product, not the current TypeScript
 **M4 — `developer.agent.md` line 366: `docker build` instead of `docker compose build`**
 
 The developer checklist item still uses the old bare `docker build` command:
+
 ```
 - [ ] Docker image builds successfully (`docker build`)
 ```
@@ -161,6 +164,7 @@ The rest of the file (line 309) correctly uses `docker compose build`. The commi
 **M5 — `developer.agent.md` line 368: Old "Comprehensive demo" checklist item**
 
 The developer Definition of Done checklist still contains:
+
 ```
 - [ ] Comprehensive demo passes markdownlint with 0 errors (REQUIRED)
 ```
@@ -204,7 +208,7 @@ The commit updated `rm-no-uat.prompt.md` and `docs/agents.md` to use "purely int
 
 ---
 
-**M8 — Both reviewer agents: Malformed Vitest coverage commands**
+**M8** — Both reviewer agents: Malformed Vitest coverage commands
 
 The coverage section in both reviewer agents uses .NET-style flags incorrectly placed in a Vitest command:
 
@@ -214,12 +218,14 @@ cd src && npx vitest run --configuration Release -- --coverage --coverage-output
 ```
 
 Problems:
+
 1. `--configuration Release` is a `dotnet test` flag, not a Vitest flag. Vitest uses `--mode production` or similar.
 2. `--coverage-output` and `--coverage-output-format` are dotnet coverage flags. Vitest uses `--coverage.reporter` and `--coverage.provider`.
 3. The `# (not applicable)` commented-out line is the old dotnet `CoverageEnforcer` tool command and should be removed entirely.
 4. The coverage thresholds (84.48% line, 72.80% branch) appear to be carried over from the old C# project's actual measured baselines — they are not appropriate defaults for a new TypeScript project.
 
 **Files:**
+
 - `.github/agents/code-reviewer.agent.md`, lines 225–227
 - `.github/agents/developer.agent.md`, corresponding section
 
@@ -229,7 +235,7 @@ Problems:
 
 **M9 — `developer.agent.md` line 57: Empty bullet left by C# removal**
 
-A blank bullet (`- `) was left in the "Always Do" section where the `_camelCase` private fields rule used to be.
+A blank bullet (`-`) was left in the "Always Do" section where the `_camelCase` private fields rule used to be.
 
 **File:** `.github/agents/developer.agent.md`, line 57
 
@@ -239,7 +245,7 @@ A blank bullet (`- `) was left in the "Always Do" section where the `_camelCase`
 
 **M10 — `code-reviewer.agent.md` line 234: Empty checkbox left by C# removal**
 
-A blank checkbox item (`- [ ] `) appears in the Code Quality checklist where the `_camelCase` rule used to be.
+A blank checkbox item (`- [ ]`) appears in the Code Quality checklist where the `_camelCase` rule used to be.
 
 **File:** `.github/agents/code-reviewer.agent.md`, line 234
 
@@ -250,9 +256,11 @@ A blank checkbox item (`- [ ] `) appears in the Code Quality checklist where the
 **M11 — `developer.agent.md` line 176: Double-dash formatting bug**
 
 A merge artifact left a double-dash prefix:
+
 ```
 - - Comments must explain "why" not just "what"
 ```
+
 The first `-` is from an old line that should have been removed (the C# XML doc comment mandate), and the second `-` is the correct replacement line.
 
 Additionally, the line immediately above (`- **All members must have XML doc comments** (public, internal, AND private)`) is a C# XML doc comment requirement that should have been removed but was not.
@@ -268,6 +276,7 @@ Additionally, the line immediately above (`- **All members must have XML doc com
 **S1 — `release-manager-coding-agent.agent.md` lines 266, 269: Stale "Terraform practitioners" language**
 
 The release notes template still references the old product's audience:
+
 - Line 266: "New terraform feature support" (example of user-facing change)
 - Line 269: "Technical blog-post style written by a developer for Terraform practitioners (not marketing copy)"
 
