@@ -48,9 +48,39 @@ jobs:
 
       - name: Report result
         run: |
+          BRANCH="${{ github.event.inputs.branch || github.ref_name }}"
           if [ "${{ steps.dockerfile_check.outputs.exists }}" = "true" ]; then
             echo "✅ Docker image built successfully. Ready for UAT."
+            echo ""
+            echo "To run the app locally for UAT testing:"
+            echo ""
+            echo "  git fetch origin && git checkout ${BRANCH}"
+            echo "  docker compose up"
+            echo ""
+            echo "Then open http://localhost:3000"
+
+            {
+              echo "## ✅ Docker image built successfully"
+              echo ""
+              echo "**Branch:** \`${BRANCH}\`"
+              echo ""
+              echo "### Run locally for UAT testing"
+              echo ""
+              echo '```bash'
+              echo "git fetch origin && git checkout ${BRANCH}"
+              echo "docker compose up"
+              echo '```'
+              echo ""
+              echo "Then open [http://localhost:3000](http://localhost:3000)"
+            } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "ℹ️  No Dockerfile present on this branch yet. UAT Docker build skipped."
             echo "Add a Dockerfile at src/Dockerfile to enable UAT builds."
+
+            {
+              echo "## ℹ️ UAT Docker build skipped"
+              echo ""
+              echo "No Dockerfile present on this branch yet."
+              echo "Add a Dockerfile at \`src/Dockerfile\` to enable UAT builds."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi

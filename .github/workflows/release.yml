@@ -278,3 +278,45 @@ jobs:
             org.opencontainers.image.description=CSRD Climate Reporting for German SMEs
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Print pull command
+        run: |
+          VERSION="${{ needs.release.outputs.version }}"
+          REPO="ghcr.io/${{ github.repository_owner }}/green-ledger"
+          REPO=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+
+          echo "✅ Docker image pushed to GHCR."
+          echo ""
+          echo "To pull and run this release:"
+          echo ""
+          echo "  docker pull ${REPO}:${VERSION}"
+          echo "  docker run -p 3000:3000 ${REPO}:${VERSION}"
+
+          {
+            echo "## ✅ Docker image pushed to GHCR"
+            echo ""
+            echo "### Pull and run this release"
+            echo ""
+            echo '```bash'
+            echo "docker pull ${REPO}:${VERSION}"
+            echo "docker run -p 3000:3000 ${REPO}:${VERSION}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ needs.release.outputs.is_prerelease }}" != "true" ]; then
+            echo ""
+            echo "Or use the latest tag:"
+            echo ""
+            echo "  docker pull ${REPO}:latest"
+            echo "  docker run -p 3000:3000 ${REPO}:latest"
+
+            {
+              echo ""
+              echo "### Or use the latest tag"
+              echo ""
+              echo '```bash'
+              echo "docker pull ${REPO}:latest"
+              echo "docker run -p 3000:3000 ${REPO}:latest"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
