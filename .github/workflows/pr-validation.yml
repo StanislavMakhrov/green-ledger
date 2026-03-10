@@ -106,7 +106,6 @@ jobs:
             echo "Pull and run the image to verify this PR locally:"
             echo ""
             echo '```bash'
-            echo "docker pull ${IMAGE}"
             echo "docker run --rm -p 3000:3000 ${IMAGE}"
             echo '```'
             echo ""
