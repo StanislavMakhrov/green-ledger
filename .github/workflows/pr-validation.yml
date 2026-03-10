@@ -252,25 +252,25 @@ jobs:
           docker logs green-ledger-smoke
           exit 1
 
-      - name: Setup Node.js
+      - name: Set up Python
         if: steps.dockerfile_check.outputs.exists == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-python@v5
         with:
-          node-version: 20
-          cache: ${{ hashFiles('src/package-lock.json') != '' && 'npm' || '' }}
-          cache-dependency-path: src/package-lock.json
+          python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install Chrome
         if: steps.dockerfile_check.outputs.exists == 'true'
-        working-directory: src
-        run: npm ci
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install Python smoke-test dependencies
+        if: steps.dockerfile_check.outputs.exists == 'true'
+        run: pip install -r smoke-tests/requirements.txt
 
       - name: Run smoke tests
         if: steps.dockerfile_check.outputs.exists == 'true'
-        working-directory: src
         env:
           BASE_URL: http://localhost:3000
-        run: npm run smoke-test
+        run: pytest smoke-tests/ -v --tb=short
 
       - name: Stop Docker container
         if: always() && steps.dockerfile_check.outputs.exists == 'true'

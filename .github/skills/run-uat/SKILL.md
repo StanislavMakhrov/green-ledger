@@ -1,6 +1,6 @@
 ---
 name: run-uat
-description: Write automated smoke tests for the PR's user-facing scenarios and post manual UAT instructions for the Maintainer.
+description: Write automated Python Selenium smoke tests covering all user-facing scenarios for the PR, and post optional manual UAT instructions for the Maintainer.
 ---
 
 # Run UAT
@@ -9,25 +9,26 @@ description: Write automated smoke tests for the PR's user-facing scenarios and 
 
 Execute User Acceptance Testing for a user-facing feature by:
 
-1. Writing automated HTTP smoke tests committed to `src/smoke-tests/`
-2. Guiding the Maintainer through manual visual verification via Docker
+1. Writing automated **Python Selenium smoke tests** committed to `smoke-tests/` at the repo root
+2. Optionally guiding the Maintainer through additional manual visual verification via Docker
 
 ## Hard Rules
 
 ### Must
 
-- Write smoke tests in `src/smoke-tests/<feature-slug>/smoke.test.ts` before asking for manual verification
-- Use `fetch()` for smoke tests — no browser automation, no Prisma imports
-- Include `const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'` in every smoke test file
-- Present a clear, step-by-step verification checklist to the Maintainer
+- Write smoke tests in `smoke-tests/<feature-slug>/test_smoke.py` covering **all user-facing scenarios**
+- Use Selenium browser automation — the tests drive a headless Chrome against the live app
+- Use the shared fixtures from `smoke-tests/conftest.py` (`driver`, `base_url`)
+- Cover every scenario from the test plan — the automated tests are the primary validation
+- Present a clear, step-by-step optional verification checklist to the Maintainer
 - Wait for explicit PASS/FAIL from the Maintainer before proceeding
 - Document results in `docs/features/NNN-<feature-slug>/uat-report.md`
 
 ### Must Not
 
-- Claim UAT passed without an explicit Maintainer decision
-- Add smoke tests to the regular unit-test suite (they live in `src/smoke-tests/` only)
-- Import application source modules in smoke tests (call the HTTP API instead)
+- Claim UAT passed without an explicit Maintainer decision on the manual check
+- Place smoke tests inside `src/` (they live at `smoke-tests/` in the repo root)
+- Import application source modules in smoke tests (navigate via browser only)
 
 ## Actions
 
@@ -41,30 +42,33 @@ ls docs/features/*/uat-test-plan.md
 If found, use the verification steps from the test plan. Otherwise, derive steps from
 the feature specification.
 
-### 2. Write Automated Smoke Tests
+### 2. Write Automated Selenium Smoke Tests
 
-Create `src/smoke-tests/<feature-slug>/smoke.test.ts`:
+Create `smoke-tests/<feature-slug>/test_smoke.py` using the shared fixtures:
 
-```typescript
-const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
+```python
+"""Selenium smoke tests for <feature name>."""
 
-function get(path: string): Promise<Response> {
-  return fetch(`${BASE_URL}${path}`)
-}
+import pytest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-describe('<Feature Name> — smoke', () => {
-  it('GET /<key-page> responds with 200', async () => {
-    const res = await get('/<key-page>')
-    expect(res.status).toBe(200)
-  })
 
-  it('GET /api/<endpoint> returns expected shape', async () => {
-    const res = await get('/api/<endpoint>')
-    expect(res.status).toBe(200)
-    const body = await res.json()
-    expect(body).toHaveProperty('data')
-  })
-})
+def navigate(driver, base_url: str, path: str) -> None:
+    driver.get(f"{base_url}{path}")
+    WebDriverWait(driver, 15).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
+
+class Test<FeatureName>:
+    def test_<scenario>(self, driver, base_url):
+        """User can <do something>."""
+        navigate(driver, base_url, "/<page>")
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "<selector>"))
+        )
 ```
 
 Commit the smoke test file. CI will run it automatically in the `smoke-tests` job.
@@ -74,10 +78,12 @@ Commit the smoke test file. CI will run it automatically in the `smoke-tests` jo
 Post in chat (VS Code) or as a PR comment (coding agent):
 
 ```markdown
-## 🧪 UAT Verification Required
+## 🧪 UAT — Automated Smoke Tests Running + Optional Manual Check
 
-Automated smoke tests have been added and will run in CI.
-Please also verify the feature manually:
+Python Selenium smoke tests have been added and will run in CI (smoke-tests job),
+covering all user-facing scenarios from the test plan.
+
+The Maintainer may optionally also verify the feature manually:
 
 ### How to run
 
@@ -108,4 +114,4 @@ If FAIL, the description is required and becomes the "Issues" section of the UAT
 ### 5. Write UAT Report
 
 Create `docs/features/NNN-<feature-slug>/uat-report.md` documenting both
-the smoke test status and the Maintainer's manual verification result.
+the smoke test status and the Maintainer's optional manual verification result.

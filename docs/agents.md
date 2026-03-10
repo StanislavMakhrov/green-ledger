@@ -305,7 +305,7 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 6. **Developer** implements features/fixes and tests.
 7. **Technical Writer** updates all relevant documentation (markdown files in the repository).
 8. **Code Reviewer** reviews and approves the work. Hands off to UAT Tester for user-facing features, or directly to Release Manager for purely internal/non-UI changes.
-9. **UAT Tester** writes automated HTTP smoke tests for the PR's user-facing scenarios (committed to `src/smoke-tests/`) and posts manual verification instructions for the Maintainer. Smoke tests run automatically in the CI `smoke-tests` job. Waits for Maintainer PASS/FAIL on the manual check.
+9. **UAT Tester** writes automated **Python Selenium smoke tests** for the PR's user-facing scenarios (committed to `smoke-tests/<feature-slug>/test_smoke.py` at repo root) that cover all scenarios from the test plan. Smoke tests run in CI via the `smoke-tests` job. Also posts optional manual verification instructions for the Maintainer as an additional check. Waits for Maintainer PASS/FAIL on the manual check.
 10. **Release Manager** prepares, coordinates, and executes the release.
 
 **Meta-Agent:**
