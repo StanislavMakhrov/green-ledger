@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Suppliers must be able to submit activity data (spend, transport, waste) through a public web form without creating a user account or logging in. The form URL must be shareable by email or messaging — the GreenLedger user copies the link from the `/suppliers` page and sends it to the supplier contact.
+Suppliers must be able to submit activity data (spend, transport, waste) through a public web form without creating a user account or logging in. The form URL must be shareable by email or messaging — the application user copies the link from the `/suppliers` page and sends it to the supplier contact.
 
 Requirements:
 - The form must be accessible to anyone who has the URL — no authentication challenge.
@@ -59,7 +59,7 @@ A random UUID token in the URL is the simplest secure pattern for one-time or li
 
 - **Security by obscurity (sufficient for demo):** A 128-bit UUID has ~5.3 × 10³⁸ possible values. Brute-force enumeration is computationally infeasible. This is the same mechanism used by calendar invite links, file sharing links, and similar "capability URL" patterns.
 - **No infrastructure overhead:** No OTP delivery (email/SMS), no session store, no JWT signing keys, no TOTP seeds. Token validation is a single indexed database lookup.
-- **Revocable:** Refreshing the token via the API immediately invalidates the old URL. The GreenLedger user can regenerate a token if a supplier's contact changes or if the old link is compromised.
+- **Revocable:** Refreshing the token via the API immediately invalidates the old URL. The application user can regenerate a token if a supplier's contact changes or if the old link is compromised.
 - **Unambiguous supplier association:** The token is the foreign key to the supplier. There is no ambiguity about which supplier submitted data.
 - **Audit trail:** Every submission creates an `AuditTrailEvent` with `actor = "supplier"` and `entityId` pointing to the created `Scope3Record`, providing a clear audit trail without requiring supplier identity.
 
@@ -69,7 +69,7 @@ This pattern is sometimes called a "magic link" or "capability URL" and is widel
 
 ### Alternative A: Email OTP (one-time password sent to supplier's email)
 
-Generate a short-lived code sent to `Supplier.contactEmail` when the GreenLedger user triggers a submission request.
+Generate a short-lived code sent to `Supplier.contactEmail` when the application user triggers a submission request.
 
 **Pros:** Higher assurance that the submitter controls the supplier's email address.  
 **Cons:** Requires an email delivery service (SMTP/SES/SendGrid), adds latency (email delivery), requires the supplier to have access to the email inbox at the time of submission, complicates the demo flow significantly. Out of scope for MVP (no auth/RBAC, no external service integrations).
@@ -87,7 +87,7 @@ Generate a JWT signed with a server secret, embedded in the URL, with an expiry 
 
 ### Alternative C: Shared password or PIN
 
-Display a form-level password that the GreenLedger user communicates to the supplier.
+Display a form-level password that the application user communicates to the supplier.
 
 **Pros:** Simple, no token storage needed.  
 **Cons:** Passwords are shared secrets that can be reused across suppliers, are harder to revoke per-supplier, and provide no automatic supplier association on submission. The user experience is worse than a direct link.
@@ -109,7 +109,7 @@ A single public form URL where the supplier selects themselves from a dropdown.
 
 - Zero authentication infrastructure required — suppliers access forms via a shareable URL.
 - Token lookup is a single indexed database query (`publicFormToken` has a `@unique` constraint).
-- Tokens are immediately revocable by the GreenLedger user.
+- Tokens are immediately revocable by the application user.
 - Each submission is unambiguously linked to a specific supplier record.
 - The pattern is familiar to end users (magic links, calendar invites, file share links).
 

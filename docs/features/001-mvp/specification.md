@@ -1,4 +1,4 @@
-# Feature: GreenLedger MVP — Complete Initial Implementation
+# Feature: MVP — Complete Initial Implementation
 
 **Feature Number:** 001
 **Slug:** mvp
@@ -7,7 +7,7 @@
 
 ## Overview
 
-GreenLedger is a B2B SaaS application for German SMEs (Mittelstand) that automates CSRD/ESRS climate reporting with a deep focus on Scope 3 (supply chain emissions). The MVP delivers the complete initial implementation of the product — from the database schema and API layer through to the full Next.js UI and an exportable PDF CSRD Climate Report.
+This is a B2B SaaS application for German SMEs (Mittelstand) that automates CSRD/ESRS climate reporting with a deep focus on Scope 3 (supply chain emissions). The MVP delivers the complete initial implementation of the product — from the database schema and API layer through to the full Next.js UI and an exportable PDF CSRD Climate Report.
 
 **Problem solved:**
 
@@ -388,4 +388,4 @@ The MVP must support the following end-to-end demonstration scenario:
 
 ## Open Questions
 
-None — requirements are fully derived from `docs/spec.md` which constitutes the authoritative product specification for the MVP.
+None — requirements are fully derived from `docs/requirements.md` which constitutes the authoritative product specification for the MVP.

@@ -68,7 +68,7 @@ This includes both:
 ### ⚠️ Ask First
 
 - If the request seems like a bug fix rather than a feature
-- If the feature conflicts with project goals in docs/spec.md
+- If the feature conflicts with project goals in docs/requirements.md
 - If the feature requires significant architecture changes
 - If the scope seems too large for one feature
 
@@ -88,7 +88,8 @@ This includes both:
 
 Before starting, familiarize yourself with:
 
-- [docs/spec.md](../../docs/spec.md) - Project specification and goals
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and goals
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [docs/features.md](../../docs/features.md) and feature descriptions in `docs/features/` - Existing features
 - [docs/agents.md](../../docs/agents.md) - Workflow overview and artifact formats
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)

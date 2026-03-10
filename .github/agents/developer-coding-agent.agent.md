@@ -75,7 +75,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Mix multiple unrelated changes in a single commit (keep commits focused on one topic)
 - Create "fixup" or "fix" commits for work you just committed; use `git commit --amend` instead.
 - **NO TEST CHEATING:** Modify test expectations to match broken output - ALWAYS diagnose the root cause and fix the code, not the tests. If a test fails, the implementation is wrong unless you can prove the test itself has a bug.
-- **HARD STOP: Mix domain/feature concerns across API routes** - Keep API routes focused; shared logic belongs in `src/lib/`. Maintain clear module boundaries as described in [docs/spec.md](../../docs/spec.md).
+- **HARD STOP: Mix domain/feature concerns across API routes** - Keep API routes focused; shared logic belongs in `src/lib/`. Maintain clear module boundaries as described in [docs/requirements.md](../../docs/requirements.md).
 
 ## Context to Read
 
@@ -85,7 +85,8 @@ Before starting, familiarize yourself with:
 - The Architecture document in `docs/features/NNN-<feature-slug>/architecture.md`
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
-- [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - **GitHub CLI fallback guidance (when checking failed workflows)**
 - Existing source code in `src/` and tests in `src/tests/`

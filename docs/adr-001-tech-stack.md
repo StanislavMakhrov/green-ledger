@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-GreenLedger is a greenfield B2B SaaS application targeting German SMEs for CSRD/ESRS climate reporting. The MVP must be delivered as a local demo that can be containerised and run via `docker compose`. The team requires a full-stack framework with a single codebase for both UI and API, a relational database with future Postgres-migration capability, strict TypeScript enforcement, and a test harness that integrates with CI.
+This is a greenfield B2B SaaS application targeting German SMEs for CSRD/ESRS climate reporting. The MVP must be delivered as a local demo that can be containerised and run via `docker compose`. The team requires a full-stack framework with a single codebase for both UI and API, a relational database with future Postgres-migration capability, strict TypeScript enforcement, and a test harness that integrates with CI.
 
 The following concerns drive the stack selection:
 
@@ -18,7 +18,7 @@ The following concerns drive the stack selection:
 
 ## Decision
 
-The following tech stack is adopted for the GreenLedger MVP:
+The following tech stack is adopted for the MVP:
 
 | Concern | Technology |
 |---------|-----------|

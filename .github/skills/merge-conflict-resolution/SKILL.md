@@ -43,7 +43,7 @@ Sometimes, intent is genuinely contradictory and cannot be resolved automaticall
 
 ## When to Ask the Maintainer
 
-If the conflict touches **source-of-truth docs** (e.g., `docs/spec.md`, `docs/architecture.md`) and the correct content is not unambiguous from the current task context, you must **ask the maintainer which version to keep/merge** before committing.
+If the conflict touches **source-of-truth docs** (e.g., `docs/requirements.md`, `docs/conventions.md`, `docs/architecture.md`) and the correct content is not unambiguous from the current task context, you must **ask the maintainer which version to keep/merge** before committing.
 
 If the two change intents are contradictory (both cannot be true at the same time), you must ask the user to choose a direction. Do not attempt to “average” or invent a new intent.
 

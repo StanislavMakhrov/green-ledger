@@ -89,7 +89,8 @@ Before handing off, **append your log entry** to the `## Agent Work Log` section
 
 Before investigating, review relevant context:
 
-- [docs/spec.md](../../docs/spec.md) - Project specification
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [docs/architecture.md](../../docs/architecture.md) - Architecture overview
 - [README.md](../../README.md) - Project overview and usage
 - Recent commits: `git log --oneline -10`

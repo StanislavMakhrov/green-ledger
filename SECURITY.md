@@ -47,7 +47,7 @@ Include:
 
 ## Security Best Practices
 
-When using GreenLedger:
+When using this application:
 
 - ✅ Keep dependencies updated
 - ✅ Review supplier form tokens for unauthorized access
@@ -59,4 +59,4 @@ When using GreenLedger:
 - Open a [GitHub Discussion](https://github.com/StanislavMakhrov/green-ledger/discussions)
 - Email: <support@green-ledger.dev>
 
-Thank you for helping keep GreenLedger and its users safe!
+Thank you for helping keep this project and its users safe!
