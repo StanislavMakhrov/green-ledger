@@ -38,7 +38,7 @@ A 5-minute demo flow:
 - Tests: minimal unit/smoke tests (Vitest for API logic); also ensure `next build` works
 - CI: PR validation runs tests + `next build`
 - Release: tags `v*` create GitHub Release and build/push Docker image to GHCR
-- Local run: `docker compose` or `make dev`
+- Local run: `docker run` or `make dev`
 
 ## Project Organization
 

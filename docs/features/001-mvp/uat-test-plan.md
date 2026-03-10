@@ -12,7 +12,7 @@ the running application and delivers the 5-minute demo flow described in the spe
 
 1. The application is running locally:
    ```bash
-   docker compose up -d
+   docker run --rm -p 3000:3000 -v greenledger-data:/data green-ledger
    # or for development:
    cd src && npm run dev
    ```

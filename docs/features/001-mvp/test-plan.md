@@ -61,7 +61,7 @@ All test files live in `src/__tests__/` or colocated with their source module as
 
 **Test Steps:**
 
-1. Run `docker compose up -d` (or `cd src && npm run dev`).
+1. Run `docker run --rm -p 3000:3000 -v greenledger-data:/data green-ledger` (or `cd src && npm run dev`).
 2. Navigate to `http://localhost:3000/dashboard`.
 3. Observe the KPI cards.
 

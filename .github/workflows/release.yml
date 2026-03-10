@@ -214,9 +214,48 @@ jobs:
             echo "Extracting changelog for version $VERSION"
             bash scripts/extract-changelog.sh CHANGELOG.md "$VERSION" "$LAST" > release-notes.md
             if [ ! -s release-notes.md ]; then
-              echo "Release v${VERSION}" > release-notes.md
+              echo "Generating What's New from git log (no CHANGELOG entry found)"
+              {
+                echo "## What's New in v${VERSION}"
+                echo ""
+                if [ -n "$LAST" ]; then
+                  RANGE="v${LAST}..v${VERSION}"
+                else
+                  RANGE="v${VERSION}"
+                fi
+                # Include user-visible commit types: feat, fix, perf
+                git log --oneline "$RANGE" 2>/dev/null \
+                  | grep -Ei '^[a-f0-9]{7,40} (feat|fix|perf)(\([^)]*\))?[!]?:' \
+                  | sed 's/^[a-f0-9]\{7,40\} /- /' \
+                  | head -20 || true  # limit to 20 entries to keep release notes concise
+                echo ""
+                echo "_See [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full details._"
+              } > release-notes.md
             fi
           fi
+
+      - name: Append Docker info to release notes
+        if: steps.version.outputs.version != ''
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          REPO="ghcr.io/${{ github.repository_owner }}/green-ledger"
+          REPO=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "## 🐳 Docker Image"
+            echo ""
+            echo "Pull and run v${VERSION}:"
+            echo '```bash'
+            echo "docker pull ${REPO}:${VERSION}"
+            echo "docker run --rm -p 3000:3000 ${REPO}:${VERSION}"
+            echo '```'
+            if [ "${{ steps.version.outputs.is_prerelease }}" != "true" ]; then
+              echo ""
+              echo "Also available as: \`${REPO}:latest\`, \`${REPO}:${{ steps.version.outputs.major }}\`, \`${REPO}:${{ steps.version.outputs.minor }}\`"
+            fi
+          } >> release-notes.md
 
       - name: Create GitHub Release
         if: steps.version.outputs.version != ''

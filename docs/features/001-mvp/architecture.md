@@ -434,6 +434,6 @@ The following modules will be created or modified during implementation:
 | API routes | All files under `src/app/api/` (see directory structure) |
 | UI pages | All files under `src/app/` (see directory structure) |
 | Root layout + nav | `src/app/layout.tsx` |
-| Docker | `src/Dockerfile`, `docker-compose.yml` (repo root or `src/`) |
+| Docker | `src/Dockerfile` |
 | Make targets | `Makefile` (repo root) |
 | Tests | `src/__tests__/` or colocated `*.test.ts` files |
