@@ -149,7 +149,7 @@ Format:
 | `next-issue-number` | Determine the next available issue number across all change types (feature, fix, workflow) by checking both local docs and remote branches, then reserve it by pushing an empty branch. |
 | `pre-push-validation` | Run all PR Validation checks locally (lint, type-check, test, build, markdownlint) before pushing to ensure the PR passes CI without maintainer intervention. |
 | `run-tests` | Run the project test suite using `npm test` (Vitest) from the `src/` directory. Use `npm run test:watch` for development. |
-| `run-uat` | Run User Acceptance Testing by building and running the Docker image, then asking the Maintainer to manually verify. |
+| `run-uat` | Guide the UAT Tester through writing smoke tests and posting manual verification instructions for the Maintainer. |
 | `validate-agent` | Validate agent definitions for consistency, model availability, handoff integrity, and tool existence. |
 | `view-pr-github` | View a GitHub PR (prefer GitHub chat tools; gh is fallback with pager disabled). |
 
@@ -232,7 +232,7 @@ flowchart TB
 	UAT_AGENT["<b>UAT Tester</b>"]
 
 	%% Row 16: UAT Artifacts
-	UAT["🧪 Docker Image + Manual Check"]
+	UAT["🧪 Smoke Tests + UAT Report"]
 
 	%% Row 17: Release Manager
 	RM["<b>Release Manager</b>"]
@@ -305,7 +305,7 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 6. **Developer** implements features/fixes and tests.
 7. **Technical Writer** updates all relevant documentation (markdown files in the repository).
 8. **Code Reviewer** reviews and approves the work. Hands off to UAT Tester for user-facing features, or directly to Release Manager for purely internal/non-UI changes.
-9. **UAT Tester** validates user-facing features by building the Docker image and asking the Maintainer to manually verify the app. Waits for Maintainer PASS/FAIL.
+9. **UAT Tester** writes automated HTTP smoke tests for the PR's user-facing scenarios (committed to `src/smoke-tests/`) and posts manual verification instructions for the Maintainer. Smoke tests run automatically in the CI `smoke-tests` job. Waits for Maintainer PASS/FAIL on the manual check.
 10. **Release Manager** prepares, coordinates, and executes the release.
 
 **Meta-Agent:**
@@ -492,11 +492,11 @@ Agents determine their execution environment by analyzing:
 
 ### 9. UAT Tester
 
-- **Goal:** Validate user-facing features by building and running the Docker image, then asking the Maintainer to manually verify.
-- **Deliverables:** UAT report documenting Docker run instructions, verification checklist, and Maintainer's PASS/FAIL decision.
-- **Workflow:** Build Docker image → start app → present checklist → wait for Maintainer verdict → document result.
+- **Goal:** Validate user-facing features via automated smoke tests (CI) and Maintainer manual verification.
+- **Deliverables:** Smoke test file(s) in `src/smoke-tests/<feature-slug>/smoke.test.ts` (committed, run by CI) and a UAT report documenting the Maintainer's PASS/FAIL decision.
+- **Workflow:** Write smoke tests → commit → post manual verification checklist as PR comment → wait for Maintainer verdict → document result.
 - **Feedback format:** Maintainer replies in chat (VS Code) or as a PR comment (coding agent). PASS requires no description. FAIL requires a description: which page/flow, expected vs actual, screenshots if possible.
-- **Definition of Done:** Maintainer has manually checked the running app and given an explicit PASS or FAIL (with description) verdict. UAT report is written to `docs/features/NNN-<feature-slug>/uat-report.md`.
+- **Definition of Done:** Smoke tests are committed and the CI `smoke-tests` job passes. Maintainer has manually verified the running Docker image and given an explicit PASS or FAIL verdict. UAT report is written to `docs/features/NNN-<feature-slug>/uat-report.md`.
 
 ### 10. Release Manager
 
@@ -550,8 +550,9 @@ When multiple branches are created in parallel, they may independently pick the 
 | **Architecture Decision Records (ADRs)** | Captures significant design decisions, alternatives considered, and rationale. Provides context for future maintainers. | Markdown following the ADR format: Context, Decision, Consequences. | `docs/adr-<number>-<short-title>.md` (high level / general decisions) and `docs/features/NNN-<feature-slug>/architecture.md` (feature-specific decisions) |
 | **User Stories / Tasks** | Actionable work items with clear acceptance criteria. Used to track implementation progress (features) or workflow improvement work (workflow). | Markdown. For workflow improvements, use a table with a Status column (icon + text) and a short rationale per item. | `docs/features/NNN-<feature-slug>/tasks.md` and `docs/workflow/NNN-<topic-slug>/tasks.md` |
 | **Test Plan & Test Cases** | Defines how the feature will be verified. Maps test cases to acceptance criteria. For user-facing features, includes user acceptance scenarios for manual review. | Markdown document with: Test Objectives, Test Cases (ID, Description, Steps, Expected Result), Coverage Matrix, User Acceptance Scenarios (for user-facing features). | `docs/features/NNN-<feature-slug>/test-plan.md` |
-| **UAT Test Plan** | For user-facing features, defines what the Maintainer should verify when running the Docker image locally. | Markdown document specifying: Goal, Test Steps (what pages/flows to check), Expected Results, Docker run instructions. | `docs/features/NNN-<feature-slug>/uat-test-plan.md` |
-| **UAT Report** | Documents the Maintainer's manual verification of the running Docker image. | Markdown with: Docker image used, test steps performed, PASS/FAIL result, notes. | `docs/features/NNN-<feature-slug>/uat-report.md` |
+| **UAT Test Plan** | For user-facing features, defines acceptance scenarios for both automated smoke tests and Maintainer manual verification. | Markdown document specifying: Goal, Test Steps (pages/flows to check), Expected Results, Docker run instructions. | `docs/features/NNN-<feature-slug>/uat-test-plan.md` |
+| **Smoke Tests** | Automated HTTP tests that call the running Docker container from outside. Run by the CI `smoke-tests` job on every PR. | TypeScript files using Vitest + `fetch()`. No application imports — pure HTTP calls. | `src/smoke-tests/<feature-slug>/smoke.test.ts` |
+| **UAT Report** | Documents automated smoke test results and the Maintainer's manual verification verdict. | Markdown with: smoke test status, Docker image used, manual steps performed, PASS/FAIL result, notes. | `docs/features/NNN-<feature-slug>/uat-report.md` |
 | **Code & Tests** | Implementation of the feature including unit tests, integration tests, and any necessary refactoring. | Source code files following project conventions (Next.js App Router, `src/lib/` for shared logic). | `src/app/`, `src/lib/`, and co-located test files |
 | **Documentation** | Updated user-facing and developer documentation reflecting the new feature. | Markdown files following existing documentation structure. | `docs/`, `README.md` |
 | **Code Review Report** | Feedback on code quality, adherence to standards, and approval status. May request rework. | Markdown document with: Summary, Issues Found, Recommendations, Approval Status. | `docs/features/NNN-<feature-slug>/code-review.md` |
@@ -683,7 +684,7 @@ Each agent hands off to the next by producing a specific deliverable. The workfl
 | Developer               | Technical Writer        | Code & Tests                                         |
 | Technical Writer        | Code Reviewer           | Updated Documentation                                |
 | Code Reviewer           | UAT Tester (user-facing features) <br/> Release Manager (purely internal changes) <br/> Developer (rework needed) | Code Review Report |
-| UAT Tester              | Release Manager (approved) <br/> Developer (issues found) | Maintainer verified Docker image manually |
+| UAT Tester              | Release Manager (approved) <br/> Developer (issues found) | Smoke tests committed and CI passes; Maintainer verified Docker image manually |
 | Release Manager         | CI/CD Pipeline, GitHub  | Pull Request, Release Notes                          |
 | Release Manager         | Retrospective           | Deployment Complete                                  |
 | Retrospective           | Workflow Engineer       | Retrospective Report with Action Items               |
