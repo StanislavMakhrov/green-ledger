@@ -94,7 +94,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}-${{ steps.repo.outputs.sha }}
-            ghcr.io/${{ steps.repo.outputs.name }}:pr-${{ github.event.pull_request.number }}
 
       - name: UAT instructions
         if: steps.dockerfile_check.outputs.exists == 'true'
