@@ -3,6 +3,7 @@
 [![CI](https://github.com/StanislavMakhrov/green-ledger/workflows/CI/badge.svg)](https://github.com/StanislavMakhrov/green-ledger/actions/workflows/ci.yml)
 [![PR Validation](https://github.com/StanislavMakhrov/green-ledger/workflows/PR%20Validation/badge.svg)](https://github.com/StanislavMakhrov/green-ledger/actions/workflows/pr-validation.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker Image](https://img.shields.io/badge/ghcr.io-green--ledger-blue?logo=docker)](https://github.com/StanislavMakhrov/green-ledger/pkgs/container/green-ledger)
 [![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748?logo=prisma)](https://www.prisma.io/)
@@ -51,7 +52,24 @@ GreenLedger automates the complete workflow:
 
 ## Quick Start
 
-### Fastest Path — Docker
+### Fastest Path — Docker (from GHCR)
+
+Pull the latest release image directly from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/stanislavmakhrov/green-ledger:latest
+docker run --rm -p 3000:3000 ghcr.io/stanislavmakhrov/green-ledger:latest
+```
+
+Open [http://localhost:3000](http://localhost:3000) — the app starts pre-seeded with demo data.
+
+You can also pin to a specific version (see [Releases](https://github.com/StanislavMakhrov/green-ledger/releases)):
+
+```bash
+docker pull ghcr.io/stanislavmakhrov/green-ledger:1.2.3
+```
+
+### Build from Source — Docker
 
 ```bash
 git clone https://github.com/StanislavMakhrov/green-ledger.git
