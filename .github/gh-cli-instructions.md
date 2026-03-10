@@ -20,7 +20,6 @@
 2. **SECOND: Use Repository Wrapper Scripts** (when MCP tools don't cover the use case)
    - **`scripts/pr-github.sh`** - For PR operations (create, merge)
    - **`scripts/check-workflow-status.sh`** - For workflow operations (list, watch, trigger, view)
-   - **`scripts/uat-watch-github.sh`** - For UAT PR watching
    - **`scripts/git-status.sh`** - For git status
    - **`scripts/git-diff.sh`** - For git diff
    - **`scripts/git-log.sh`** - For git log
