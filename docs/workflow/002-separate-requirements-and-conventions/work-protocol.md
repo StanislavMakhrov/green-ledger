@@ -19,7 +19,7 @@ removed from all docs except `README.md` and `docs/requirements.md`.
 |-------|----------|--------|
 | Workflow Engineer | ✅ Required | ✅ Completed |
 | Release Manager | ✅ Required | ✅ Completed |
-| Retrospective | ✅ Required | ⏳ Pending |
+| Retrospective | ✅ Required | ✅ Completed |
 
 ## Agent Work Log
 
@@ -54,3 +54,17 @@ removed from all docs except `README.md` and `docs/requirements.md`.
     before running Actions on bot-originated PRs. Maintainer must approve in the GitHub
     Actions tab.
   - PR is still in draft state; maintainer must mark it ready for review.
+
+### Retrospective
+
+- **Date:** 2026-03-10
+- **Summary:** Conducted the post-cycle retrospective. Analysed git history, PR metadata,
+  CI workflow run list, work-protocol entries, and release notes (no chat logs were
+  exported). Produced `retrospective.md` covering timeline, agent performance, CI
+  blocking friction, and three improvement opportunities.
+- **Artifacts Produced:**
+  - `docs/workflow/002-separate-requirements-and-conventions/retrospective.md`
+- **Problems Encountered:**
+  - No chat logs were available, so per-agent metrics (model usage, request counts,
+    rejection rates, response times) could not be derived. All such fields are marked
+    Unavailable in the report.
