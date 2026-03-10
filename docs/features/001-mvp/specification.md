@@ -50,7 +50,7 @@ GreenLedger is a B2B SaaS application for German SMEs (Mittelstand) that automat
 - PDF export using a server-side HTML-to-PDF rendering approach.
 - Minimal unit/smoke tests using Vitest covering core API logic.
 - CI/CD workflows: PR Validation, CI (versioning), Release (Docker + GHCR).
-- Local run support via `docker compose` and `make dev`.
+- Local run support via `docker run` and `make dev`.
 
 ### Out of Scope
 
@@ -282,8 +282,8 @@ All routes are implemented as Next.js Route Handlers under `src/app/api/`.
 | PDF generation | Server-side HTML rendering → PDF (minimal dependencies; e.g., Puppeteer or equivalent) |
 | Testing | Vitest for unit/smoke tests; `next build` as integration smoke test |
 | CI/CD | GitHub Actions: PR Validation, CI (commit-and-tag-version), Release (Docker + GHCR) |
-| Containerisation | Docker; `docker compose` for local development |
-| Local dev | `make dev` or `docker compose up` |
+| Containerisation | Docker (single image, no Compose) |
+| Local dev | `make dev` or `docker run` |
 
 ### Coding Standards
 
@@ -382,7 +382,7 @@ The MVP must support the following end-to-end demonstration scenario:
 - [ ] ESLint passes with zero errors.
 - [ ] All Vitest unit/smoke tests pass.
 - [ ] `next build` completes without errors.
-- [ ] Application starts and serves all 8 pages with `docker compose up`.
+- [ ] Application starts and serves all 8 pages with `docker run`.
 
 ---
 

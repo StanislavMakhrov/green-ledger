@@ -277,7 +277,7 @@ graph TB
 
 | Environment | Purpose | Configuration |
 |-------------|---------|---------------|
-| Development | Local development | Docker Compose on developer machines |
+| Development | Local development | Docker on developer machines |
 | Staging | Pre-production testing | Cloud-hosted, mirrors production |
 | Production | Live system | Cloud-hosted, scaled for load |
 

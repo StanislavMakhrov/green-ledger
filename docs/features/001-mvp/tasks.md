@@ -269,32 +269,28 @@ C13 Downstream leased assets, C14 Franchises, C15 Investments.
 
 ---
 
-### T07: Dockerfile and `docker-compose.yml` ✅ DONE
+### T07: Dockerfile ✅ DONE
 
 **Priority:** P1 (critical path — required for Demo and Release)
 
 **Description:**
 Create a multi-stage Dockerfile at `src/Dockerfile` that produces a minimal production image.
-Create a `docker-compose.yml` at the repository root (or `src/`) that mounts a SQLite data volume,
-runs migrations on startup, and exposes port 3000. Create a `Makefile` at the repo root with a
-`make dev` target. Puppeteer requires Chromium — install it in the Dockerfile and set
+Create a `Makefile` at the repo root with a `make dev` target. Puppeteer requires Chromium — install it in the Dockerfile and set
 `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true` with `PUPPETEER_EXECUTABLE_PATH` pointing to the
 system Chromium.
 
 **Files to create:**
 
 - `src/Dockerfile`
-- `docker-compose.yml` (repo root)
 - `Makefile` (repo root, `make dev` target)
 - `.dockerignore` (update existing one in `src/` if present)
 
 **Acceptance Criteria:**
 
 - [ ] `docker build -f src/Dockerfile src/ -t green-ledger:local` succeeds.
-- [ ] `docker compose up` starts the application at `http://localhost:3000`.
+- [ ] `docker run --rm -p 3000:3000 -v greenledger-data:/data green-ledger:local` starts the application at `http://localhost:3000`.
 - [ ] SQLite data is persisted to a named Docker volume (not lost on container restart).
-- [ ] Migrations run automatically on container start (via `prisma migrate deploy`).
-- [ ] `make dev` starts the application (either `docker compose up` or `cd src && npm run dev`).
+- [ ] `make dev` starts the application (either `docker run` or `cd src && npm run dev`).
 - [ ] `Puppeteer` can launch Chromium inside the container (no sandbox error crashes the PDF route).
 - [ ] Docker image is ≤ 1 GB (use multi-stage build; exclude `node_modules` dev deps).
 

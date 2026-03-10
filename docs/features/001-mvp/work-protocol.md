@@ -90,7 +90,6 @@
   - `src/lib/prisma.ts` — Singleton PrismaClient
   - `src/tests/constants.test.ts` — 7 unit tests for constants
   - `src/Dockerfile` — Multi-stage Docker build with Chromium for Puppeteer
-  - `docker-compose.yml` — Docker Compose with persistent data volume
   - `Makefile` — Convenience targets for dev, build, up, down, seed
 - **Problems Encountered:**
   - `next@15.2.1` (originally specified) had critical CVEs; upgraded to patched `15.5.12`

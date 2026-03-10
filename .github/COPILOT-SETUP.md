@@ -30,8 +30,8 @@ This repository uses GitHub Copilot coding agents for automated development work
 ## UAT (User Acceptance Testing)
 
 UAT is performed manually by the Maintainer using Docker:
-1. The UAT Tester agent builds the Docker image (`docker compose build`)
-2. The Maintainer runs `docker compose up` and verifies the feature at http://localhost:3000
+1. The UAT Tester agent provides a Docker image tag from GHCR (e.g., `ghcr.io/stanislavmakhrov/green-ledger:pr-42`)
+2. The Maintainer runs `docker run --rm -p 3000:3000 ghcr.io/stanislavmakhrov/green-ledger:pr-42` and verifies the feature at http://localhost:3000
 3. The Maintainer replies PASS or FAIL
 
 No special tokens, separate repositories, or environments are required for UAT.

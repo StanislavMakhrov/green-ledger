@@ -74,7 +74,8 @@ docker pull ghcr.io/stanislavmakhrov/green-ledger:1.2.3
 ```bash
 git clone https://github.com/StanislavMakhrov/green-ledger.git
 cd green-ledger
-docker compose up
+docker build -t green-ledger ./src
+docker run --rm -p 3000:3000 -v greenledger-data:/data green-ledger
 ```
 
 Open [http://localhost:3000](http://localhost:3000) — the app starts pre-seeded with demo data.
@@ -110,8 +111,9 @@ Open [http://localhost:3000](http://localhost:3000).
 ### Docker
 
 ```bash
-# Run from the repository root
-docker compose up
+# Build from the repository root
+docker build -t green-ledger ./src
+docker run --rm -p 3000:3000 -v greenledger-data:/data green-ledger
 ```
 
 Open [http://localhost:3000](http://localhost:3000) — the app is pre-seeded with demo data.
