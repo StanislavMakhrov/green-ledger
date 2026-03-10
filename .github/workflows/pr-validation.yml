@@ -15,8 +15,8 @@ permissions:
   packages: write
 
 jobs:
-  validate:
-    name: Validate PR
+  docker:
+    name: Build & Push Docker Image for UAT
     runs-on: ubuntu-latest
 
     steps:
@@ -57,80 +57,6 @@ jobs:
           fi
 
           echo "✓ Commit messages OK for internal-only PR."
-
-      - name: Check if validation is needed
-        id: filter
-        run: |
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-
-          CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "No changed files detected; running validation"
-            exit 0
-          fi
-
-          NON_IGNORED=$(echo "$CHANGED_FILES" | grep -Ev '^(docs/|\.github/agents/|\.github/skills/|\.github/copilot-instructions\.md$|\.github/gh-cli-instructions\.md$|\.github/pull_request_template\.md$)' || true)
-
-          if [ -z "$NON_IGNORED" ]; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "Only docs/agent-instructions changed; skipping validation"
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Non-ignored files changed; running validation"
-          fi
-
-      - name: Setup Node.js
-        if: steps.filter.outputs.changed == 'true'
-        uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: ${{ hashFiles('src/package-lock.json') != '' && 'npm' || '' }}
-          cache-dependency-path: src/package-lock.json
-
-      - name: Install dependencies
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npm ci
-
-      - name: Generate Prisma client
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npx prisma generate
-
-      - name: Lint
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npm run lint
-
-      - name: Type check
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npm run type-check
-
-      - name: Test
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npm test
-
-      - name: Build
-        if: steps.filter.outputs.changed == 'true'
-        working-directory: src
-        run: npm run build
-
-      - name: Skip validation (no relevant files changed)
-        if: steps.filter.outputs.changed == 'false'
-        run: echo "✅ PR validation skipped (docs/agent-only changes)"
-
-  docker:
-    name: Build & Push Docker Image for UAT
-    runs-on: ubuntu-latest
-    needs: validate
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
 
       - name: Check for Dockerfile
         id: dockerfile_check

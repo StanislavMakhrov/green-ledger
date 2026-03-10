@@ -13,6 +13,12 @@ ENV DATABASE_URL="file:/data/greenledger.db"
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN npx prisma generate
+
+# Guardrails: lint, type-check, unit tests
+RUN npm run lint
+RUN npm run type-check
+RUN npm test
+
 RUN npm run build
 RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/prisma db push --skip-generate
 RUN DATABASE_URL="file:/tmp/greenledger.template.db" ./node_modules/.bin/tsx prisma/seed.ts
