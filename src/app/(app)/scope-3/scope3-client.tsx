@@ -39,9 +39,11 @@ interface NewRecordForm {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function Scope3Client({
+  reportingYear,
   initialCategories,
   initialRecords,
 }: {
+  reportingYear: number;
   initialCategories: Scope3Category[];
   initialRecords: Scope3Record[];
 }) {
@@ -112,6 +114,7 @@ export default function Scope3Client({
       )}
       {activeTab === "records" && (
         <RecordsSection
+          reportingYear={reportingYear}
           categories={categories}
           records={records}
           total={total}
@@ -236,11 +239,13 @@ function CategoriesSection({
 // ─── Records Section ──────────────────────────────────────────────────────────
 
 function RecordsSection({
+  reportingYear,
   categories,
   records,
   total,
   onRefresh,
 }: {
+  reportingYear: number;
   categories: Scope3Category[];
   records: Scope3Record[];
   total: number;
@@ -248,7 +253,7 @@ function RecordsSection({
 }) {
   const EMPTY_FORM: NewRecordForm = {
     categoryId: categories[0]?.id ?? "",
-    periodYear: new Date().getFullYear().toString(),
+    periodYear: reportingYear.toString(),
     valueTco2e: "",
     calculationMethod: "spend_based",
     emissionFactorSource: "",

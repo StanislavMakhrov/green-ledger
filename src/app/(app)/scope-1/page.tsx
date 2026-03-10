@@ -20,6 +20,7 @@ export default async function Scope1Page() {
   // Serialize Date to ISO string for client component props
   return (
     <Scope1Client
+      reportingYear={company?.reportingYear ?? new Date().getFullYear()}
       initialRecords={records.map((r) => ({
         ...r,
         createdAt: r.createdAt.toISOString(),

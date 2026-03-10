@@ -24,6 +24,7 @@ export default async function Scope3Page() {
 
   return (
     <Scope3Client
+      reportingYear={company?.reportingYear ?? new Date().getFullYear()}
       initialCategories={categories}
       initialRecords={records}
     />

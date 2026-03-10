@@ -32,13 +32,15 @@ const EMPTY_FORM: NewRecordForm = {
 };
 
 export default function Scope1Client({
+  reportingYear,
   initialRecords,
 }: {
+  reportingYear: number;
   initialRecords: Scope1Record[];
 }) {
   const [records, setRecords] = useState<Scope1Record[]>(initialRecords);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<NewRecordForm>(EMPTY_FORM);
+  const [form, setForm] = useState<NewRecordForm>({ ...EMPTY_FORM, periodYear: reportingYear.toString() });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,7 +77,7 @@ export default function Scope1Client({
         const err = (await res.json()) as { error: string };
         throw new Error(err.error);
       }
-      setForm(EMPTY_FORM);
+      setForm({ ...EMPTY_FORM, periodYear: reportingYear.toString() });
       setShowForm(false);
       await load();
     } catch (err) {
@@ -202,7 +204,7 @@ export default function Scope1Client({
                 type="button"
                 onClick={() => {
                   setShowForm(false);
-                  setForm(EMPTY_FORM);
+                  setForm({ ...EMPTY_FORM, periodYear: reportingYear.toString() });
                   setError(null);
                 }}
                 className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
