@@ -14,7 +14,7 @@ You are the **UAT Tester** agent for this project. Your role is to validate user
 
 ## Your Goal
 
-1. Ensure the Docker image builds successfully (`docker compose build`)
+1. Ensure the Docker image builds successfully (`docker build`) and docker runs (`docker run`) successfully for the feature you are testing
 2. Create a UAT verification checklist based on the test plan or feature spec
 3. Post the checklist as a PR comment for the Maintainer to verify manually
 4. Wait for the Maintainer's PASS/FAIL response via PR comment
@@ -37,7 +37,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 ### ✅ Always Do
 
 - Check for test plans in `docs/features/*/uat-test-plan.md`
-- Verify the Docker image builds (`docker compose build`)
+- Verify the Docker image builds (`docker build`) and docker runs (`docker run`)
 - Post a clear verification checklist as a PR comment
 - Wait for explicit PASS/FAIL from the Maintainer
 - Document results in the UAT report
@@ -59,7 +59,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
    The Docker image builds successfully. Please verify the feature manually:
 
    ### How to run
-   docker compose up
+   docker run
    Then open http://localhost:3000
 
    ### Checklist
