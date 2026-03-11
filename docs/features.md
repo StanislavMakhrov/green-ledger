@@ -1,18 +1,18 @@
 # Features
 
-This document describes the features of GreenLedger from a user perspective.
+This document describes the features of this application from a user perspective.
 
 ## Overview
 
-GreenLedger is a B2B SaaS application for German SMEs (Mittelstand) that automates CSRD/ESRS climate reporting with a deep focus on Scope 3 (supply chain) emissions.
+This is a B2B SaaS application for German SMEs (Mittelstand) that automates CSRD/ESRS climate reporting with a deep focus on Scope 3 (supply chain) emissions.
 
-## Features
+## Feature List
 
 Features are tracked as specifications in `docs/features/NNN-<slug>/specification.md`. Each feature progresses through the agent workflow: Requirements → Architecture → Quality → Tasks → Development → Review → Release.
 
 ### MVP Features ✅
 
-All MVP features have been implemented in the GreenLedger application.
+All MVP features have been implemented in the application.
 
 - **Dashboard** — KPI overview showing Scope 1, Scope 2, Scope 3, and Total emissions
 - **Supplier Management** — CRUD operations with tokenized public form link generation

@@ -2,7 +2,7 @@
 
 This document provides generic guidelines for AI agents.
 
-For project-specific instructions, refer to the `docs/spec.md` file in the repository.
+For project-specific instructions, refer to the `docs/requirements.md` and `docs/conventions.md` files in the repository.
 
 ## Coding Pattern Preferences
 
@@ -134,7 +134,7 @@ Note: `docs/agents.md` is a helpful index, but `.github/skills/` is the authorit
 
 ## Documentation
 
-- Ensure that you follow instructions from the `docs/spec.md` and other documentation files in the /docs folder
+- Ensure that you follow instructions from `docs/requirements.md`, `docs/conventions.md`, and other documentation files in the /docs folder
 - Ensure that all documentation files are updated with any code changes
 - Ensure that all documentation files are consistent with each, do not contradict each other and do not contain outdated information
 - When writing documentation, ensure that it is clear, concise, and easy to understand

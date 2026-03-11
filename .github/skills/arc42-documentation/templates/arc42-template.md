@@ -25,7 +25,8 @@ This document follows the [arc42 template](https://arc42.org/) for architecture 
 
 **Links to detailed requirements:**
 
-- [docs/spec.md](../../spec.md)
+- [docs/requirements.md](../../requirements.md)
+- [docs/conventions.md](../../conventions.md)
 - [Feature specifications in docs/features/](../../features/)
 
 ### 1.2 Quality Goals
@@ -428,7 +429,8 @@ Quality
 
 ### A. References
 
-- [Project Specification](../../spec.md)
+- [Project Requirements](../../requirements.md)
+- [Coding Conventions](../../conventions.md)
 - [Existing ADRs](../../)
 - [arc42 Template](https://arc42.org/)
 - [C4 Model](https://c4model.com/)

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-GreenLedger is scoped to a single-company local demo for the MVP. There is no authentication, no user accounts, and no multi-tenancy. Every page, API route, and database record belongs to the same company.
+This application is scoped to a single-company local demo for the MVP. There is no authentication, no user accounts, and no multi-tenancy. Every page, API route, and database record belongs to the same company.
 
 The domain model includes a `Company` entity (id, name, reportingYear, orgBoundary, country) that acts as the root of all data (Suppliers, Scope 1/2/3 records, MethodologyNotes, AuditTrailEvents all carry a `companyId` foreign key). The question is how to resolve which company to use at runtime without a session or auth context.
 

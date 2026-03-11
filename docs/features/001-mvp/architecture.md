@@ -1,4 +1,4 @@
-# Architecture: GreenLedger MVP
+# Architecture: MVP
 
 ## Status
 
@@ -6,7 +6,7 @@ Accepted
 
 ## Overview
 
-GreenLedger MVP is a single Next.js (App Router) application providing both the full user interface and the REST API. It uses Prisma with SQLite for local demo and is packaged as a Docker container. All application code lives under `src/`.
+The MVP is a single Next.js (App Router) application providing both the full user interface and the REST API. It uses Prisma with SQLite for local demo and is packaged as a Docker container. All application code lives under `src/`.
 
 The architecture is intentionally minimal: one process, one database, no microservices, no external queues. The complexity ceiling for the MVP is a well-structured monolith with clear module boundaries.
 
@@ -14,15 +14,18 @@ The architecture is intentionally minimal: one process, one database, no microse
 
 ## Directory Structure
 
-```
+```text
 /                                  # Repo root
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
 ├── docs/                          # Architecture docs, ADRs, feature specs
-│   ├── spec.md
-│   ├── architecture.md
+│   ├── requirements.md
+│   ├── conventions.md
+│   ├── features.md
+│   ├── agents.md
+│   ├── testing-strategy.md
 │   ├── adr-001-tech-stack.md
 │   ├── adr-002-pdf-generation.md
 │   ├── adr-003-single-company-demo.md
@@ -135,6 +138,7 @@ src/                               # All application source code
 All pages (`app/**/page.tsx`) are React Server Components unless they require browser interactivity (form state, clipboard access, client-side navigation triggers). Interactive UI elements (forms, buttons with handlers, copy-to-clipboard) are extracted into `"use client"` sub-components.
 
 **Rule of thumb:**
+
 - `page.tsx` — server component; fetches data directly via Prisma or via internal fetch to the API.
 - `components/SomeForm.tsx` — client component when it manages local state or handles browser events.
 
@@ -142,7 +146,7 @@ All pages (`app/**/page.tsx`) are React Server Components unless they require br
 
 All data mutations go through Route Handlers in `app/api/`. They follow REST conventions:
 
-```
+```text
 GET    /api/suppliers          → list
 POST   /api/suppliers          → create
 GET    /api/suppliers/[id]     → read one
@@ -246,7 +250,7 @@ Input validation is performed in Route Handlers before any database write. Inval
 
 ## PDF Generation Flow
 
-```
+```text
 GET /api/export/pdf
   │
   ├─ 1. Fetch all required data from Prisma:
@@ -325,22 +329,24 @@ The supplier form is a special case: it is publicly accessible without authentic
 
 ### Page Route: `/public/supplier/[token]`
 
-```
+```text
 src/app/public/supplier/[token]/page.tsx
 ```
 
 This is a Server Component that:
+
 1. Looks up the supplier: `prisma.supplier.findUnique({ where: { publicFormToken: token } })`
 2. If not found: renders a 404 / "Link expired" message.
 3. If found: renders the `SupplierFormClient` client component with the supplier name.
 
 ### API Route: `POST /api/public/supplier/[token]`
 
-```
+```text
 src/app/api/public/supplier/[token]/route.ts
 ```
 
 This Route Handler:
+
 1. Looks up the supplier by `publicFormToken`.
 2. Validates the submitted payload (one of `spend_eur`, `ton_km`, `waste_kg`).
 3. Calculates `valueTco2e`:
@@ -353,7 +359,7 @@ This Route Handler:
 
 ### Token Generation
 
-```
+```text
 POST /api/suppliers/[id]/token
   → crypto.randomUUID()
   → prisma.supplier.update({ where: { id }, data: { publicFormToken: newToken } })

@@ -61,7 +61,7 @@ In addition to updating feature-specific documentation, ensure the following glo
 - Ensure consistency across all documentation files
 - Match style and tone of existing documentation
 - Verify no contradictions between documents
-- Follow [docs/spec.md](../../docs/spec.md) standards when documenting UI or API behavior
+- Follow [docs/conventions.md](../../docs/conventions.md) standards when documenting UI or API behavior
 
 ### ⚠️ Ask First
 
@@ -89,7 +89,8 @@ Before starting, familiarize yourself with:
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The implementation in `src/` (focus on public interfaces and user-facing behavior)
 - [README.md](../../README.md) - Main project documentation
-- [docs/spec.md](../../docs/spec.md) - Project specification
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and CI/CD standards
 - [docs/features.md](../../docs/features.md) - Feature descriptions
 - [docs/agents.md](../../docs/agents.md) - Workflow overview and artifact formats
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
@@ -115,7 +116,7 @@ Based on the feature implementation, consider updating:
 
 2. **docs/features.md** - Add or update the feature description
 
-3. **docs/spec.md** - If the feature changes project goals or scope
+3. **docs/requirements.md** - If the feature changes project goals or scope
 
 4. **Feature-specific docs** - Create or update `docs/features/NNN-<feature-slug>/` files
 
@@ -146,7 +147,7 @@ Your work is complete when:
 - [ ] All user-facing changes are documented
 - [ ] README.md is updated if the feature affects basic usage
 - [ ] docs/features.md includes the new feature
-- [ ] docs/spec.md is updated if project goals changed
+- [ ] docs/requirements.md is updated if project goals changed
 - [ ] Documentation is consistent with existing style
 - [ ] No contradictions exist between documentation files
 - [ ] The maintainer has approved the documentation

@@ -161,7 +161,8 @@ green-ledger/
 │   ├── public/             # Static assets
 │   └── package.json        # npm package definition
 ├── docs/                   # Documentation
-│   ├── spec.md             # Project specification
+│   ├── requirements.md     # Project requirements and domain model
+│   ├── conventions.md      # Coding conventions and CI/CD standards
 │   ├── features.md         # Feature descriptions
 │   └── agents.md           # Agent workflow documentation
 ├── .github/                # CI/CD, agents, skills
@@ -170,7 +171,8 @@ green-ledger/
 
 ## Documentation
 
-- [Project Specification](docs/spec.md) — Complete product spec, domain model, business rules
+- [Project Requirements](docs/requirements.md) — Product requirements, domain model, business rules
+- [Coding Conventions](docs/conventions.md) — Coding standards, CI/CD, versioning
 - [Features](docs/features.md) — User-facing feature documentation
 - [Agent Workflow](docs/agents.md) — AI agent-based development workflow
 - [Contributing](CONTRIBUTING.md) — Development guidelines

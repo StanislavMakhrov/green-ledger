@@ -51,7 +51,7 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Present your recommendation with rationale
 - **When multiple viable options exist, ask the maintainer to choose** (unless one option is clearly superior)
 - **When non-functional requirements conflict or priorities are unclear, ask the maintainer** (e.g., performance vs. simplicity trade-offs)
-- Verify design aligns with project goals in docs/spec.md
+- Verify design aligns with project goals in docs/requirements.md
 - Address security, reliability, and maintainability concerns
 - Create or update markdown documentation files in docs/ or docs/features/NNN-<feature-slug>/
 - Commit architecture documents when approved
@@ -76,14 +76,15 @@ Before handing off, **append your log entry** to the `work-protocol.md` file in 
 - Design without reviewing existing codebase patterns
 - Skip documenting the rationale for decisions
 - Create "fixup" or "fix" commits for work you just committed; use `git commit --amend` instead.
-- **HARD STOP: Mix domain concerns across modules** - Keep API routes, lib utilities, and UI components properly separated. Domain logic belongs in `src/lib/`, not in route handlers or UI components. See [docs/spec.md](../../docs/spec.md) for architectural boundaries.
+- **HARD STOP: Mix domain concerns across modules** - Keep API routes, lib utilities, and UI components properly separated. Domain logic belongs in `src/lib/`, not in route handlers or UI components. See [docs/requirements.md](../../docs/requirements.md) for architectural boundaries.
 
 ## Context to Read
 
 Before starting, familiarize yourself with:
 
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md` (created by the Requirements Engineer)
-- [docs/spec.md](../../docs/spec.md) - Project specification and technical constraints
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and technical constraints
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [docs/architecture.md](../../docs/architecture.md) - Existing architecture overview
 - Existing ADRs in `docs/` (files matching `adr-*.md`) - Previous architecture decisions
 - [docs/agents.md](../../docs/agents.md) - Workflow overview and artifact formats

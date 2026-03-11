@@ -1,8 +1,8 @@
-# Test Plan: GreenLedger MVP (001)
+# Test Plan: MVP (001)
 
 ## Overview
 
-This test plan covers the GreenLedger MVP — a greenfield Next.js application for CSRD/ESRS climate
+This test plan covers the MVP — a greenfield Next.js application for CSRD/ESRS climate
 reporting. It maps every acceptance criterion in the [feature specification](./specification.md) to
 concrete, fully automated test cases using **Vitest** (`cd src && npm test`).
 

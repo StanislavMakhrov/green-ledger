@@ -138,7 +138,8 @@ Before starting, familiarize yourself with:
 - The Architecture document in `docs/features/NNN-<feature-slug>/architecture.md`
 - The Tasks document in `docs/features/NNN-<feature-slug>/tasks.md`
 - The Test Plan in `docs/features/NNN-<feature-slug>/test-plan.md`
-- [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Coding guidelines
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
 - [docs/testing-strategy.md](../../docs/testing-strategy.md) - Testing conventions

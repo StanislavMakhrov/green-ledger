@@ -106,8 +106,8 @@ Update your todo list as you complete each section.
 
 Work through sections in recommended order:
 
-1. Use `search/*` tools to find relevant content in `docs/spec.md` and feature specifications
-2. Start with **Section 1** (Introduction and Goals) - easiest to fill from spec.md
+1. Use `search/*` tools to find relevant content in `docs/requirements.md`, `docs/conventions.md`, and feature specifications
+2. Start with **Section 1** (Introduction and Goals) - easiest to fill from requirements.md
 3. Add **Section 3** (Context and Scope) - define system boundaries
 4. Document **Section 4** (Solution Strategy) - key architectural decisions
 5. Complete **Section 5** (Building Block View) - component structure

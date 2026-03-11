@@ -1,8 +1,8 @@
-# UAT Test Plan: GreenLedger MVP (001)
+# UAT Test Plan: MVP (001)
 
 ## Goal
 
-Verify that the complete GreenLedger MVP — dashboard KPIs, supplier token management, public
+Verify that the complete MVP — dashboard KPIs, supplier token management, public
 supplier form, Scope 1/2/3 data entry, methodology notes, and PDF export — works correctly in
 the running application and delivers the 5-minute demo flow described in the specification.
 

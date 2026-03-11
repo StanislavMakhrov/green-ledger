@@ -2,7 +2,7 @@
 
 ## Overview
 
-GreenLedger uses a layered testing strategy: fast unit tests for pure business logic,
+This project uses a layered testing strategy: fast unit tests for pure business logic,
 TypeScript compilation as integration validation, automated Python Selenium smoke tests
 against the Docker container in CI (covering all user-facing scenarios), and optional
 manual UAT for additional visual/UX verification.

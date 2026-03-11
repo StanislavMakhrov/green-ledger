@@ -125,7 +125,7 @@ Before proceeding with the release, **verify the Work Protocol** (`work-protocol
 - **Enforce commit type guardrails:** Verify that PRs which only change workflow/internal tooling (`.github/`, `scripts/`, `docs/`, `website/`) do NOT use `feat:` or `fix:` commit types. These must use `workflow:`, `docs:`, `chore:`, or `ci:` instead. Using `feat:` or `fix:` for non-code changes causes incorrect Versionize version bumps.
 - **Generate screenshots for visual features (MANDATORY):** If the release involves visual changes (layout, colors, UI/UX changes), screenshots are required and non-negotiable. Use a browser automation tool or take manual screenshots from the running Docker image.
 - Execute release steps autonomously (create PR, trigger workflows, monitor pipelines)
-- **Conflict Check (REQUIRED):** Before finalizing a merge, manually verify that critical documentation files (like `docs/architecture.md` or `docs/spec.md`) have not been accidentally reverted or corrupted by the merge process, even if the CLI reports success.
+- **Conflict Check (REQUIRED):** Before finalizing a merge, manually verify that critical documentation files (like `docs/architecture.md`, `docs/requirements.md`, or `docs/conventions.md`) have not been accidentally reverted or corrupted by the merge process, even if the CLI reports success.
 - **Enforce `Rebase and merge` only** when merging PRs. If GitHub shows merge-commit or squash options, stop and fix branch protection; do not proceed until rebase-only is available. Use `scripts/pr-github.sh create-and-merge` (runs `--rebase --delete-branch`). Only use raw `gh pr merge --rebase --delete-branch` as a final fallback if the wrapper is unavailable.
 - Wait for PR Validation workflow to complete successfully before merging PR
 - Wait for CI on main to complete before triggering release workflow
@@ -164,7 +164,8 @@ Before starting, familiarize yourself with:
 
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md`
 - The Code Review Report in `docs/features/NNN-<feature-slug>/code-review.md`
-- [docs/spec.md](../../docs/spec.md) - Project specification and coding standards
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) - Contribution and release guidelines
 - Current version in `src/package.json`
 

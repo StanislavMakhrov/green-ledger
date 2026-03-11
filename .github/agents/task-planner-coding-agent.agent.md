@@ -97,7 +97,8 @@ Before starting, familiarize yourself with:
 - The Feature Specification in `docs/features/NNN-<feature-slug>/specification.md`
 - The Architecture document in `docs/features/NNN-<feature-slug>/architecture.md` (if exists)
 - [docs/agents.md](../../docs/agents.md) - Workflow overview and artifact formats
-- [docs/spec.md](../../docs/spec.md) - Project goals and constraints
+- [docs/requirements.md](../../docs/requirements.md) - Project goals and constraints
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - GitHub CLI fallback guidance (only if a chat tool is missing)
 
 ## Conversation Approach

@@ -76,7 +76,8 @@ Include a **Work Protocol Analysis** section in the retrospective report that ev
 ## Context to Read
 
 - `docs/agents.md` (to understand the intended workflow)
-- `docs/spec.md` (to understand project standards)
+- `docs/requirements.md` (to understand project requirements and standards)
+- `docs/conventions.md` (to understand coding conventions and CI/CD standards)
 - The Work Protocol (`work-protocol.md`) in the work item folder (to analyze workflow completeness and agent-reported problems)
 - The feature or issue documentation (e.g., `specification.md`, `tasks.md`) to understand the scope.
 

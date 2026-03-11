@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-GreenLedger must produce an audit-ready "CSRD Climate Report" PDF that includes a cover page, an emissions summary table, a Scope 3 breakdown, methodology notes, and an assumptions/data quality section. The PDF must be generated server-side on demand via a GET request to `/api/export/pdf` and streamed back to the browser as a downloadable file.
+The application must produce an audit-ready "CSRD Climate Report" PDF that includes a cover page, an emissions summary table, a Scope 3 breakdown, methodology notes, and an assumptions/data quality section. The PDF must be generated server-side on demand via a GET request to `/api/export/pdf` and streamed back to the browser as a downloadable file.
 
 Key requirements for the PDF:
 

@@ -317,7 +317,7 @@ _Agents produce and consume artifacts. Arrows show artifact creation and consump
 
 ## Cloud Agents vs Local Agents
 
-The green-ledger workflow supports both **local agents** (running in VS Code) and **cloud agents** (running on GitHub infrastructure).
+This workflow supports both **local agents** (running in VS Code) and **cloud agents** (running on GitHub infrastructure).
 
 ### Local Agents (Interactive)
 
@@ -666,7 +666,7 @@ Example: If the most recent feature is `025-...` and a workflow item `026-...` a
 
 **Note:** The Requirements Engineer creates the feature branch at the start of the feature workflow. The Issue Analyst creates the fix branch at the start of the bug fix workflow. All subsequent agents work on the same branch until Release Manager creates the pull request.
 
-**Commit Type Guardrails:** Pull requests that only change workflow/internal tooling (`.github/`, `scripts/`, `docs/`) must NOT use `feat:` or `fix:` commit types — use `docs:`, `chore:`, `ci:`, or `refactor:` instead. Using `feat:` or `fix:` for non-code changes causes incorrect version bumps. See [docs/spec.md § Commit Guardrails](spec.md#github-actions-workflows) for details.
+**Commit Type Guardrails:** Pull requests that only change workflow/internal tooling (`.github/`, `scripts/`, `docs/`) must NOT use `feat:` or `fix:` commit types — use `docs:`, `chore:`, `ci:`, or `refactor:` instead. Using `feat:` or `fix:` for non-code changes causes incorrect version bumps. See [docs/conventions.md § Commit Guardrails](conventions.md#github-actions-workflows) for details.
 
 ---
 

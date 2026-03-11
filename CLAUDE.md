@@ -9,8 +9,9 @@ This project uses comprehensive instruction files for AI agents. Read these befo
 ### Primary Instructions
 
 1. **`.github/copilot-instructions.md`** - Generic AI agent guidelines (coding patterns, workflows, terminal commands)
-2. **`docs/spec.md`** - Project specification, domain model, organization, coding standards, CI/CD
-3. **`docs/agents.md`** - Agent-based workflow overview
+2. **`docs/requirements.md`** - Project requirements, domain model, organization
+3. **`docs/conventions.md`** - Coding standards, CI/CD, versioning
+4. **`docs/agents.md`** - Agent-based workflow overview
 
 ### Architecture Documentation
 

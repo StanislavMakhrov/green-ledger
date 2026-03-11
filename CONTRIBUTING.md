@@ -1,6 +1,6 @@
-# Contributing to GreenLedger
+# Contributing
 
-Thank you for your interest in contributing to GreenLedger! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to this project! This document provides guidelines and instructions for contributing.
 
 ## Development Workflow
 
@@ -188,7 +188,8 @@ green-ledger/
 ├── public/             # Static assets
 ├── tests/              # Test utilities and shared fixtures
 ├── docs/               # Documentation
-│   ├── spec.md         # Product specification (source of truth)
+│   ├── requirements.md # Product requirements and domain model (source of truth)
+│   ├── conventions.md  # Coding conventions and CI/CD standards
 │   ├── features.md     # MVP feature list
 │   ├── agents.md       # Agent workflow documentation
 │   ├── features/       # Per-feature specs and artifacts (created per feature)
@@ -203,7 +204,8 @@ green-ledger/
 
 ## Documentation
 
-- **`docs/spec.md`** — Product specification and domain model (source of truth)
+- **`docs/requirements.md`** — Product requirements and domain model (source of truth)
+- **`docs/conventions.md`** — Coding conventions, CI/CD, and versioning standards
 - **`docs/features/NNN-slug/`** — Per-feature specifications, architecture, test plans, tasks
 - **`docs/agents.md`** — Complete agent workflow, roles, and handoff documentation
 - **`docs/adr-NNN-title.md`** — Architecture Decision Records for significant design choices
@@ -211,7 +213,7 @@ green-ledger/
 
 ## Getting Help
 
-- Check documentation in `/docs` (start with `spec.md`)
+- Check documentation in `/docs` (start with `requirements.md`)
 - Review agent definitions in `.github/agents/`
 - Check agent skills in `.github/skills/`
 - Open a [GitHub Discussion](https://github.com/StanislavMakhrov/green-ledger/discussions)

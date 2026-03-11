@@ -1,8 +1,8 @@
-# Tasks: GreenLedger MVP — Complete Initial Implementation
+# Tasks: MVP — Complete Initial Implementation
 
 ## Overview
 
-This document breaks the GreenLedger MVP feature (001) into prioritised, independently implementable
+This document breaks the MVP feature (001) into prioritised, independently implementable
 tasks for the Developer agent. The MVP delivers a complete Next.js (App Router) application with
 Prisma/SQLite, a REST API, a full TailwindCSS UI, proxy Scope 3 calculations, PDF CSRD Climate Report
 export via Puppeteer, and Vitest unit/smoke tests — all from a greenfield `src/` directory.

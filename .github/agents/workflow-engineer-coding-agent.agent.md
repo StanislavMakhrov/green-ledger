@@ -71,7 +71,8 @@ Before making changes, familiarize yourself with:
 - [.github/copilot-instructions.md](../copilot-instructions.md) - Project-wide Copilot instructions including tool naming conventions
 - [.github/gh-cli-instructions.md](../gh-cli-instructions.md) - **GitHub CLI fallback guidance for automated agents**
 - All existing agents in `.github/agents/*.agent.md` - Current agent definitions
-- [docs/spec.md](../../docs/spec.md) - Project specification
+- [docs/requirements.md](../../docs/requirements.md) - Project requirements and domain model
+- [docs/conventions.md](../../docs/conventions.md) - Coding conventions and standards
 
 ## Reference Documentation
 
