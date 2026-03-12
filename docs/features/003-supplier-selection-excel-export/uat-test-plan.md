@@ -75,10 +75,12 @@ formatted `.xlsx` file containing only the selected suppliers' data.
 
 1. Ensure no suppliers are selected
 2. Attempt to programmatically trigger the export button via browser DevTools:
+
    ```js
    document.querySelector('[data-testid="export-button"]')?.click()
    // or find the button by text and dispatch a click event
    ```
+
 3. Verify an **inline message** appears: _"Please select at least one supplier to export."_
 4. Verify **no file download** is triggered
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -124,7 +124,7 @@ High-level guidance for the Developer agent. **Do not implement here** — docum
 
 ### New Dependency
 
-```
+```text
 exceljs@4.4.0   (no known vulnerabilities as of 2025-07-14)
 ```
 
@@ -147,7 +147,7 @@ Add to `src/package.json` under `dependencies`.
 
 ### `src/lib/excel/supplier-export.ts` — Library Utility
 
-```
+```typescript
 Interface SupplierExportRow {
   name: string
   country: string
@@ -175,6 +175,7 @@ This mirrors the pattern in `src/lib/pdf/report-template.ts` (pure data-in / out
 **Endpoint:** `GET /api/suppliers/export?ids=id1,id2,...`
 
 Behaviour:
+
 1. Parse `ids` query parameter (comma-separated string).
 2. Return HTTP 400 if `ids` is absent or empty.
 3. Fetch matching suppliers from Prisma (filtered by `companyId = DEMO_COMPANY_ID` and
@@ -229,7 +230,7 @@ const someSelected = selectedIds.size > 0 && selectedIds.size < suppliers.length
 
 **Header bar changes:**
 
-```
+```text
 [Selection counter: "N supplier(s) selected"]  [Export to Excel ↓]  [+ Add Supplier]
 ```
 
@@ -241,27 +242,31 @@ const someSelected = selectedIds.size > 0 && selectedIds.size < suppliers.length
 **Table header row changes:**
 
 - New leftmost `<th>` containing:
-  ```
+
+  ```html
   <input type="checkbox"
     aria-label="Select all suppliers"
     checked={allSelected}
-    ref={...}   // use ref to set indeterminate when someSelected
+    ref={...}
     onChange={handleSelectAll}
   />
   ```
+
 - `handleSelectAll`: if currently all selected → clear set; otherwise → add all IDs to set.
 - Set `indeterminate` property via a `useEffect` or a callback ref when `someSelected`.
 
 **Table body row changes:**
 
 - New leftmost `<td>` containing:
-  ```
+
+  ```html
   <input type="checkbox"
     aria-label={`Select ${s.name}`}
     checked={selectedIds.has(s.id)}
     onChange={() => handleToggleSelect(s.id)}
   />
   ```
+
 - `handleToggleSelect(id)`: creates a new `Set` from `selectedIds`; toggles membership.
 - Selected row styling: add `bg-green-50` (or `bg-blue-50` for contrast) to the `<tr>`
   when `selectedIds.has(s.id)`.

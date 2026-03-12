@@ -76,6 +76,14 @@
   5. **Task 5** — Create `src/__tests__/supplier-selection.test.ts` pure-logic unit tests (TC-01–TC-08, TC-22)
 - **Problems Encountered:** None. All upstream documents were thorough and consistent. The architecture document provided precise implementation guidance that mapped directly to concrete task acceptance criteria.
 
+### Code Reviewer
+
+- **Date:** 2025-07-14
+- **Summary:** Reviewed all implementation files against specification, architecture, and test plan. All 14 acceptance criteria are met. Two minor code fixes applied directly: (1) URL query construction in `handleExport()` changed from template literal to `URLSearchParams` for correct encoding; (2) download anchor element now appended/removed from DOM for Safari compatibility. Also fixed markdownlint errors in `architecture.md` (ADR status updated to "Accepted", code fence language tags added) and `uat-test-plan.md`. All 44 tests pass after fixes.
+- **Artifacts Produced:**
+  - `docs/features/003-supplier-selection-excel-export/code-review.md`
+- **Problems Encountered:** tasks.md and test-plan.md still have MD032 list-spacing markdownlint errors (cosmetic, not enforced by CI). TC-08 test is trivially vacuous — noted in review report as a minor issue.
+
 ### Technical Writer
 
 - **Date:** 2025-07-14

@@ -157,7 +157,8 @@ export default function SuppliersClient({
     setExportError(null);
     try {
       const ids = Array.from(selectedIds).join(",");
-      const res = await fetch(`/api/suppliers/export?ids=${ids}`);
+      const params = new URLSearchParams({ ids });
+      const res = await fetch(`/api/suppliers/export?${params.toString()}`);
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(body.error ?? "Export request failed");
@@ -170,7 +171,10 @@ export default function SuppliersClient({
       const match = /filename="([^"]+)"/.exec(disposition);
       a.download = match ? match[1] : `suppliers-export.xlsx`;
       a.href = url;
+      a.style.display = "none";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Export failed:", err);
