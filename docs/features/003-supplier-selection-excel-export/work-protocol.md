@@ -43,3 +43,17 @@
   2. **Smoke tests cover UI interactions** — Selenium tests in `smoke-tests/supplier-selection-excel-export/test_smoke.py` verify all user-facing UI elements and the download flow end-to-end against the Docker container.
   3. **Selection state logic tested as pure functions** — `handleToggleSelect`, `handleSelectAll`, and derived state (`allSelected`, `someSelected`) are extracted and tested as pure logic in `src/__tests__/supplier-selection.test.ts`, avoiding the need for React component rendering in unit tests.
 - **Problems Encountered:** None. Architecture document was clear and complete, making it straightforward to define testable units for each architectural component.
+
+### Task Planner
+
+- **Date:** 2025-07-14
+- **Summary:** Broke down Feature 003 into 5 ordered, actionable implementation tasks. Read all upstream artifacts (specification, architecture ADR-005, test plan, conventions, existing `suppliers-client.tsx`, and the PDF export pattern) to ensure every acceptance criterion and test case is covered. Mapped all 22 test cases from the test plan to specific tasks and files. Identified three open questions for the Maintainer (audit entity type enum, row highlight colour, counter wording).
+- **Artifacts Produced:**
+  - `docs/features/003-supplier-selection-excel-export/tasks.md`
+- **Task Breakdown:**
+  1. **Task 1** — Install `exceljs@4.4.0` dependency
+  2. **Task 2** — Create `src/lib/excel/supplier-export.ts` utility + unit tests (TC-11–TC-15)
+  3. **Task 3** — Create `src/app/api/suppliers/export/route.ts` route handler + unit tests (TC-16–TC-21)
+  4. **Task 4** — Update `suppliers-client.tsx` with selection state, checkboxes, export button, and `handleExport()` (TC-01–TC-08, TC-09–TC-10 smoke)
+  5. **Task 5** — Create `src/__tests__/supplier-selection.test.ts` pure-logic unit tests (TC-01–TC-08, TC-22)
+- **Problems Encountered:** None. All upstream documents were thorough and consistent. The architecture document provided precise implementation guidance that mapped directly to concrete task acceptance criteria.
