@@ -38,6 +38,7 @@ GreenLedger automates the complete workflow:
 - 🔗 **Public Supplier Forms** — Token-based forms for supplier data submission
 - 📐 **Materiality Assessment** — Mark and justify material Scope 3 categories
 - 📄 **PDF Export** — Audit-ready "CSRD Climate Report" with methodology and assumptions
+- 📥 **Excel Export** — Select suppliers and download as `.xlsx` for sharing with auditors and consultants
 - 🔍 **Audit Trail** — Every change tracked with actor, timestamp, and context
 
 ## Tech Stack
@@ -46,6 +47,7 @@ GreenLedger automates the complete workflow:
 - **Styling:** TailwindCSS
 - **Database:** SQLite via Prisma (Postgres-migratable)
 - **PDF Export:** Puppeteer (HTML-to-PDF rendering)
+- **Excel Export:** ExcelJS (server-side `.xlsx` generation)
 - **Tests:** Vitest
 - **CI/CD:** GitHub Actions
 

@@ -75,3 +75,14 @@
   4. **Task 4** — Update `suppliers-client.tsx` with selection state, checkboxes, export button, and `handleExport()` (TC-01–TC-08, TC-09–TC-10 smoke)
   5. **Task 5** — Create `src/__tests__/supplier-selection.test.ts` pure-logic unit tests (TC-01–TC-08, TC-22)
 - **Problems Encountered:** None. All upstream documents were thorough and consistent. The architecture document provided precise implementation guidance that mapped directly to concrete task acceptance criteria.
+
+### Technical Writer
+
+- **Date:** 2025-07-14
+- **Summary:** Updated all user-facing and developer documentation to reflect the implemented Supplier Selection and Excel Export feature. Reviewed the specification, architecture ADR, and implementation files (`suppliers-client.tsx`, `supplier-export.ts`, route handler) to verify documented behaviour matches what was built.
+- **Artifacts Produced:**
+  - `docs/features.md` — Added "Post-MVP Features" section with full Feature 003 description covering user-facing capabilities, technical implementation, and out-of-scope items.
+  - `docs/adr-005-supplier-selection-excel-export.md` — Created top-level ADR file following the project convention (`/docs/adr-NNN-title.md`), with status "Accepted" and condensed implementation reference.
+  - `README.md` — Added "📥 Excel Export" to the Features list; added ExcelJS to the Tech Stack section.
+  - `docs/requirements.md` — Updated `/suppliers` page description in the Pages table to mention selection and Excel export.
+- **Problems Encountered:** The architecture document lived inside the feature folder (`architecture.md`) but the project convention requires top-level ADR files at `docs/adr-NNN-title.md`. Created the missing `docs/adr-005-supplier-selection-excel-export.md` to satisfy this convention.
