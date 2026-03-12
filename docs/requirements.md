@@ -216,7 +216,7 @@ Sections required:
 | Path | Description |
 |------|-------------|
 | `/dashboard` | KPI cards for Scope 1, 2, 3, Total |
-| `/suppliers` | CRUD + generate/refresh token + copy link |
+| `/suppliers` | CRUD + generate/refresh token + copy link + select suppliers + Excel export |
 | `/scope-1` | Simple add/list |
 | `/scope-2` | Simple add/list |
 | `/scope-3` | Categories + records table |
