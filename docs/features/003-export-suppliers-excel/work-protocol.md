@@ -14,7 +14,7 @@
 | Quality Engineer | ✅ Required | ✅ Done |
 | Task Planner | ✅ Required | ✅ Done |
 | Developer | ✅ Required | ✅ Done |
-| Technical Writer | ✅ Required | ⏳ Pending |
+| Technical Writer | ✅ Required | ✅ Done |
 | Code Reviewer | ✅ Required | ⏳ Pending |
 | UAT Tester | ⚠️ If user-facing | ⏳ Pending |
 | Release Manager | ✅ Required | ⏳ Pending |
@@ -90,4 +90,11 @@
     without a major version upgrade that changes licensing.
   - CodeQL: 0 alerts.
 
+### Technical Writer
 
+- **Date:** 2025-07-14
+- **Summary:** Reviewed the feature specification, architecture (ADR-005), and implementation. Updated global documentation to reflect the new Excel export capability: added the feature to `docs/features.md` and the `README.md` Features section; added SheetJS to the README.md Tech Stack. No changes to `docs/requirements.md` were needed (project scope/goals unchanged). Verified no contradictions exist between documentation files.
+- **Artifacts Produced:**
+  - `docs/features.md` — added "Excel Export (Suppliers)" entry to MVP Features list
+  - `README.md` — added 📥 Excel Export to Features list; added SheetJS to Tech Stack
+- **Problems Encountered:** None
