@@ -26,11 +26,11 @@ inside `src/`. This is the only new dependency required by this feature and must
 be installed before any other task can be implemented or tested.
 
 **Acceptance Criteria:**
-- [ ] `cd src && npm install xlsx` completes without errors
-- [ ] `"xlsx"` appears in `src/package.json` under `"dependencies"` with a version
+- [x] `cd src && npm install xlsx` completes without errors
+- [x] `"xlsx"` appears in `src/package.json` under `"dependencies"` with a version
       in the `0.18.x` range (e.g. `"^0.18.5"`)
-- [ ] `src/package-lock.json` is updated to reflect the new dependency
-- [ ] Running `cd src && npm run build` still succeeds (no import resolution errors)
+- [x] `src/package-lock.json` is updated to reflect the new dependency
+- [x] Running `cd src && npm run build` still succeeds (no import resolution errors)
 
 **Dependencies:** None
 
@@ -58,28 +58,28 @@ Create a new Next.js App Router route handler at
 6. Returns an HTTP 500 JSON response if any step throws an error.
 
 **Acceptance Criteria:**
-- [ ] File `src/app/api/export/suppliers/xlsx/route.ts` exists and exports an
+- [x] File `src/app/api/export/suppliers/xlsx/route.ts` exists and exports an
       async `GET` function
-- [ ] Prisma query selects only `name`, `country`, `sector`, `contactEmail`,
+- [x] Prisma query selects only `name`, `country`, `sector`, `contactEmail`,
       `status`; `publicFormToken` is **not** in the `select` clause
-- [ ] Rows are ordered `{ orderBy: { name: "asc" } }`
-- [ ] Row objects use the keys `Name`, `Country`, `Sector`, `"Contact Email"`,
+- [x] Rows are ordered `{ orderBy: { name: "asc" } }`
+- [x] Row objects use the keys `Name`, `Country`, `Sector`, `"Contact Email"`,
       `Status` (human-readable, matching the spec's header row)
-- [ ] SheetJS calls follow the pattern:
+- [x] SheetJS calls follow the pattern:
       `json_to_sheet(rows)` → `book_new()` + `book_append_sheet(wb, ws, "Suppliers")`
       → `write(wb, { type: "buffer", bookType: "xlsx" })`
-- [ ] `logAuditEvent` is called with
+- [x] `logAuditEvent` is called with
       `{ entityType: "export", action: "exported", actor: "system", ... }`
       and a comment containing the supplier row count
-- [ ] Response `Content-Type` is
+- [x] Response `Content-Type` is
       `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
-- [ ] Response `Content-Disposition` is
+- [x] Response `Content-Disposition` is
       `attachment; filename="greenledger-suppliers-YYYY-MM-DD.xlsx"` using today's
       ISO date (`new Date().toISOString().slice(0, 10)`)
-- [ ] Response `Cache-Control` is `no-store`
-- [ ] On DB error the handler catches the exception and returns
+- [x] Response `Cache-Control` is `no-store`
+- [x] On DB error the handler catches the exception and returns
       `NextResponse.json({ error: "Failed to generate XLSX", detail: message }, { status: 500 })`
-- [ ] TypeScript strict-mode compilation succeeds (`cd src && npm run type-check`)
+- [x] TypeScript strict-mode compilation succeeds (`cd src && npm run type-check`)
 
 **Dependencies:** Task 1
 
@@ -102,22 +102,22 @@ Modify `src/app/(app)/suppliers/suppliers-client.tsx` to add an "Export to Excel
 anchor link in the toolbar area next to the existing "+ Add Supplier" button.
 
 **Acceptance Criteria:**
-- [ ] An `<a>` element with `href="/api/export/suppliers/xlsx"` is rendered in
+- [x] An `<a>` element with `href="/api/export/suppliers/xlsx"` is rendered in
       the toolbar `div` (the `flex items-center justify-between` container at
       approximately line 110)
-- [ ] The anchor text is `⬇ Export to Excel` (or visually equivalent)
-- [ ] The `<a>` tag uses a secondary button style consistent with the page's
+- [x] The anchor text is `⬇ Export to Excel` (or visually equivalent)
+- [x] The `<a>` tag uses a secondary button style consistent with the page's
       design system, e.g.:
       ```
       className="bg-white border border-gray-300 text-gray-700 px-4 py-2
                  rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
       ```
-- [ ] The existing `+ Add Supplier` button is unchanged and still present
-- [ ] The toolbar `div` wraps both controls in a `flex items-center gap-3`
+- [x] The existing `+ Add Supplier` button is unchanged and still present
+- [x] The toolbar `div` wraps both controls in a `flex items-center gap-3`
       container so they appear side-by-side
-- [ ] The button is visible regardless of whether any suppliers exist
-- [ ] TypeScript compilation succeeds with no new type errors
-- [ ] No client-side `fetch()` or `useState` logic is added — the `<a>` tag
+- [x] The button is visible regardless of whether any suppliers exist
+- [x] TypeScript compilation succeeds with no new type errors
+- [x] No client-side `fetch()` or `useState` logic is added — the `<a>` tag
       triggers the browser's native file-download flow directly
 
 **Dependencies:** None (can be developed in parallel with Task 2, but needs
@@ -145,32 +145,32 @@ Real SheetJS execution is used (no mocking of `xlsx`) so that tests verify actua
 binary output.
 
 **Acceptance Criteria:**
-- [ ] File `src/__tests__/xlsx-export.test.ts` exists
-- [ ] `@/lib/prisma` is mocked with `vi.mock` so `prisma.supplier.findMany` is a
+- [x] File `src/__tests__/xlsx-export.test.ts` exists
+- [x] `@/lib/prisma` is mocked with `vi.mock` so `prisma.supplier.findMany` is a
       `vi.fn()` controllable per test
-- [ ] `@/lib/audit` is mocked with `vi.mock` so `logAuditEvent` is a `vi.fn()`
-- [ ] The `SUPPLIER_FIXTURES` array is defined inline (Alpha Ltd / Beta GmbH as
+- [x] `@/lib/audit` is mocked with `vi.mock` so `logAuditEvent` is a `vi.fn()`
+- [x] The `SUPPLIER_FIXTURES` array is defined inline (Alpha Ltd / Beta GmbH as
       specified in the test plan's "Test Data Requirements" section)
-- [ ] **TC-01** — `GET` returns HTTP 200 with non-empty body when suppliers exist
-- [ ] **TC-02** — `Content-Disposition` matches regex
+- [x] **TC-01** — `GET` returns HTTP 200 with non-empty body when suppliers exist
+- [x] **TC-02** — `Content-Disposition` matches regex
       `attachment; filename="greenledger-suppliers-\d{4}-\d{2}-\d{2}\.xlsx"`
-- [ ] **TC-03** — `Cache-Control` header equals `"no-store"`
-- [ ] **TC-04** — `Content-Type` header equals
+- [x] **TC-03** — `Cache-Control` header equals `"no-store"`
+- [x] **TC-04** — `Content-Type` header equals
       `"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"`
-- [ ] **TC-05** — Header row (row index 0) deep-equals
+- [x] **TC-05** — Header row (row index 0) deep-equals
       `["Name", "Country", "Sector", "Contact Email", "Status"]`
-- [ ] **TC-06** — Data rows match fixture values; `rows.length === 2`
-- [ ] **TC-07** — `publicFormToken` is absent from all XLSX headers and cells
+- [x] **TC-06** — Data rows match fixture values; `rows.length === 2`
+- [x] **TC-07** — `publicFormToken` is absent from all XLSX headers and cells
       (even when the mock returns a fixture object that includes it)
-- [ ] **TC-08** — Empty supplier list returns HTTP 200 with a header-only XLSX
+- [x] **TC-08** — Empty supplier list returns HTTP 200 with a header-only XLSX
       (exactly 1 row, the header row)
-- [ ] **TC-09** — `logAuditEvent` is called exactly once with
+- [x] **TC-09** — `logAuditEvent` is called exactly once with
       `{ action: "exported", entityType: "export" }` and a comment containing
       the supplier count
-- [ ] **TC-10** — DB error (mock rejects) returns HTTP 500 JSON with
+- [x] **TC-10** — DB error (mock rejects) returns HTTP 500 JSON with
       `{ error: "Failed to generate XLSX" }`
-- [ ] All 10 tests pass: `cd src && npm test -- xlsx-export`
-- [ ] No existing tests are broken: `cd src && npm test` exits with 0
+- [x] All 10 tests pass: `cd src && npm test -- xlsx-export`
+- [x] No existing tests are broken: `cd src && npm test` exits with 0
 
 **Dependencies:** Tasks 1 and 2 (tests import and exercise the real route)
 

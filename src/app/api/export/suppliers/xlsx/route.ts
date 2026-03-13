@@ -31,9 +31,8 @@ export async function GET() {
     }));
 
     // ── 3. Build XLSX workbook and write to buffer ────────────────────────────
-    // Use json_to_sheet with an explicit header order so that an empty array
-    // still produces a valid header row (XLSX.utils.json_to_sheet([]) alone
-    // omits headers; passing { header } ensures they are always written).
+    // Pass explicit header array to ensure headers are written even when rows is
+    // empty (json_to_sheet with an empty array would otherwise omit headers).
     const ws = XLSX.utils.json_to_sheet(rows, {
       header: ["Name", "Country", "Sector", "Contact Email", "Status"],
     });
