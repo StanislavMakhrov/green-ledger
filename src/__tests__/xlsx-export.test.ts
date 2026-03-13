@@ -1,7 +1,7 @@
 /**
  * Unit tests for GET /api/export/suppliers/xlsx
  *
- * Tests use real SheetJS execution (xlsx is NOT mocked) to verify actual
+ * Tests use real ExcelJS execution (exceljs is NOT mocked) to verify actual
  * binary output, while Prisma and the audit helper are mocked so no database
  * connection is required.
  *
@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { prisma } from "@/lib/prisma";
 import { logAuditEvent } from "@/lib/audit";
 
@@ -48,24 +48,50 @@ const SUPPLIER_FIXTURES = [
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-/** Parse a Response body into a SheetJS workbook. */
+/** Parse a Response body into an ExcelJS workbook. */
 async function parseXlsxResponse(response: Response) {
   const arrayBuffer = await response.arrayBuffer();
-  return XLSX.read(Buffer.from(arrayBuffer));
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(Buffer.from(arrayBuffer));
+  return workbook;
 }
 
-/** Return the first sheet as an array of arrays (header: 1 mode). */
-function sheetToRows(wb: XLSX.WorkBook): unknown[][] {
-  const sheetName = wb.SheetNames[0];
-  const ws = wb.Sheets[sheetName];
-  return XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1 });
+/** Return the first sheet as an array of arrays (header row first). */
+function sheetToRows(workbook: ExcelJS.Workbook): unknown[][] {
+  const worksheet = workbook.worksheets[0];
+  const rows: unknown[][] = [];
+  worksheet.eachRow((row) => {
+    rows.push(row.values as unknown[]);
+  });
+  // ExcelJS row.values is 1-indexed (index 0 is null); strip the leading null
+  return rows.map((row) => (row as unknown[]).slice(1));
 }
 
-/** Return the first sheet as an array of plain objects (default mode). */
-function sheetToObjects(wb: XLSX.WorkBook): Record<string, unknown>[] {
-  const sheetName = wb.SheetNames[0];
-  const ws = wb.Sheets[sheetName];
-  return XLSX.utils.sheet_to_json<Record<string, unknown>>(ws);
+/** Return the first sheet as an array of plain objects (using header row as keys). */
+function sheetToObjects(workbook: ExcelJS.Workbook): Record<string, unknown>[] {
+  const worksheet = workbook.worksheets[0];
+  const allRows: unknown[][][] = [];
+  worksheet.eachRow((row) => {
+    allRows.push([row.values as unknown[]]);
+  });
+
+  if (allRows.length < 2) return [];
+
+  // Build header list from first row (strip leading null from 1-indexed values)
+  const headerRow = (worksheet.getRow(1).values as unknown[]).slice(1) as string[];
+  const result: Record<string, unknown>[] = [];
+
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // skip header
+    const values = (row.values as unknown[]).slice(1);
+    const obj: Record<string, unknown> = {};
+    headerRow.forEach((header, i) => {
+      obj[header] = values[i];
+    });
+    result.push(obj);
+  });
+
+  return result;
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────────

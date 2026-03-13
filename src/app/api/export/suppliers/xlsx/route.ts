@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { prisma } from "@/lib/prisma";
 import { DEMO_COMPANY_ID } from "@/lib/constants";
 import { logAuditEvent } from "@/lib/audit";
@@ -21,26 +21,33 @@ export async function GET() {
       },
     });
 
-    // ── 2. Map to human-readable header keys ──────────────────────────────────
-    const rows = suppliers.map((s) => ({
-      Name: s.name,
-      Country: s.country,
-      Sector: s.sector,
-      "Contact Email": s.contactEmail,
-      Status: s.status,
-    }));
+    // ── 2. Build XLSX workbook with ExcelJS (MIT-licensed, no known CVEs) ─────
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Suppliers");
 
-    // ── 3. Build XLSX workbook and write to buffer ────────────────────────────
-    // Pass explicit header array to ensure headers are written even when rows is
-    // empty (json_to_sheet with an empty array would otherwise omit headers).
-    const ws = XLSX.utils.json_to_sheet(rows, {
-      header: ["Name", "Country", "Sector", "Contact Email", "Status"],
-    });
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Suppliers");
-    const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+    // Define columns with explicit headers so the header row is always written,
+    // even when the suppliers array is empty.
+    worksheet.columns = [
+      { header: "Name", key: "name" },
+      { header: "Country", key: "country" },
+      { header: "Sector", key: "sector" },
+      { header: "Contact Email", key: "contactEmail" },
+      { header: "Status", key: "status" },
+    ];
 
-    // ── 4. Log audit event (mirrors the PDF export pattern) ──────────────────
+    for (const s of suppliers) {
+      worksheet.addRow({
+        name: s.name,
+        country: s.country,
+        sector: s.sector,
+        contactEmail: s.contactEmail,
+        status: s.status,
+      });
+    }
+
+    const buf = await workbook.xlsx.writeBuffer();
+
+    // ── 3. Log audit event (mirrors the PDF export pattern) ──────────────────
     await logAuditEvent({
       companyId: DEMO_COMPANY_ID,
       entityType: "export",
@@ -50,17 +57,18 @@ export async function GET() {
       comment: `Suppliers exported to XLSX — ${suppliers.length} rows`,
     });
 
-    // ── 5. Return binary response ─────────────────────────────────────────────
+    // ── 4. Return binary response ─────────────────────────────────────────────
     const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     const filename = `greenledger-suppliers-${date}.xlsx`;
+    const bodyBuffer = Buffer.from(buf);
 
-    return new NextResponse(new Uint8Array(buf as Buffer), {
+    return new NextResponse(new Uint8Array(bodyBuffer), {
       status: 200,
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": `attachment; filename="${filename}"`,
-        "Content-Length": (buf as Buffer).length.toString(),
+        "Content-Length": bodyBuffer.length.toString(),
         "Cache-Control": "no-store",
       },
     });
