@@ -112,12 +112,20 @@ export default function SuppliersClient({
           <h1 className="text-3xl font-bold text-gray-900">Suppliers</h1>
           <p className="text-gray-500 mt-1">Manage supplier emission data collection</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
-        >
-          + Add Supplier
-        </button>
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/export/suppliers/xlsx"
+            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+          >
+            ⬇ Export to Excel
+          </a>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
+          >
+            + Add Supplier
+          </button>
+        </div>
       </div>
 
       {/* Add Supplier Form */}

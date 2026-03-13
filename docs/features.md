@@ -22,4 +22,5 @@ All MVP features have been implemented in the application.
 - **Supplier Public Form** — Token-based public form for supplier data submission
 - **Methodology Notes** — Edit and manage methodology documentation per scope
 - **PDF Export** — Generate audit-ready "CSRD Climate Report" with full breakdown via Puppeteer
+- **Excel Export (Suppliers)** — Download all suppliers as a `.xlsx` file via a one-click "Export to Excel" button on the Suppliers page; file includes Name, Country, Sector, Contact Email, and Status columns, sorted alphabetically by name, and is named `greenledger-suppliers-YYYY-MM-DD.xlsx`
 - **Audit Trail** — Track all data changes with actor, timestamp, and context
