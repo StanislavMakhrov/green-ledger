@@ -60,6 +60,7 @@ export async function GET() {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": `attachment; filename="${filename}"`,
+        "Content-Length": (buf as Buffer).length.toString(),
         "Cache-Control": "no-store",
       },
     });

@@ -26,6 +26,7 @@ inside `src/`. This is the only new dependency required by this feature and must
 be installed before any other task can be implemented or tested.
 
 **Acceptance Criteria:**
+
 - [x] `cd src && npm install xlsx` completes without errors
 - [x] `"xlsx"` appears in `src/package.json` under `"dependencies"` with a version
       in the `0.18.x` range (e.g. `"^0.18.5"`)
@@ -49,6 +50,7 @@ Install inside `src/` (where `package.json` lives), not at the repository root.
 **Description:**
 Create a new Next.js App Router route handler at
 `src/app/api/export/suppliers/xlsx/route.ts` that:
+
 1. Fetches all suppliers for `DEMO_COMPANY_ID` from Prisma (five fields only,
    sorted by `name` ascending — `publicFormToken` must never be selected).
 2. Maps the Prisma records to row objects with human-readable header keys.
@@ -58,6 +60,7 @@ Create a new Next.js App Router route handler at
 6. Returns an HTTP 500 JSON response if any step throws an error.
 
 **Acceptance Criteria:**
+
 - [x] File `src/app/api/export/suppliers/xlsx/route.ts` exists and exports an
       async `GET` function
 - [x] Prisma query selects only `name`, `country`, `sector`, `contactEmail`,
@@ -102,13 +105,15 @@ Modify `src/app/(app)/suppliers/suppliers-client.tsx` to add an "Export to Excel
 anchor link in the toolbar area next to the existing "+ Add Supplier" button.
 
 **Acceptance Criteria:**
+
 - [x] An `<a>` element with `href="/api/export/suppliers/xlsx"` is rendered in
       the toolbar `div` (the `flex items-center justify-between` container at
       approximately line 110)
 - [x] The anchor text is `⬇ Export to Excel` (or visually equivalent)
 - [x] The `<a>` tag uses a secondary button style consistent with the page's
       design system, e.g.:
-      ```
+
+      ```text
       className="bg-white border border-gray-300 text-gray-700 px-4 py-2
                  rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
       ```
@@ -145,6 +150,7 @@ Real SheetJS execution is used (no mocking of `xlsx`) so that tests verify actua
 binary output.
 
 **Acceptance Criteria:**
+
 - [x] File `src/__tests__/xlsx-export.test.ts` exists
 - [x] `@/lib/prisma` is mocked with `vi.mock` so `prisma.supplier.findMany` is a
       `vi.fn()` controllable per test

@@ -40,6 +40,7 @@ Reference: `docs/features/003-export-suppliers-excel/specification.md`
 **User Goal**: Download all suppliers as an XLSX file for offline use.
 
 **Test Steps**:
+
 1. Run the app: `docker compose up -d`
 2. Navigate to `http://localhost:3000/suppliers`
 3. Verify an **"⬇ Export to Excel"** button/link is visible in the toolbar next to **"+ Add Supplier"**
@@ -49,12 +50,14 @@ Reference: `docs/features/003-export-suppliers-excel/specification.md`
 7. Verify the filename pattern is `greenledger-suppliers-YYYY-MM-DD.xlsx`
 
 **Expected Output**:
+
 - First row: header row with columns `Name`, `Country`, `Sector`, `Contact Email`, `Status`
 - Subsequent rows: one row per supplier, sorted A–Z by Name
 - No column named `publicFormToken` is visible anywhere
 - File opens without warnings in Excel / LibreOffice Calc
 
 **Success Criteria**:
+
 - [ ] Button is visible in the Suppliers toolbar
 - [ ] File downloads automatically with `.xlsx` extension and correct filename pattern
 - [ ] Header row contains exactly the five specified columns
@@ -63,6 +66,7 @@ Reference: `docs/features/003-export-suppliers-excel/specification.md`
 - [ ] File opens correctly in Excel and LibreOffice Calc
 
 **Feedback Opportunities**:
+
 - Does the button placement feel natural next to the Add Supplier button?
 - Is the plain-text status column (active/inactive) readable enough, or would colour coding help?
 
@@ -73,16 +77,19 @@ Reference: `docs/features/003-export-suppliers-excel/specification.md`
 **User Goal**: Confirm export works gracefully when no suppliers exist.
 
 **Test Steps**:
+
 1. (If required) Temporarily remove all suppliers via the app or seed a blank DB
 2. Navigate to `http://localhost:3000/suppliers`
 3. Click "Export to Excel"
 
 **Expected Output**:
+
 - A valid `.xlsx` file is downloaded
 - The file contains only the header row (Name, Country, Sector, Contact Email, Status)
 - No JavaScript error or 500 error page appears
 
 **Success Criteria**:
+
 - [ ] File downloads without error
 - [ ] File contains header row with all five column names
 - [ ] No data rows are present (empty sheet body)
@@ -103,10 +110,12 @@ records should produce an HTTP 200 response whose body is a non-empty binary buf
 (valid XLSX).
 
 **Preconditions:**
+
 - `prisma.supplier.findMany` is mocked to return at least one supplier record
 - `logAuditEvent` is mocked as a no-op
 
 **Test Steps:**
+
 1. Import `GET` from `@/app/api/export/suppliers/xlsx/route`
 2. Mock `@/lib/prisma` so `prisma.supplier.findMany` resolves with a fixture array
 3. Mock `@/lib/audit` so `logAuditEvent` resolves without error
@@ -130,9 +139,11 @@ The `Content-Disposition` header must follow the pattern
 `attachment; filename="greenledger-suppliers-YYYY-MM-DD.xlsx"`.
 
 **Preconditions:**
+
 - Same mocks as TC-01
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Read `response.headers.get("Content-Disposition")`
 3. Assert it matches the regex `attachment; filename="greenledger-suppliers-\d{4}-\d{2}-\d{2}\.xlsx"`
@@ -153,9 +164,11 @@ The response must include `Cache-Control: no-store` to prevent proxies from cach
 the export binary.
 
 **Preconditions:**
+
 - Same mocks as TC-01
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Assert `response.headers.get("Cache-Control") === "no-store"`
 
@@ -175,9 +188,11 @@ The `Content-Type` must be
 `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
 
 **Preconditions:**
+
 - Same mocks as TC-01
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Assert `response.headers.get("Content-Type")` equals the XLSX MIME type string
 
@@ -197,10 +212,12 @@ The first row of the returned XLSX sheet must be a header row with exactly the f
 human-readable column names: `Name`, `Country`, `Sector`, `Contact Email`, `Status`.
 
 **Preconditions:**
+
 - `prisma.supplier.findMany` returns at least one supplier record
 - `logAuditEvent` mocked
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Read the response buffer via `await response.arrayBuffer()`
 3. Parse the buffer with `XLSX.read()` (SheetJS)
@@ -222,16 +239,20 @@ Row 0 contains exactly the five specified header strings in the specified order.
 Each supplier returned by Prisma must appear as exactly one data row in the sheet.
 
 **Preconditions:**
+
 - Mock returns a two-supplier array:
+
   ```ts
   [
     { name: "Alpha Ltd", country: "DE", sector: "Energy", contactEmail: "a@alpha.com", status: "active" },
     { name: "Beta GmbH", country: "FR", sector: "Transport", contactEmail: "b@beta.com", status: "inactive" },
   ]
   ```
+
 - `logAuditEvent` mocked
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Parse the XLSX buffer and convert to row objects
 3. Assert `rows.length === 2` (data rows, excluding header)
@@ -253,10 +274,12 @@ The `publicFormToken` field must **not** appear as a column header or cell value
 the exported sheet.
 
 **Preconditions:**
+
 - Mock returns suppliers that include `publicFormToken` in their JS objects to
   simulate a scenario where the token leaks into the mapping layer
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Parse XLSX and extract header row and all cell values
 3. Assert no cell or header equals `"publicFormToken"` or contains a UUID in the
@@ -278,10 +301,12 @@ When `prisma.supplier.findMany` returns an empty array, the route must still ret
 HTTP 200 with a valid XLSX containing only the header row.
 
 **Preconditions:**
+
 - `prisma.supplier.findMany` mocked to return `[]`
 - `logAuditEvent` mocked
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Assert `response.status === 200`
 3. Parse XLSX buffer
@@ -304,10 +329,12 @@ HTTP 200, valid XLSX, one header row, no data rows.
 `entityType: "export"` and `action: "exported"`.
 
 **Preconditions:**
+
 - `prisma.supplier.findMany` returns a fixture array (may be empty)
 - `logAuditEvent` is mocked with `vi.fn()`
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Assert `logAuditEvent` was called exactly once
 3. Assert the call argument includes `{ action: "exported", entityType: "export" }`
@@ -329,10 +356,12 @@ If `prisma.supplier.findMany` throws an error (simulating a DB failure), the rou
 must return HTTP 500 with a JSON body containing an `error` field.
 
 **Preconditions:**
+
 - `prisma.supplier.findMany` mocked to reject with `new Error("DB connection failed")`
 - `logAuditEvent` mocked
 
 **Test Steps:**
+
 1. Call `await GET()`
 2. Assert `response.status === 500`
 3. Parse response body as JSON
@@ -353,9 +382,11 @@ HTTP 500 with JSON error body; no unhandled exception thrown.
 The Suppliers page must render an "Export to Excel" link/button in the toolbar.
 
 **Preconditions:**
+
 - Docker container running at `BASE_URL`
 
 **Test Steps:**
+
 1. Navigate to `{base_url}/suppliers`
 2. Wait for `<main>` to be present
 3. Assert page body contains the text `"Export to Excel"`
@@ -377,9 +408,11 @@ not render a Next.js error page. The browser may trigger a file download or disp
 binary content; neither is a 500/application error.
 
 **Preconditions:**
+
 - Docker container running at `BASE_URL`
 
 **Test Steps:**
+
 1. Navigate to `{base_url}/api/export/suppliers/xlsx`
 2. Assert page title does not contain `"500"`
 3. Assert page body does not contain `"Application error"` (case-insensitive)

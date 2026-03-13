@@ -17,6 +17,7 @@ records with the correct columns, filename, and sort order.
 3. Look at the toolbar area at the top-right of the supplier list
 
 **Verify:**
+
 - An **"⬇ Export to Excel"** button or link is visible next to the **"+ Add Supplier"** button
 - The button is styled consistently with the existing secondary button style (white background, gray border)
 
@@ -29,6 +30,7 @@ records with the correct columns, filename, and sort order.
 3. Save the file and open it in Microsoft Excel or LibreOffice Calc
 
 **Verify:**
+
 - The filename follows the pattern `greenledger-suppliers-YYYY-MM-DD.xlsx` (today's date)
 - The file opens without warnings or repair prompts
 - Row 1 is a header row with exactly these column names (in any order):
@@ -51,6 +53,7 @@ records with the correct columns, filename, and sort order.
 2. (Optional) Export again and verify a second audit entry is added
 
 **Verify:**
+
 - An audit event with action `exported` was logged for the XLSX export
 
 ---
@@ -65,6 +68,7 @@ records with the correct columns, filename, and sort order.
 4. Open the downloaded file
 
 **Verify:**
+
 - File downloads without error
 - File contains only the header row (no data rows)
 - No error message appears in the browser

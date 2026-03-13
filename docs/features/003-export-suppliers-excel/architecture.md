@@ -103,7 +103,7 @@ dependency tree and follows the "simplest thing that works" principle stated in
 
 ### New dependency
 
-```
+```text
 xlsx   (latest v0.18.x, installed in src/)
 ```
 
@@ -242,7 +242,7 @@ is satisfied automatically.
 
 ### Directory layout after implementation
 
-```
+```text
 src/app/api/export/
   pdf/
     route.ts          (existing)
