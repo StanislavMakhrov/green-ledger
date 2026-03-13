@@ -111,3 +111,12 @@
   - `docs/features/003-export-suppliers-excel/test-plan.md` (modified — MD032/MD031 fixes)
   - `docs/features/003-export-suppliers-excel/uat-test-plan.md` (modified — MD032 fixes)
 - **Problems Encountered:** 45 markdownlint errors found in documentation files produced by earlier agents; all fixed.
+
+### UAT Tester
+
+- **Date:** 2025-07-14
+- **Summary:** Wrote automated Selenium smoke tests covering TC-11 (Export button visible on /suppliers) and TC-12 (XLSX endpoint returns a valid file). Tests placed at `smoke-tests/export-suppliers-excel/test_smoke.py` following the existing conftest.py fixture patterns. Tests include: button visibility, correct href, HTTP 200 + XLSX content-type, non-empty body, Content-Disposition filename, and no browser error page.
+- **Artifacts Produced:**
+  - `smoke-tests/export-suppliers-excel/test_smoke.py` (new)
+  - `docs/features/003-export-suppliers-excel/work-protocol.md` (this entry)
+- **Problems Encountered:** None
