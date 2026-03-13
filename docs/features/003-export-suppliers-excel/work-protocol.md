@@ -32,3 +32,18 @@
   - `docs/features/003-export-suppliers-excel/specification.md`
   - `docs/features/003-export-suppliers-excel/work-protocol.md`
 - **Problems Encountered:** None
+
+### Architect
+
+- **Date:** 2025-07-14
+- **Summary:** Explored the existing PDF export route, suppliers UI, Prisma
+  schema, and package.json. Confirmed neither `xlsx` nor `exceljs` was
+  installed. Designed the XLSX export feature following the PDF route pattern:
+  `GET /api/export/suppliers/xlsx` → Prisma fetch (5 columns, no
+  `publicFormToken`) → SheetJS buffer → audit log → binary response. Selected
+  SheetJS (`xlsx`) over ExcelJS as the lighter, simpler library suited to
+  plain-text tabular output. Documented UI placement (anchor tag next to
+  "+ Add Supplier") and all response headers.
+- **Artifacts Produced:**
+  - `docs/features/003-export-suppliers-excel/architecture.md` (ADR-005)
+- **Problems Encountered:** None
