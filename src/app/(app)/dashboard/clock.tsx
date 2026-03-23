@@ -25,7 +25,10 @@ export function Clock() {
   });
 
   return (
-    <span className="text-sm text-gray-400 font-mono tabular-nums">
+    <span
+      aria-label={`Current time: ${formatted}`}
+      className="text-sm text-gray-400 font-mono tabular-nums"
+    >
       🕐 {formatted}
     </span>
   );
