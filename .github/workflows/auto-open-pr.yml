@@ -37,7 +37,7 @@ jobs:
             --json number \
             --jq '.[0].number' 2>/dev/null || true)
 
-          if [ -n "${existing//[[:space:]]/}" ]; then
+          if [ -n "$existing" ]; then
             echo "PR #$existing already exists for branch '$branch'; nothing to do."
             exit 0
           fi

@@ -26,7 +26,7 @@ export function Clock() {
 
   return (
     <span
-      aria-label={`Current time: ${formatted}`}
+      aria-live="polite"
       className="text-sm text-gray-400 font-mono tabular-nums"
     >
       🕐 {formatted}
