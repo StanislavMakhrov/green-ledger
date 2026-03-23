@@ -28,8 +28,14 @@ This skill is automatically loaded by all coding agents. It defines the core wor
 - When an issue is assigned to `@copilot`, GitHub automatically creates a `copilot/*` branch and draft PR
 - When you start working, you're already on the correct branch with an active PR
 - **NEVER run `git checkout`, `git switch`, or `git branch` commands** - you're already on the right branch
-- **NEVER attempt to create a new PR** - one already exists for your work
+- **NEVER attempt to create a new PR** - one already exists for your work (or the `auto-open-pr.yml` workflow will create it automatically on your first push)
 - Your job is to commit work to the existing branch using `report_progress` (which handles git push automatically)
+
+**When started from a Copilot Chat task (not an issue assignment):**
+
+- GitHub does NOT auto-create a PR in this context
+- The `auto-open-pr.yml` workflow fires on every `push` to `copilot/**` branches and creates a draft PR automatically
+- Simply call `report_progress` as normal — the workflow handles PR creation
 
 **Why this fails:**
 
