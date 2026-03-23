@@ -1,0 +1,57 @@
+name: Auto-open PR for Copilot branches
+
+on:
+  push:
+    branches:
+      - 'copilot/**'
+
+concurrency:
+  group: auto-open-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-pr:
+    name: Open PR if none exists
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Open draft PR if none exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAGER: cat
+          GH_FORCE_TTY: "false"
+        run: |
+          set -euo pipefail
+
+          branch="${GITHUB_REF_NAME}"
+
+          existing=$(gh pr list \
+            --head "$branch" \
+            --state open \
+            --json number \
+            --jq '.[0].number' 2>/dev/null || true)
+
+          if [ -n "${existing//[[:space:]]/}" ]; then
+            echo "PR #$existing already exists for branch '$branch'; nothing to do."
+            exit 0
+          fi
+
+          # Derive title from the most recent commit subject
+          title=$(git log -1 --pretty=%s)
+
+          # Build a minimal PR body
+          body=$'## Problem\n\n_Describe why this change is needed._\n\n## Change\n\n_Describe what changed._\n\n## Verification\n\n_Describe how this was validated._'
+
+          echo "No open PR found for '$branch'; creating draft PR..."
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "$title" \
+            --body "$body" \
+            --draft
