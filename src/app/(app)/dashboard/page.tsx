@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { DEMO_COMPANY_ID } from "@/lib/constants";
+import { Clock } from "./clock";
 
 // Force dynamic rendering — page requires database access at request time
 export const dynamic = "force-dynamic";
@@ -36,10 +37,15 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">
-          {company?.name ?? "Demo GmbH"} · Reporting Year {year}
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-500 mt-1">
+              {company?.name ?? "Demo GmbH"} · Reporting Year {year}
+            </p>
+          </div>
+          <Clock />
+        </div>
       </div>
 
       {/* KPI Cards */}
